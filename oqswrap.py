@@ -1,27 +1,26 @@
 # Open Quantum Safe (OQS) Python Module
+#
 # TODOs:
-# * should we implement stricter arg checking, or simply document the functions
-#   (see https://www.python.org/dev/peps/pep-0484/, https://www.python.org/dev/peps/pep-3107/)
 # * add unit test
 
 # import ctypes to call native
-from ctypes import *
-# platform.system to learn the OS
-from platform import system
+import ctypes as ct
+# import platform to learn the OS we're on
+import platform
 
 # expected return value from native OQS functions
 _OQS_SUCCESS = 0
 
 # load native OQS library
-if system() == 'Windows':
-        liboqs = windll.LoadLibrary('oqs')
+if platform.system() == 'Windows':
+        liboqs = ct.windll.LoadLibrary('oqs')
 else:
     try:
         # try to load a local library first
-        liboqs = cdll.LoadLibrary('./liboqs.so')
+        liboqs = ct.cdll.LoadLibrary('./liboqs.so')
     except OSError:
         # no local liboqs, try to load the system one
-        liboqs = cdll.LoadLibrary('liboqs.so')
+        liboqs = ct.cdll.LoadLibrary('liboqs.so')
 
 class MechanismNotSupportedError(Exception):
     """Exception raised when an algorithm is not supported by OQS.
@@ -50,43 +49,44 @@ class MechanismNotEnabledError(MechanismNotSupportedError):
 ############################################
 
 # The native KEM structure returned by OQS
-class OQS_KEM(Structure):
+class OQS_KEM(ct.Structure):
     _fields_ = [
-        ("method_name", c_char_p),
-        ("alg_version", c_char_p),
-        ("claimed_nist_level", c_ubyte),
-        ("ind_cca", c_ubyte),
-        ("length_public_key", c_size_t),
-        ("length_secret_key", c_size_t),
-        ("length_ciphertext", c_size_t),
-        ("length_shared_secret", c_size_t),
-        ("keypair_cb", c_void_p),
-        ("encaps_cb", c_void_p),
-        ("decaps_cb", c_void_p)
+        ("method_name", ct.c_char_p),
+        ("alg_version", ct.c_char_p),
+        ("claimed_nist_level", ct.c_ubyte),
+        ("ind_cca", ct.c_ubyte),
+        ("length_public_key", ct.c_size_t),
+        ("length_secret_key", ct.c_size_t),
+        ("length_ciphertext", ct.c_size_t),
+        ("length_shared_secret", ct.c_size_t),
+        ("keypair_cb", ct.c_void_p),
+        ("encaps_cb", ct.c_void_p),
+        ("decaps_cb", ct.c_void_p)
     ]
-liboqs.OQS_KEM_new.restype = POINTER(OQS_KEM)
+liboqs.OQS_KEM_new.restype = ct.POINTER(OQS_KEM)
 
-liboqs.OQS_KEM_alg_identifier.restype = c_char_p
+liboqs.OQS_KEM_alg_identifier.restype = ct.c_char_p
 
-# populate the list of enabled KEMs
-_max_number_KEMs = liboqs.OQS_KEM_alg_count()
-_supported_KEMs = []
-_enabled_KEMs = []
-for i in range(0, _max_number_KEMs):
-    algid =  liboqs.OQS_KEM_alg_identifier(i)
-    algid_string = algid.decode()
-    _supported_KEMs.append(algid_string)
-    # check if alg is enabled
-    is_supported = True
+def is_KEM_enabled(alg_name):
+    """Returns True if the KEM algorithm is enabled, False otherwise.
+
+    Attribute:
+        alg_name -- a KEM mechanism algorithm name
+    """
     try:
-        kem = liboqs.OQS_KEM_new( create_string_buffer(algid) )
-        kem.contents # triggers ValueError if init failed # TODO: must be a better way
-        liboqs.OQS_KEM_free(kem)
+        kem = liboqs.OQS_KEM_new(ct.create_string_buffer(alg_name.encode()))
+        if(kem.contents):
+            liboqs.OQS_KEM_free(kem)
+            return True
     except ValueError:
-        is_supported = False
-    if (is_supported):
-        _enabled_KEMs.append(algid_string)
-    
+        pass
+    return False
+
+_max_number_KEMs = liboqs.OQS_KEM_alg_count()
+_KEM_alg_ids = [liboqs.OQS_KEM_alg_identifier(i) for i in range(_max_number_KEMs)]
+_supported_KEMs = [i.decode() for i in _KEM_alg_ids]
+_enabled_KEMs = [i for i in _supported_KEMs if is_KEM_enabled(i)]
+
 def get_enabled_KEM_mechanisms():
     """Returns the list of enabled KEM mechanisms."""
     return _enabled_KEMs
@@ -123,7 +123,7 @@ class KeyEncapsulation:
                 raise MechanismNotEnabledError(alg_name)
             else:
                 raise MechanismNotSupportedError(alg_name)
-        self._kem = liboqs.OQS_KEM_new( create_string_buffer(alg_name.encode()) )
+        self._kem = liboqs.OQS_KEM_new( ct.create_string_buffer(alg_name.encode()) )
         self.details = {
             'name' : self._kem.contents.method_name.decode(),
             'version' : self._kem.contents.alg_version.decode(),
@@ -133,21 +133,18 @@ class KeyEncapsulation:
             'length_secret_key' : int(self._kem.contents.length_secret_key),
             'length_ciphertext' : int(self._kem.contents.length_ciphertext),
             'length_shared_secret' : int(self._kem.contents.length_shared_secret) }
-        if secret_key != None:
-            self.secret_key = create_string_buffer(secret_key, self._kem.contents.length_secret_key)
+        if secret_key:
+            self.secret_key = ct.create_string_buffer(secret_key, self._kem.contents.length_secret_key)
 
     def generate_keypair(self):
         """Generates a new keypair and returns the public key.
 
         If needed, the secret key can be obtained by calling export_secret_key.
         """
-        public_key = create_string_buffer(self._kem.contents.length_public_key)
-        self.secret_key = create_string_buffer(self._kem.contents.length_secret_key)
-        _rv = liboqs.OQS_KEM_keypair(self._kem, byref(public_key), byref(self.secret_key))
-        if _rv == _OQS_SUCCESS:
-            return bytes(public_key)
-        else:
-            return 0
+        public_key = ct.create_string_buffer(self._kem.contents.length_public_key)
+        self.secret_key = ct.create_string_buffer(self._kem.contents.length_secret_key)
+        _rv = liboqs.OQS_KEM_keypair(self._kem, ct.byref(public_key), ct.byref(self.secret_key))
+        return bytes(public_key) if _rv == _OQS_SUCCESS else 0
 
     def export_secret_key(self):
         """Exports the secret key."""
@@ -159,14 +156,11 @@ class KeyEncapsulation:
         Attribute:
             public_key -- the peer's public key.
         """
-        my_public_key = create_string_buffer(public_key, self._kem.contents.length_public_key)
-        ciphertext = create_string_buffer(self._kem.contents.length_ciphertext)
-        shared_secret = create_string_buffer(self._kem.contents.length_shared_secret)
-        _rv = liboqs.OQS_KEM_encaps(self._kem, byref(ciphertext), byref(shared_secret), my_public_key)
-        if _rv == _OQS_SUCCESS:
-            return encap_data(bytes(ciphertext), bytes(shared_secret))
-        else:
-            return 0
+        my_public_key = ct.create_string_buffer(public_key, self._kem.contents.length_public_key)
+        ciphertext = ct.create_string_buffer(self._kem.contents.length_ciphertext)
+        shared_secret = ct.create_string_buffer(self._kem.contents.length_shared_secret)
+        _rv = liboqs.OQS_KEM_encaps(self._kem, ct.byref(ciphertext), ct.byref(shared_secret), my_public_key)
+        return encap_data(bytes(ciphertext), bytes(shared_secret)) if _rv == _OQS_SUCCESS else 0
 
     def decap_secret(self, ciphertext):
         """Decapsulates the ciphertext and returns the secret.
@@ -174,13 +168,10 @@ class KeyEncapsulation:
         Attribute:
             ciphertext -- the ciphertext received from the peer.
         """
-        my_ciphertext = create_string_buffer(ciphertext, self._kem.contents.length_ciphertext)
-        shared_secret = create_string_buffer(self._kem.contents.length_shared_secret)
-        _rv = liboqs.OQS_KEM_decaps(self._kem, byref(shared_secret), my_ciphertext, self.secret_key);
-        if _rv == _OQS_SUCCESS:
-            return bytes(shared_secret)
-        else:
-            return 0
+        my_ciphertext = ct.create_string_buffer(ciphertext, self._kem.contents.length_ciphertext)
+        shared_secret = ct.create_string_buffer(self._kem.contents.length_shared_secret)
+        _rv = liboqs.OQS_KEM_decaps(self._kem, ct.byref(shared_secret), my_ciphertext, self.secret_key)
+        return bytes(shared_secret) if _rv == _OQS_SUCCESS else 0
 
     def free(self):
         """Releases the native resources."""
@@ -194,46 +185,47 @@ class KeyEncapsulation:
 ############################################
 
 # The native signature structure returned by OQS
-class OQS_SIG(Structure):
+class OQS_SIG(ct.Structure):
     _fields_ = [
-        ("method_name", c_char_p),
-        ("alg_version", c_char_p),
-        ("claimed_nist_level", c_ubyte),
-        ("euf_cma", c_ubyte),
-        ("length_public_key", c_size_t),
-        ("length_secret_key", c_size_t),
-        ("length_signature", c_size_t),
-        ("keypair_cb", c_void_p),
-        ("sign_cb", c_void_p),
-        ("verify_cb", c_void_p)
+        ("method_name", ct.c_char_p),
+        ("alg_version", ct.c_char_p),
+        ("claimed_nist_level", ct.c_ubyte),
+        ("euf_cma", ct.c_ubyte),
+        ("length_public_key", ct.c_size_t),
+        ("length_secret_key", ct.c_size_t),
+        ("length_signature", ct.c_size_t),
+        ("keypair_cb", ct.c_void_p),
+        ("sign_cb", ct.c_void_p),
+        ("verify_cb", ct.c_void_p)
     ]
 
-liboqs.OQS_SIG_new.restype = POINTER(OQS_SIG)
+liboqs.OQS_SIG_new.restype = ct.POINTER(OQS_SIG)
 
-liboqs.OQS_SIG_alg_identifier.restype = c_char_p
+liboqs.OQS_SIG_alg_identifier.restype = ct.c_char_p
 
-# populate the list of enabled signature mechanisms
-_max_number_sigs = liboqs.OQS_SIG_alg_count()
-_supported_sigs = []
-_enabled_sigs = []
-for i in range(0, _max_number_sigs):
-    algid =  liboqs.OQS_SIG_alg_identifier(i)
-    algid_string = algid.decode()
-    _supported_sigs.append(algid_string)
-    # check if alg is enabled
-    is_supported = True
+def is_sig_enabled(alg_name):
+    """Returns True if the signature algorithm is enabled, False otherwise.
+
+    Attribute:
+        alg_name -- a signature mechanism algorithm name
+    """
     try:
-        sig = liboqs.OQS_SIG_new( create_string_buffer(algid) )
-        sig.contents # triggers ValueError if init failed # TODO: must be a better way
-        liboqs.OQS_SIG_free(sig)
+        sig = liboqs.OQS_SIG_new(ct.create_string_buffer(alg_name.encode()))
+        if(sig.contents):
+            liboqs.OQS_SIG_free(sig)
+            return True
     except ValueError:
-        is_supported = False
-    if (is_supported):
-        _enabled_sigs.append(algid_string)
+        pass
+    return False
+
+_max_number_sigs = liboqs.OQS_SIG_alg_count()
+_sig_alg_ids = [liboqs.OQS_SIG_alg_identifier(i) for i in range(_max_number_sigs)]
+_supported_sigs = [i.decode() for i in _sig_alg_ids]
+_enabled_sigs = [i for i in _supported_sigs if is_sig_enabled(i)]
 
 def get_enabled_sig_mechanisms():
     """Returns the list of enabled signature mechanisms."""
-    return _enabled_KEMs
+    return _enabled_sigs
 
 def print_enabled_sig_mechanisms():
     """Prints the list of enabled signature mechanisms."""
@@ -255,7 +247,7 @@ class Signature:
             else:
                 raise MechanismNotSupportedError(alg_name)
 
-        self._sig = liboqs.OQS_SIG_new( create_string_buffer(alg_name.encode()) )
+        self._sig = liboqs.OQS_SIG_new( ct.create_string_buffer(alg_name.encode()) )
         self.details = {
             'name' : self._sig.contents.method_name.decode(),
             'version' : self._sig.contents.alg_version.decode(),
@@ -264,21 +256,18 @@ class Signature:
             'length_public_key' : int(self._sig.contents.length_public_key),
             'length_secret_key' : int(self._sig.contents.length_secret_key),
             'length_signature' : int(self._sig.contents.length_signature) }
-        if secret_key != None:
-            self.secret_key = create_string_buffer(secret_key, self._sig.contents.length_secret_key)
+        if secret_key:
+            self.secret_key = ct.create_string_buffer(secret_key, self._sig.contents.length_secret_key)
 
     def generate_keypair(self):
         """Generates a new keypair and returns the public key.
 
         If needed, the secret key can be obtained by calling export_secret_key.
         """
-        public_key = create_string_buffer(self._sig.contents.length_public_key)
-        self.secret_key = create_string_buffer(self._sig.contents.length_secret_key)
-        _rv = liboqs.OQS_SIG_keypair(self._sig, byref(public_key), byref(self.secret_key))
-        if _rv == _OQS_SUCCESS:
-            return bytes(public_key)
-        else:
-            return 0
+        public_key = ct.create_string_buffer(self._sig.contents.length_public_key)
+        self.secret_key = ct.create_string_buffer(self._sig.contents.length_secret_key)
+        _rv = liboqs.OQS_SIG_keypair(self._sig, ct.byref(public_key), ct.byref(self.secret_key))
+        return bytes(public_key) if _rv == _OQS_SUCCESS else 0
 
     def export_secret_key(self):
         """Exports the secret key."""
@@ -290,15 +279,12 @@ class Signature:
         Attribute:
             message -- the message to sign.
         """
-        my_message = create_string_buffer(message, len(message)) # provide length to avoid extra null char
-        message_len = c_int(len(my_message))
-        signature = create_string_buffer(self._sig.contents.length_signature)
-        sig_len = c_int(0)
-        _rv = liboqs.OQS_SIG_sign(self._sig, byref(signature), byref(sig_len), my_message, message_len, self.secret_key)
-        if _rv == _OQS_SUCCESS:
-            return bytes(signature[:sig_len.value])
-        else:
-            return 0
+        my_message = ct.create_string_buffer(message, len(message)) # provide length to avoid extra null char
+        message_len = ct.c_int(len(my_message))
+        signature = ct.create_string_buffer(self._sig.contents.length_signature)
+        sig_len = ct.c_int(0)
+        _rv = liboqs.OQS_SIG_sign(self._sig, ct.byref(signature), ct.byref(sig_len), my_message, message_len, self.secret_key)
+        return bytes(signature[:sig_len.value]) if _rv == _OQS_SUCCESS else 0
 
     def verify(self, message, signature, public_key):
         """Verifies the provided signature on the message; returns True if valid.
@@ -308,16 +294,13 @@ class Signature:
             signature -- the signature on the message.
             public_key -- the signer's publid key.
         """
-        my_message = create_string_buffer(message, len(message)) # provide length to avoid extra null char
-        message_len = c_int(len(my_message))
-        my_signature = create_string_buffer(signature, len(signature)) # provide length to avoid extra null char
-        sig_len = c_int(len(my_signature))
-        my_public_key = create_string_buffer(public_key, self._sig.contents.length_public_key)
+        my_message = ct.create_string_buffer(message, len(message)) # provide length to avoid extra null char
+        message_len = ct.c_int(len(my_message))
+        my_signature = ct.create_string_buffer(signature, len(signature)) # provide length to avoid extra null char
+        sig_len = ct.c_int(len(my_signature))
+        my_public_key = ct.create_string_buffer(public_key, self._sig.contents.length_public_key)
         _rv = liboqs.OQS_SIG_verify(self._sig, my_message, message_len, my_signature, sig_len, my_public_key)
-        if _rv == _OQS_SUCCESS:
-            return True
-        else:
-            return False
+        return True if _rv == _OQS_SUCCESS else False
 
     def free(self):
         """Releases the native resources."""
