@@ -9,22 +9,22 @@ class TestKEM(unittest.TestCase):
             with self.subTest(alg_name=alg_name):
                 kem = oqswrap.KeyEncapsulation(alg_name)
                 public_key = kem.generate_keypair()
-                encap_data = kem.encap_secret(public_key)
-                shared_secret_client = kem.decap_secret(encap_data.ciphertext)
-                self.assertEqual(shared_secret_client, encap_data.shared_secret)
+                ciphertext, shared_secret_server = kem.encap_secret(public_key)
+                shared_secret_client = kem.decap_secret(ciphertext)
+                self.assertEqual(shared_secret_client, shared_secret_server)
                 
                 # failure cases
                 
                 # wrong ciphertext
                 wrong_ciphertext = bytes(random.getrandbits(8) for _ in range(kem.details['length_ciphertext']))
                 shared_secret_client_2 = kem.decap_secret(wrong_ciphertext)
-                self.assertNotEqual(shared_secret_client_2, encap_data.shared_secret)
+                self.assertNotEqual(shared_secret_client_2, shared_secret_server)
                 
                 # wrong secret key
                 wrong_secret_key = bytes(random.getrandbits(8) for _ in range(kem.details['length_secret_key']))
                 kem2 = oqswrap.KeyEncapsulation(alg_name, wrong_secret_key)
-                shared_secret_client_3 = kem2.decap_secret(encap_data.ciphertext)
-                self.assertNotEqual(shared_secret_client_3, encap_data.shared_secret)
+                shared_secret_client_3 = kem2.decap_secret(ciphertext)
+                self.assertNotEqual(shared_secret_client_3, shared_secret_server)
 
                 # clean-up
                 kem.free()

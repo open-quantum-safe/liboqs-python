@@ -1,7 +1,4 @@
 # Open Quantum Safe (OQS) Python Module
-#
-# TODOs:
-# * add unit test
 
 # import ctypes to call native
 import ctypes as ct
@@ -12,6 +9,7 @@ import platform
 _OQS_SUCCESS = 0
 
 # load native OQS library
+# TODO: improve the lib loading (check common OS paths, env variables, clean exit on error)
 if platform.system() == 'Windows':
         liboqs = ct.windll.LoadLibrary('oqs')
 else:
@@ -95,18 +93,6 @@ def print_enabled_KEM_mechanisms():
     """Prints the list of enabled KEM mechanisms."""
     print('Enabled KEM mechanisms:', ', '.join(_enabled_KEMs))
 
-class encap_data:
-    """Encodes data returned by KeyEncapsulation.encap_secret.
-    
-    Attributes:
-        ciphertext -- the ciphertext to send
-        shared_secret -- the generated shared secret
-    """
-
-    def __init__(self, ciphertext, shared_secret):
-        self.ciphertext = ciphertext
-        self.shared_secret = shared_secret
-
 class KeyEncapsulation:
     """An OQS key encapsulation object.
     
@@ -160,7 +146,7 @@ class KeyEncapsulation:
         ciphertext = ct.create_string_buffer(self._kem.contents.length_ciphertext)
         shared_secret = ct.create_string_buffer(self._kem.contents.length_shared_secret)
         _rv = liboqs.OQS_KEM_encaps(self._kem, ct.byref(ciphertext), ct.byref(shared_secret), my_public_key)
-        return encap_data(bytes(ciphertext), bytes(shared_secret)) if _rv == _OQS_SUCCESS else 0
+        return bytes(ciphertext), bytes(shared_secret) if _rv == _OQS_SUCCESS else 0
 
     def decap_secret(self, ciphertext):
         """Decapsulates the ciphertext and returns the secret.

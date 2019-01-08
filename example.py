@@ -27,12 +27,12 @@ public_key = client.generate_keypair()
 # client = oqswrap.KeyEncapsulation(kemalg, secret_key)
 
 # the server encapsulates its secret using the client's public key
-encap_data = server.encap_secret(public_key)
+ciphertext, shared_secret_server = server.encap_secret(public_key)
 
 # the client decapsulates the the server's ciphertext to obtain the shared secret
-shared_secret_client = client.decap_secret(encap_data.ciphertext)
+shared_secret_client = client.decap_secret(ciphertext)
 
-if shared_secret_client == encap_data.shared_secret:
+if shared_secret_client == shared_secret_server:
     print("success: shared secrets are equal")
 else:
     print("error: shared secrets are NOT equal")
