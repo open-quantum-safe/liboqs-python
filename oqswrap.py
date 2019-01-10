@@ -27,10 +27,11 @@ def _load_shared_obj():
 
     # search typical locations too
     paths += [ctu.find_library('oqs'), os.path.join(os.curdir, LIBOQS_SHARED_OBJ)]
+    dll = ct.windll if platform.system() == 'Windows' else ct.cdll
 
     for path in paths:
         if path and os.path.exists(path):
-            lib = ct.cdll.LoadLibrary(path)
+            lib = dll.LoadLibrary(path)
             return lib
 
     raise RuntimeError('No liboqs.so found!')
