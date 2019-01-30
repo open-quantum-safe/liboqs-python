@@ -1,5 +1,5 @@
 import unittest
-import oqswrap
+from oqs import oqswrap
 import random
 
 class TestKEM(unittest.TestCase):
@@ -12,14 +12,14 @@ class TestKEM(unittest.TestCase):
                 ciphertext, shared_secret_server = kem.encap_secret(public_key)
                 shared_secret_client = kem.decap_secret(ciphertext)
                 self.assertEqual(shared_secret_client, shared_secret_server)
-                
+
                 # failure cases
-                
+
                 # wrong ciphertext
                 wrong_ciphertext = bytes(random.getrandbits(8) for _ in range(kem.details['length_ciphertext']))
                 shared_secret_client_2 = kem.decap_secret(wrong_ciphertext)
                 self.assertNotEqual(shared_secret_client_2, shared_secret_server)
-                
+
                 # wrong secret key
                 wrong_secret_key = bytes(random.getrandbits(8) for _ in range(kem.details['length_secret_key']))
                 kem2 = oqswrap.KeyEncapsulation(alg_name, wrong_secret_key)
@@ -33,7 +33,7 @@ class TestKEM(unittest.TestCase):
     def test_not_supported(self):
         with self.assertRaises(oqswrap.MechanismNotSupportedError):
             kem = oqswrap.KeyEncapsulation('bogus')
-        
+
     def test_not_enabled(self):
         for alg_name in oqswrap._supported_KEMs:
             if alg_name not in oqswrap._enabled_KEMs:
@@ -41,7 +41,7 @@ class TestKEM(unittest.TestCase):
                 with self.assertRaises(oqswrap.MechanismNotEnabledError):
                     kem = oqswrap.KeyEncapsulation(alg_name)
                 return
-    
+
 class TestSig(unittest.TestCase):
 
     def test_sig(self):
@@ -61,7 +61,7 @@ class TestSig(unittest.TestCase):
                 # wrong message
                 wrong_message = bytes(random.getrandbits(8) for _ in range(100))
                 self.assertFalse(sig.verify(wrong_message, signature, public_key))
-                
+
                 # wrong signature
                 wrong_signature = bytes(random.getrandbits(8) for _ in range(sig.details['length_signature']))
                 self.assertFalse(sig.verify(message, wrong_signature, public_key))
@@ -69,7 +69,7 @@ class TestSig(unittest.TestCase):
                 # wrong public key
                 wrong_public_key = bytes(random.getrandbits(8) for _ in range(sig.details['length_public_key']))
                 self.assertFalse(sig.verify(message, signature, wrong_public_key))
-                
+
                 # clean-up
                 sig.free()
 
@@ -77,7 +77,7 @@ class TestSig(unittest.TestCase):
     def test_not_supported(self):
         with self.assertRaises(oqswrap.MechanismNotSupportedError):
             sig = oqswrap.Signature('bogus')
-        
+
     def test_not_enabled(self):
         for alg_name in oqswrap._supported_sigs:
             if alg_name not in oqswrap._enabled_sigs:

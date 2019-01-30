@@ -1,6 +1,6 @@
 # illustrates how to use the python OQS wrapper
 
-import oqswrap
+from oqs import oqswrap
 
 #######################################################################
 # KEM example
