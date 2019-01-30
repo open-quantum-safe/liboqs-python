@@ -1,13 +1,15 @@
 import unittest
-from oqs import oqswrap
 import random
+
+import oqs
+
 
 class TestKEM(unittest.TestCase):
 
     def test_kem(self):
-        for alg_name in oqswrap._enabled_KEMs:
+        for alg_name in oqs._enabled_KEMs:
             with self.subTest(alg_name=alg_name):
-                kem = oqswrap.KeyEncapsulation(alg_name)
+                kem = oqs.KeyEncapsulation(alg_name)
                 public_key = kem.generate_keypair()
                 ciphertext, shared_secret_server = kem.encap_secret(public_key)
                 shared_secret_client = kem.decap_secret(ciphertext)
@@ -22,7 +24,7 @@ class TestKEM(unittest.TestCase):
 
                 # wrong secret key
                 wrong_secret_key = bytes(random.getrandbits(8) for _ in range(kem.details['length_secret_key']))
-                kem2 = oqswrap.KeyEncapsulation(alg_name, wrong_secret_key)
+                kem2 = oqs.KeyEncapsulation(alg_name, wrong_secret_key)
                 shared_secret_client_3 = kem2.decap_secret(ciphertext)
                 self.assertNotEqual(shared_secret_client_3, shared_secret_server)
 
@@ -31,24 +33,24 @@ class TestKEM(unittest.TestCase):
                 kem2.free()
 
     def test_not_supported(self):
-        with self.assertRaises(oqswrap.MechanismNotSupportedError):
-            kem = oqswrap.KeyEncapsulation('bogus')
+        with self.assertRaises(oqs.MechanismNotSupportedError):
+            kem = oqs.KeyEncapsulation('bogus')
 
     def test_not_enabled(self):
-        for alg_name in oqswrap._supported_KEMs:
-            if alg_name not in oqswrap._enabled_KEMs:
+        for alg_name in oqs._supported_KEMs:
+            if alg_name not in oqs._enabled_KEMs:
                 # found an non-enabled but supported alg
-                with self.assertRaises(oqswrap.MechanismNotEnabledError):
-                    kem = oqswrap.KeyEncapsulation(alg_name)
+                with self.assertRaises(oqs.MechanismNotEnabledError):
+                    kem = oqs.KeyEncapsulation(alg_name)
                 return
 
 class TestSig(unittest.TestCase):
 
     def test_sig(self):
-        for alg_name in oqswrap._enabled_sigs:
+        for alg_name in oqs._enabled_sigs:
             with self.subTest(alg_name=alg_name):
                 message = bytes(random.getrandbits(8) for _ in range(100))
-                sig = oqswrap.Signature(alg_name)
+                sig = oqs.Signature(alg_name)
                 public_key = sig.generate_keypair()
                 signature = sig.sign(message)
                 self.assertTrue(sig.verify(message, signature, public_key))
@@ -75,15 +77,15 @@ class TestSig(unittest.TestCase):
 
 
     def test_not_supported(self):
-        with self.assertRaises(oqswrap.MechanismNotSupportedError):
-            sig = oqswrap.Signature('bogus')
+        with self.assertRaises(oqs.MechanismNotSupportedError):
+            sig = oqs.Signature('bogus')
 
     def test_not_enabled(self):
-        for alg_name in oqswrap._supported_sigs:
-            if alg_name not in oqswrap._enabled_sigs:
+        for alg_name in oqs._supported_sigs:
+            if alg_name not in oqs._enabled_sigs:
                 # found an non-enabled but supported alg
-                with self.assertRaises(oqswrap.MechanismNotEnabledError):
-                    sig = oqswrap.Signature(alg_name)
+                with self.assertRaises(oqs.MechanismNotEnabledError):
+                    sig = oqs.Signature(alg_name)
                 return
 
 if __name__ == '__main__':
