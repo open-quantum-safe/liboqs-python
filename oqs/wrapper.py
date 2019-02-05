@@ -123,6 +123,12 @@ class OQS_KEM(ct.Structure):
         if secret_key:
             self.secret_key = ct.create_string_buffer(secret_key, self._kem.contents.length_secret_key)
 
+    def __enter__(self):
+        return self
+
+    def __exit__(self, ctx_type, ctx_value, ctx_traceback):
+        self.free()
+
     def generate_keypair(self):
         """Generates a new keypair and returns the public key.
 
@@ -247,6 +253,12 @@ class OQS_SIG(ct.Structure):
             'length_signature' : int(self._sig.contents.length_signature) }
         if secret_key:
             self.secret_key = ct.create_string_buffer(secret_key, self._sig.contents.length_secret_key)
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, ctx_type, ctx_value, ctx_traceback):
+        self.free()
 
     def generate_keypair(self):
         """Generates a new keypair and returns the public key.
