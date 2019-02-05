@@ -50,7 +50,7 @@ class TestSig(unittest.TestCase):
         for alg_name in oqs._enabled_sigs:
             with self.subTest(alg_name=alg_name):
                 message = bytes(random.getrandbits(8) for _ in range(100))
-                sig = oqs.Signature(alg_name)
+                sig = oqs.OQS_SIG(alg_name)
                 public_key = sig.generate_keypair()
                 signature = sig.sign(message)
                 self.assertTrue(sig.verify(message, signature, public_key))
@@ -78,14 +78,14 @@ class TestSig(unittest.TestCase):
 
     def test_not_supported(self):
         with self.assertRaises(oqs.MechanismNotSupportedError):
-            sig = oqs.Signature('bogus')
+            sig = oqs.OQS_SIG('bogus')
 
     def test_not_enabled(self):
         for alg_name in oqs._supported_sigs:
             if alg_name not in oqs._enabled_sigs:
                 # found an non-enabled but supported alg
                 with self.assertRaises(oqs.MechanismNotEnabledError):
-                    sig = oqs.Signature(alg_name)
+                    sig = oqs.OQS_SIG(alg_name)
                 return
 
 if __name__ == '__main__':

@@ -54,8 +54,8 @@ sigs = oqs.get_enabled_sig_mechanisms()
 
 # create a signer and verifier with the default signature mechanism
 sigalg = "DEFAULT"
-signer = oqs.Signature(sigalg)
-verifier = oqs.Signature(sigalg)
+signer = oqs.OQS_SIG(sigalg)
+verifier = oqs.OQS_SIG(sigalg)
 print("Starting signature")
 print(signer.details)
 
