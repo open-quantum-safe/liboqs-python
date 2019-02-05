@@ -1,4 +1,4 @@
-from oqs.wrapper import _enabled_KEMs, _supported_KEMs, KeyEncapsulation
+from oqs.wrapper import _enabled_KEMs, _supported_KEMs, OQS_KEM
 from oqs.wrapper import _enabled_sigs, _supported_sigs, Signature
 from oqs.wrapper import MechanismNotEnabledError, MechanismNotSupportedError
 

@@ -13,8 +13,8 @@ kems = oqs.get_enabled_KEM_mechanisms()
 
 # create a client and server with the default KEM mechanism
 kemalg = "DEFAULT"
-client = oqs.KeyEncapsulation(kemalg)
-server = oqs.KeyEncapsulation(kemalg)
+client = oqs.OQS_KEM(kemalg)
+server = oqs.OQS_KEM(kemalg)
 print("Starting key encapsulation")
 print(client.details)
 
