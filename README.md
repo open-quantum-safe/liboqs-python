@@ -7,9 +7,9 @@ Contents
 --------
 
 The project contains the following files:
- - `oqswrap.py`: a python 3 module wrapper for the liboqs C library.
- - `example.py`: illustrates the usage of the liboqs python wrapper.
- - `test_oqswrap.py`: contains unit tests for the python liboqs python wrapper.
+ - `oqs/wrapper.py`: a python 3 module wrapper for the liboqs C library.
+ - `examples/example.py`: illustrates the usage of the liboqs python wrapper.
+ - `tests/test_wrapper.py`: contains unit tests for the python liboqs python wrapper.
 
 Usage
 -----
@@ -30,13 +30,16 @@ liboqs-python depends on the liboqs C library; it must be compiled as a Linux/ma
 Running
 -------
 
-As any python module, the liboqs wrapper can be imported into python programs with `import oqswrap`.
+The liboqs-python project should be in the PYTHONPATH:
+`export PYTHONPATH=/some/dir/liboqs-python`
+
+As any python module, liboqs wrapper components can be imported into python programs with `import oqs`.
 
 To run the example program:
-`python3 example.py`
+`python3 examples/example.py`
 
-To run the unit tests:
-`python3 test_oqswrap.py`
+To run the unit tests without a test runner (e.g. py.test, nose):
+`python3 tests/test_wrapper.py`
 
 The module has been tested on python 3 on Linux Ubuntu 16.04.5 and Windows 10.
 

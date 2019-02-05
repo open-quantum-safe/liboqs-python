@@ -1,20 +1,20 @@
 # illustrates how to use the python OQS wrapper
 
-import oqswrap
+import oqs
 
 #######################################################################
 # KEM example
 #######################################################################
 
 # print the available KEM mechanisms
-oqswrap.print_enabled_KEM_mechanisms()
+oqs.print_enabled_KEM_mechanisms()
 # (or obtain a list and go through them)
-kems = oqswrap.get_enabled_KEM_mechanisms()
+kems = oqs.get_enabled_KEM_mechanisms()
 
 # create a client and server with the default KEM mechanism
 kemalg = "DEFAULT"
-client = oqswrap.KeyEncapsulation(kemalg)
-server = oqswrap.KeyEncapsulation(kemalg)
+client = oqs.KeyEncapsulation(kemalg)
+server = oqs.KeyEncapsulation(kemalg)
 print("Starting key encapsulation")
 print(client.details)
 
@@ -24,7 +24,7 @@ public_key = client.generate_keypair()
 # and the client can later be reinstantiated with the key pair:
 # secret_key = client.export_secret_key()
 # store key pair, wait... (session resumption):
-# client = oqswrap.KeyEncapsulation(kemalg, secret_key)
+# client = oqs.KeyEncapsulation(kemalg, secret_key)
 
 # the server encapsulates its secret using the client's public key
 ciphertext, shared_secret_server = server.encap_secret(public_key)
@@ -48,14 +48,14 @@ print()
 #######################################################################
 
 # print the available signature mechanisms
-oqswrap.print_enabled_sig_mechanisms()
+oqs.print_enabled_sig_mechanisms()
 # (or obtain a list and go through them)
-sigs = oqswrap.get_enabled_sig_mechanisms()
+sigs = oqs.get_enabled_sig_mechanisms()
 
 # create a signer and verifier with the default signature mechanism
 sigalg = "DEFAULT"
-signer = oqswrap.Signature(sigalg)
-verifier = oqswrap.Signature(sigalg)
+signer = oqs.Signature(sigalg)
+verifier = oqs.Signature(sigalg)
 print("Starting signature")
 print(signer.details)
 
@@ -65,7 +65,7 @@ signer_public_key = signer.generate_keypair()
 # and the signer can later be reinstantiated with the key pair:
 # signer_secret_key = signer.export_secret_key()
 # store key pair, wait... (session resumption):
-# signer = oqswrap.Signature(sigalg, signer_secret_key)
+# signer = oqs.Signature(sigalg, signer_secret_key)
 
 # the message to sign
 message = b'This is the message to sign'

@@ -9,7 +9,7 @@ import ctypes.util as ctu
 import platform
 
 
-LIBOQS_SHARED_OBJ = 'liboqs.so'
+LIBOQS_SHARED_OBJ = 'oqs' if platform.system() == 'Windows' else 'liboqs.so'
 LIBOQS_INSTALL_PATH = 'LIBOQS_INSTALL_PATH'
 
 
