@@ -19,8 +19,6 @@ liboqs-python defines two main classes: `KeyEncapsulation` and `Signature`, prov
 liboqs installation
 -------------------
 
-liboqs-python does not depend on any other python packages.
-
 liboqs-python depends on the liboqs C library; it must be compiled as a Linux/macOS static library or as a Windows DLL, and installed in one of:
 
 * any file path specified by the LIBOQS_INSTALL_PATH environment variable (e.g. `LIBOQS_INSTALL_PATH="/home/user/project/liboqs.so"`)
@@ -28,6 +26,14 @@ liboqs-python depends on the liboqs C library; it must be compiled as a Linux/ma
 * the liboqs module's current folder
 
 `wrapper.py` checks the above locations in that order. Either the master or nist branch can be installed; see the [liboqs project](https://github.com/open-quantum-safe/liboqs/) for installation instructions.
+
+liboqs-python does not depend on any other python packages. The package isn't hosted on PyPI yet, but can be installed into a virtualenv using:
+
+```
+# ... create & activate virtualenv (python3 -venv <virtualenv_name>) ...
+$ cd some/dir/liboqs-python
+$ /path/to/py/install/to/use/python3 setup.py install
+```
 
 Running
 -------
