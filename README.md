@@ -19,13 +19,15 @@ liboqs-python defines two main classes: `KeyEncapsulation` and `Signature`, prov
 liboqs installation
 -------------------
 
+liboqs-python does not depend on any other python packages.
+
 liboqs-python depends on the liboqs C library; it must be compiled as a Linux/macOS static library or as a Windows DLL, and installed in one of:
 
 * any file path specified by the LIBOQS_INSTALL_PATH environment variable (e.g. `LIBOQS_INSTALL_PATH="/home/user/project/liboqs.so"`)
 * system-wide folder
 * the liboqs module's current folder
 
-`oqswrap.py` checks the above locations in that order. Either the master or nist branch can be installed; see the [liboqs project](https://github.com/open-quantum-safe/liboqs/) for installation instructions.
+`wrapper.py` checks the above locations in that order. Either the master or nist branch can be installed; see the [liboqs project](https://github.com/open-quantum-safe/liboqs/) for installation instructions.
 
 Running
 -------
