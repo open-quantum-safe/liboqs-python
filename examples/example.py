@@ -1,5 +1,6 @@
 # illustrates how to use the python OQS wrapper
 
+from pprint import pprint
 import oqs
 
 
@@ -7,16 +8,17 @@ import oqs
 # KEM example
 #######################################################################
 
-oqs.print_enabled_KEM_mechanisms()
-# (or obtain a list and go through them)
 kems = oqs.get_enabled_KEM_mechanisms()
 
-# create a client and server with the default KEM mechanism
+print('Enabled KEM mechanisms:')
+pprint(kems)
+
+# create client and server with default KEM mechanism
 kemalg = "DEFAULT"
 with oqs.KeyEncapsulation(kemalg) as client:
     with oqs.KeyEncapsulation(kemalg) as server:
-        print("Starting key encapsulation")
-        print(client.details)
+        print("\nStarting key encapsulation")
+        pprint(client.details)
 
         # client generates its keypair
         public_key = client.generate_keypair()
@@ -43,16 +45,17 @@ print()
 # Signature example
 #######################################################################
 
-oqs.print_enabled_sig_mechanisms()
-# (or obtain a list and go through them)
 sigs = oqs.get_enabled_sig_mechanisms()
 
-# create a signer and verifier with the default signature mechanism
+print('Enabled Signature mechanisms:')
+pprint(sigs)
+
+# create signer and verifier with default signature mechanism
 sigalg = "DEFAULT"
 with oqs.Signature(sigalg) as signer:
     with oqs.Signature(sigalg) as verifier:
-        print("Starting signature")
-        print(signer.details)
+        print("\nStarting signature")
+        pprint(signer.details)
 
         # the signer generates its keypair
         signer_public_key = signer.generate_keypair()

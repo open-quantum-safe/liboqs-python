@@ -217,9 +217,9 @@ def get_enabled_KEM_mechanisms():
     return _enabled_KEMs
 
 
-def print_enabled_KEM_mechanisms():
-    """Prints the list of enabled KEM mechanisms."""
-    print('Enabled KEM mechanisms:', ', '.join(_enabled_KEMs))
+def get_supported_KEM_mechanisms():
+    """Returns list of supported KEM mechanisms."""
+    return _supported_KEMs
 
 
 class Signature(ct.Structure):
@@ -361,6 +361,6 @@ def get_enabled_sig_mechanisms():
     return _enabled_sigs
 
 
-def print_enabled_sig_mechanisms():
-    """Prints the list of enabled signature mechanisms."""
-    print('Enabled signature mechanisms:', ', '.join(_enabled_sigs))
+def get_supported_sig_mechanisms():
+    """Returns list of supported signature mechanisms."""
+    return _supported_sigs
