@@ -11,6 +11,6 @@ setup(
     scripts=[],
     url='https://github.com/open-quantum-safe/liboqs-python',
     license='LICENSE.txt',
-    description='Python wrapper for liboqs',
+    description='Python wrapper for liboqs, providing post-quantum public key cryptography algorithms',
     long_description=open('README.md').read(),
 )
