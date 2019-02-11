@@ -14,7 +14,7 @@ The project contains the following files:
 Usage
 -----
 
-liboqs-python defines two main classes: `OQS_KEM` and `OQS_SIG`, providing post-quantum key encapsulation and signture mechanisms, respectively. Each must be instantiated with a string identifying one of mechanisms supported by liboqs; these can be enumerated using the `get_enabled_KEM_mechanisms` and `get_enabled_sig_mechanisms` functions. The `example.py` file details the wrapper's API.
+liboqs-python defines two main classes: `KeyEncapsulation` and `Signature`, providing post-quantum key encapsulation and signture mechanisms, respectively. Each must be instantiated with a string identifying one of mechanisms supported by liboqs; these can be enumerated using the `get_enabled_KEM_mechanisms` and `get_enabled_sig_mechanisms` functions. The `example.py` file details the wrapper's API.
 
 liboqs installation
 -------------------

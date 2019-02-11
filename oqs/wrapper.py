@@ -1,4 +1,11 @@
-# Open Quantum Safe (OQS) Python Module
+"""
+Open Quantum Safe (OQS) Python Wrapper for liboqs
+
+The liboqs project provides post-quantum public key cryptography algorithms:
+https://github.com/open-quantum-safe/liboqs
+
+This module provides a Python 3 interface to liboqs.
+"""
 
 import os
 import sys
@@ -38,7 +45,7 @@ def _load_shared_obj():
 
 
 try:
-    # TODO: fix global liboqs
+    # TODO: fix module 'global' liboqs
     liboqs = _load_shared_obj()
     assert liboqs
 except OSError as err:
@@ -58,6 +65,7 @@ class MechanismNotSupportedError(Exception):
         self.alg_name = alg_name
         self.message = alg_name + ' is not supported by OQS'
 
+
 class MechanismNotEnabledError(MechanismNotSupportedError):
     """Exception raised when an algorithm is not supported but not enabled by OQS.
 
@@ -69,14 +77,19 @@ class MechanismNotEnabledError(MechanismNotSupportedError):
         self.alg_name = alg_name
         self.message = alg_name + ' is not supported but not enabled by OQS'
 
-############################################
-# KEM
-############################################
 
-# The native KEM structure returned by OQS
-class OQS_KEM(ct.Structure):
+class KeyEncapsulation(ct.Structure):
     """
-    An OQS key encapsulation object.
+    An OQS KeyEncapsulation wraps native/C liboqs OQS_KEM structs.
+
+    The wrapper maps methods to the C equivalent as follows:
+
+    Python            |  C liboqs
+    -------------------------------
+    generate_keypair  |  keypair
+    encap_secret      |  encaps
+    decap_secret      |  decaps
+    free              |  OQS_KEM_free
     """
 
     _fields_ = [
@@ -174,7 +187,7 @@ class OQS_KEM(ct.Structure):
         return "Key encapsulation mechanism: " + self._kem.contents.method_name.decode()
 
 
-liboqs.OQS_KEM_new.restype = ct.POINTER(OQS_KEM)
+liboqs.OQS_KEM_new.restype = ct.POINTER(KeyEncapsulation)
 liboqs.OQS_KEM_alg_identifier.restype = ct.c_char_p
 
 
@@ -203,18 +216,25 @@ def get_enabled_KEM_mechanisms():
     """Returns the list of enabled KEM mechanisms."""
     return _enabled_KEMs
 
+
 def print_enabled_KEM_mechanisms():
     """Prints the list of enabled KEM mechanisms."""
     print('Enabled KEM mechanisms:', ', '.join(_enabled_KEMs))
 
 
-############################################
-# Signatures
-############################################
+class Signature(ct.Structure):
+    """
+    An OQS Signature wraps native/C liboqs OQS_SIG structs.
 
-# The native signature structure returned by OQS
-class OQS_SIG(ct.Structure):
-    """An OQS signature object."""
+    The wrapper maps methods to the C equivalent as follows:
+
+    Python            |  C liboqs
+    -------------------------------
+    generate_keypair  |  keypair
+    sign              |  sign
+    verify            |  verify
+    free              |  OQS_SIG_free
+    """
 
     _fields_ = [
         ("method_name", ct.c_char_p),
@@ -311,7 +331,7 @@ class OQS_SIG(ct.Structure):
         return "Signature mechanism: " + self._sig.contents.method_name.decode()
 
 
-liboqs.OQS_SIG_new.restype = ct.POINTER(OQS_SIG)
+liboqs.OQS_SIG_new.restype = ct.POINTER(Signature)
 liboqs.OQS_SIG_alg_identifier.restype = ct.c_char_p
 
 

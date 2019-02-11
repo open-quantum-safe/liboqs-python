@@ -9,7 +9,7 @@ class TestKEM(unittest.TestCase):
     def test_kem(self):
         for alg_name in oqs._enabled_KEMs:
             with self.subTest(alg_name=alg_name):
-                kem = oqs.OQS_KEM(alg_name)
+                kem = oqs.KeyEncapsulation(alg_name)
                 public_key = kem.generate_keypair()
                 ciphertext, shared_secret_server = kem.encap_secret(public_key)
                 shared_secret_client = kem.decap_secret(ciphertext)
@@ -24,7 +24,7 @@ class TestKEM(unittest.TestCase):
 
                 # wrong secret key
                 wrong_secret_key = bytes(random.getrandbits(8) for _ in range(kem.details['length_secret_key']))
-                kem2 = oqs.OQS_KEM(alg_name, wrong_secret_key)
+                kem2 = oqs.KeyEncapsulation(alg_name, wrong_secret_key)
                 shared_secret_client_3 = kem2.decap_secret(ciphertext)
                 self.assertNotEqual(shared_secret_client_3, shared_secret_server)
 
@@ -34,15 +34,15 @@ class TestKEM(unittest.TestCase):
 
     def test_not_supported(self):
         with self.assertRaises(oqs.MechanismNotSupportedError):
-            kem = oqs.OQS_KEM('bogus')
+            _ = oqs.KeyEncapsulation('bogus')
 
     def test_not_enabled(self):
         for alg_name in oqs._supported_KEMs:
             if alg_name not in oqs._enabled_KEMs:
                 # found an non-enabled but supported alg
                 with self.assertRaises(oqs.MechanismNotEnabledError):
-                    kem = oqs.OQS_KEM(alg_name)
-                return
+                    _ = oqs.KeyEncapsulation(alg_name)
+
 
 class TestSig(unittest.TestCase):
 
@@ -50,7 +50,7 @@ class TestSig(unittest.TestCase):
         for alg_name in oqs._enabled_sigs:
             with self.subTest(alg_name=alg_name):
                 message = bytes(random.getrandbits(8) for _ in range(100))
-                sig = oqs.OQS_SIG(alg_name)
+                sig = oqs.Signature(alg_name)
                 public_key = sig.generate_keypair()
                 signature = sig.sign(message)
                 self.assertTrue(sig.verify(message, signature, public_key))
@@ -75,18 +75,17 @@ class TestSig(unittest.TestCase):
                 # clean-up
                 sig.free()
 
-
     def test_not_supported(self):
         with self.assertRaises(oqs.MechanismNotSupportedError):
-            sig = oqs.OQS_SIG('bogus')
+            _ = oqs.Signature('bogus')
 
     def test_not_enabled(self):
         for alg_name in oqs._supported_sigs:
             if alg_name not in oqs._enabled_sigs:
                 # found an non-enabled but supported alg
                 with self.assertRaises(oqs.MechanismNotEnabledError):
-                    sig = oqs.OQS_SIG(alg_name)
-                return
+                    _ = oqs.Signature(alg_name)
+
 
 if __name__ == '__main__':
     unittest.main()

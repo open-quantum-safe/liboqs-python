@@ -13,8 +13,8 @@ kems = oqs.get_enabled_KEM_mechanisms()
 
 # create a client and server with the default KEM mechanism
 kemalg = "DEFAULT"
-with oqs.OQS_KEM(kemalg) as client:
-    with oqs.OQS_KEM(kemalg) as server:
+with oqs.KeyEncapsulation(kemalg) as client:
+    with oqs.KeyEncapsulation(kemalg) as server:
         print("Starting key encapsulation")
         print(client.details)
 
@@ -49,8 +49,8 @@ sigs = oqs.get_enabled_sig_mechanisms()
 
 # create a signer and verifier with the default signature mechanism
 sigalg = "DEFAULT"
-with oqs.OQS_SIG(sigalg) as signer:
-    with oqs.OQS_SIG(sigalg) as verifier:
+with oqs.Signature(sigalg) as signer:
+    with oqs.Signature(sigalg) as verifier:
         print("Starting signature")
         print(signer.details)
 
