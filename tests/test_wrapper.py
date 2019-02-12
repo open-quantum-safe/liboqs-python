@@ -7,7 +7,7 @@ import oqs
 class TestKEM(unittest.TestCase):
 
     def test_kem(self):
-        for alg_name in oqs._enabled_KEMs:
+        for alg_name in oqs.get_enabled_KEM_mechanisms():
             with self.subTest(alg_name=alg_name):
                 kem = oqs.KeyEncapsulation(alg_name)
                 public_key = kem.generate_keypair()
@@ -34,20 +34,22 @@ class TestKEM(unittest.TestCase):
 
     def test_not_supported(self):
         with self.assertRaises(oqs.MechanismNotSupportedError):
-            kem = oqs.KeyEncapsulation('bogus')
+            _ = oqs.KeyEncapsulation('bogus')
 
     def test_not_enabled(self):
-        for alg_name in oqs._supported_KEMs:
-            if alg_name not in oqs._enabled_KEMs:
+        # TODO: test broken as the compiled lib determines which algorithms are
+        # supported and enabled
+        for alg_name in oqs.get_supported_KEM_mechanisms():
+            if alg_name not in oqs.get_enabled_KEM_mechanisms():
                 # found an non-enabled but supported alg
                 with self.assertRaises(oqs.MechanismNotEnabledError):
-                    kem = oqs.KeyEncapsulation(alg_name)
-                return
+                    _ = oqs.KeyEncapsulation(alg_name)
+
 
 class TestSig(unittest.TestCase):
 
     def test_sig(self):
-        for alg_name in oqs._enabled_sigs:
+        for alg_name in oqs.get_enabled_sig_mechanisms():
             with self.subTest(alg_name=alg_name):
                 message = bytes(random.getrandbits(8) for _ in range(100))
                 sig = oqs.Signature(alg_name)
@@ -75,18 +77,19 @@ class TestSig(unittest.TestCase):
                 # clean-up
                 sig.free()
 
-
     def test_not_supported(self):
         with self.assertRaises(oqs.MechanismNotSupportedError):
-            sig = oqs.Signature('bogus')
+            _ = oqs.Signature('bogus')
 
     def test_not_enabled(self):
-        for alg_name in oqs._supported_sigs:
-            if alg_name not in oqs._enabled_sigs:
+        # TODO: test broken as the compiled lib determines which algorithms are
+        # supported and enabled
+        for alg_name in oqs.get_supported_sig_mechanisms():
+            if alg_name not in oqs.get_enabled_sig_mechanisms():
                 # found an non-enabled but supported alg
                 with self.assertRaises(oqs.MechanismNotEnabledError):
-                    sig = oqs.Signature(alg_name)
-                return
+                    _ = oqs.Signature(alg_name)
+
 
 if __name__ == '__main__':
     unittest.main()
