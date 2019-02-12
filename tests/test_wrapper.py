@@ -37,6 +37,8 @@ class TestKEM(unittest.TestCase):
             _ = oqs.KeyEncapsulation('bogus')
 
     def test_not_enabled(self):
+        # TODO: test broken as the compiled lib determines which algorithms are
+        # supported and enabled
         for alg_name in oqs.get_supported_KEM_mechanisms():
             if alg_name not in oqs.get_enabled_KEM_mechanisms():
                 # found an non-enabled but supported alg
@@ -80,6 +82,8 @@ class TestSig(unittest.TestCase):
             _ = oqs.Signature('bogus')
 
     def test_not_enabled(self):
+        # TODO: test broken as the compiled lib determines which algorithms are
+        # supported and enabled
         for alg_name in oqs.get_supported_sig_mechanisms():
             if alg_name not in oqs.get_enabled_sig_mechanisms():
                 # found an non-enabled but supported alg
