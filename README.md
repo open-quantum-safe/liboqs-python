@@ -19,13 +19,21 @@ liboqs-python defines two main classes: `KeyEncapsulation` and `Signature`, prov
 liboqs installation
 -------------------
 
-liboqs-python depends on the liboqs C library; it must be compiled as a Linux/macOS static library or as a Windows DLL, and installed in one of:
+liboqs-python depends on the liboqs C library; it must be compiled as a Linux/macOS library or Windows DLL, and installed in one of:
 
-* any file path specified by the LIBOQS_INSTALL_PATH environment variable (e.g. `LIBOQS_INSTALL_PATH="/home/user/project/liboqs.so"`)
+* any file path specified by the LIBOQS_INSTALL_PATH environment variable (e.g. `LIBOQS_INSTALL_PATH="/path/to/liboqs.so"`)
 * system-wide folder
-* the liboqs module's current folder
+* the liboqs Python module's current folder
 
-`oqswrap.py` checks the above locations in that order. Either the master or nist branch can be installed; see the [liboqs project](https://github.com/open-quantum-safe/liboqs/) for installation instructions.
+`wrapper.py` checks the above locations in that order. At present, only liboqs master branch can be installed; see the [liboqs project](https://github.com/open-quantum-safe/liboqs/) for installation instructions.
+
+liboqs-python does not depend on any other python packages. The package isn't hosted on PyPI yet, but can be installed into a virtualenv using:
+
+	# create & activate virtual environment, e.g.:
+	python3 -venv <virtualenv_name>
+
+	cd /some/dir/liboqs-python
+	python3 setup.py install
 
 Running
 -------
@@ -36,12 +44,14 @@ The liboqs-python project should be in the PYTHONPATH:
 As any python module, liboqs wrapper components can be imported into python programs with `import oqs`.
 
 To run the example program:
-`python3 examples/example.py`
+
+	python3 examples/example.py
 
 To run the unit tests without a test runner (e.g. py.test, nose):
-`python3 tests/test_wrapper.py`
 
-The module has been tested on python 3 on Linux Ubuntu 16.04.5 and Windows 10.
+	python3 tests/test_wrapper.py
+
+The module has been tested using Python 3 on Linux Ubuntu 16.04.5 and Windows 10.
 
 Limitations and security
 ------------------------
