@@ -182,6 +182,8 @@ class KeyEncapsulation(ct.Structure):
     def free(self):
         """Releases the native resources."""
         liboqs.OQS_KEM_free(self._kem)
+        if hasattr(self, 'secret_key'):
+            liboqs.OQS_MEM_cleanse(ct.byref(self.secret_key), self._kem.contents.length_secret_key)
 
     def __repr__(self):
         return "Key encapsulation mechanism: " + self._kem.contents.method_name.decode()
@@ -336,6 +338,8 @@ class Signature(ct.Structure):
     def free(self):
         """Releases the native resources."""
         liboqs.OQS_SIG_free(self._sig)
+        if hasattr(self, 'secret_key'):
+            liboqs.OQS_MEM_cleanse(ct.byref(self.secret_key), self._sig.contents.length_secret_key)
 
     def __repr__(self):
         return "Signature mechanism: " + self._sig.contents.method_name.decode()
