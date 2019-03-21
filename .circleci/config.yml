@@ -1,0 +1,21 @@
+version: 2
+
+jobs:
+  build:
+    docker:
+      - image: dstebila/liboqs:amd64-buster-0.0.1
+    steps:
+      - checkout
+      - run:
+          command: |
+            cd /root
+            git clone -b master --single-branch https://github.com/open-quantum-safe/liboqs
+            cd liboqs
+            autoreconf -i
+            ./configure
+            make clean
+            make -j
+            cd /root/project
+            export LIBOQS_INSTALL_PATH=/root/liboqs/.libs/liboqs.so
+            export PYTHONPATH=/root/project
+            python3 tests/test_wrapper.py
