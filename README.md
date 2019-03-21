@@ -1,6 +1,8 @@
 liboqs-python
 =============
 
+[![CircleCI](https://circleci.com/gh/open-quantum-safe/liboqs-python.svg?style=svg)](https://circleci.com/gh/open-quantum-safe/liboqs-python)
+
 **liboqs-python** offers a python module wrapping the [Open Quantum Safe](https://openquantumsafe.org/) [liboqs](https://github.com/open-quantum-safe/liboqs/) C library.
 
 Contents
