@@ -18,4 +18,4 @@ jobs:
             cd /root/project
             export LIBOQS_INSTALL_PATH=/root/liboqs/.libs/liboqs.so
             export PYTHONPATH=/root/project
-            python3 tests/test_wrapper.py
+            python3 -m nose --rednose --verbose
