@@ -6,18 +6,21 @@ version: 2
   steps:
     - checkout
     - run:
+        name: Build liboqs-master
         command: |
           cd /root
-          git clone -b master --single-branch https://github.com/open-quantum-safe/liboqs
+          git clone --branch master --single-branch https://github.com/open-quantum-safe/liboqs
           cd liboqs
           autoreconf -i
           ./configure
           make clean
           make -j
-          cd /root/project
-          export LIBOQS_INSTALL_PATH=/root/liboqs/.libs/liboqs.so
-          export PYTHONPATH=/root/project
-          python3 -m nose --rednose --verbose
+    - run:
+        name: Run liboqs-python unit tests
+        environment:
+          LIBOQS_INSTALL_PATH: /root/liboqs/.libs/liboqs.so
+          PYTHONPATH: /root/project
+        command: python3 -m nose --rednose --verbose
 
 jobs:
   amd64-buster:
