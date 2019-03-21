@@ -1,21 +1,37 @@
 version: 2
 
+.my_job: &myjob
+  docker:
+    - image: ${IMAGE}
+  steps:
+    - checkout
+    - run:
+        command: |
+          cd /root
+          git clone -b master --single-branch https://github.com/open-quantum-safe/liboqs
+          cd liboqs
+          autoreconf -i
+          ./configure
+          make clean
+          make -j
+          cd /root/project
+          export LIBOQS_INSTALL_PATH=/root/liboqs/.libs/liboqs.so
+          export PYTHONPATH=/root/project
+          python3 -m nose --rednose --verbose
+
 jobs:
+  amd64-buster:
+    <<: *myjob
+    environment:
+      IMAGE: dstebila/liboqs:amd64-buster-0.0.1
+  x86_64-xenial:
+    <<: *myjob
+    environment:
+      IMAGE: dstebila/liboqs:x86_64-xenial-0.0.1
+
+workflows:
+  version: 2
   build:
-    docker:
-      - image: dstebila/liboqs:amd64-buster-0.0.1
-    steps:
-      - checkout
-      - run:
-          command: |
-            cd /root
-            git clone -b master --single-branch https://github.com/open-quantum-safe/liboqs
-            cd liboqs
-            autoreconf -i
-            ./configure
-            make clean
-            make -j
-            cd /root/project
-            export LIBOQS_INSTALL_PATH=/root/liboqs/.libs/liboqs.so
-            export PYTHONPATH=/root/project
-            python3 -m nose --rednose --verbose
+    jobs:
+      - amd64-buster
+      - x86_64-xenial
