@@ -6,7 +6,7 @@ version: 2
   steps:
     - checkout
     - run:
-        name: Building liboqs-master
+        name: Build liboqs-master
         command: |
           cd /root
           git clone --branch master --single-branch https://github.com/open-quantum-safe/liboqs
@@ -16,7 +16,7 @@ version: 2
           make clean
           make -j
     - run:
-        name: liboqs-python unit tests
+        name: Run liboqs-python unit tests
         environment:
           LIBOQS_INSTALL_PATH: /root/liboqs/.libs/liboqs.so
           PYTHONPATH: /root/project
