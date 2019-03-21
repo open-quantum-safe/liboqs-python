@@ -6,11 +6,14 @@ version: 2
   steps:
     - checkout
     - run:
-        name: Build liboqs-master
+        name: Clone liboqs-master
         command: |
           cd /root
           git clone --branch master --single-branch https://github.com/open-quantum-safe/liboqs
-          cd liboqs
+    - run:
+        name: Build liboqs-master
+        command: |
+          cd /root/liboqs
           autoreconf -i
           ./configure
           make clean
@@ -30,7 +33,7 @@ jobs:
   x86_64-xenial:
     <<: *myjob
     environment:
-      IMAGE: dstebila/liboqs:x86_64-xenial-0.0.1
+      IMAGE: dstebila/liboqs:x86_64-xenial-0.0.2
 
 workflows:
   version: 2
