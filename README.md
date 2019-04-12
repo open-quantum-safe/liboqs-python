@@ -1,36 +1,42 @@
 liboqs-python
 =============
 
-[![CircleCI](https://circleci.com/gh/open-quantum-safe/liboqs-python.svg?style=svg)](https://circleci.com/gh/open-quantum-safe/liboqs-python)
+[![Build status - CircleCI Linux](https://circleci.com/gh/open-quantum-safe/liboqs-python.svg?style=svg)](https://circleci.com/gh/open-quantum-safe/liboqs-python)
 
-**liboqs-python** offers a python module wrapping the [Open Quantum Safe](https://openquantumsafe.org/) [liboqs](https://github.com/open-quantum-safe/liboqs/) C library.
+---
+
+**liboqs-python** offers a Python module wrapping the [Open Quantum Safe](https://openquantumsafe.org/) [liboqs](https://github.com/open-quantum-safe/liboqs/) C library, which is a C library for quantum-resistant cryptographic algorithms.
+
+## Pre-requisites
+
+liboqs-python depends on the [liboqs](https://github.com/open-quantum-safe/liboqs) C library; liboqs master branch must first be compiled as a Linux/macOS/Windows library, see the specific platform building instructions below.
 
 Contents
 --------
 
 The project contains the following files:
 
- - `oqs/wrapper.py`: a python 3 module wrapper for the liboqs C library.
- - `examples/example.py`: illustrates the usage of the liboqs python wrapper.
- - `tests/test_*.py`: unit tests for the python liboqs python wrapper.
+ - **`oqs/wrapper.py`: a Python 3 module wrapper for the liboqs C library.**
+ - `examples/example.py`: illustrates the usage of the liboqs-python wrapper.
+ - `tests/test_*.py`: unit tests for the liboqs-python wrapper.
 
 Usage
 -----
 
-liboqs-python defines two main classes: `KeyEncapsulation` and `Signature`, providing post-quantum key encapsulation and signture mechanisms, respectively. Each must be instantiated with a string identifying one of mechanisms supported by liboqs; these can be enumerated using the `get_enabled_KEM_mechanisms` and `get_enabled_sig_mechanisms` functions. The `example.py` file details the wrapper's API.
+liboqs-python defines two main classes: `KeyEncapsulation` and `Signature`, providing post-quantum key encapsulation and signture mechanisms, respectively. Each must be instantiated with a string identifying one of mechanisms supported by liboqs; these can be enumerated using the `get_enabled_KEM_mechanisms` and `get_enabled_sig_mechanisms` functions. The `example.py` file demonstrates the wrapper's API.
 
 liboqs installation
 -------------------
 
 liboqs-python depends on the liboqs C library; it must be compiled as a Linux/macOS library or Windows DLL, and installed in one of:
 
-* any file path specified by the LIBOQS_INSTALL_PATH environment variable (e.g. `LIBOQS_INSTALL_PATH="/path/to/liboqs.so"`)
-* system-wide folder
-* the liboqs Python module's current folder
+- any file path specified by the `LIBOQS_INSTALL_PATH` environment variable (e.g. `LIBOQS_INSTALL_PATH="/path/to/liboqs.so"`)
+- system-wide folder
+- the liboqs Python module's current folder
 
 `wrapper.py` checks the above locations in that order. At present, only liboqs master branch can be installed; see the [liboqs project](https://github.com/open-quantum-safe/liboqs/) for installation instructions.
 
-liboqs-python does not depend on any other python packages. The package isn't hosted on PyPI yet, but can be installed into a virtualenv using:
+liboqs-python does not depend on any other Python packages. The package isn't hosted on PyPI yet, but can be installed into a virtualenv using:
 
 	# create & activate virtual environment, e.g.:
 	python3 -venv <virtualenv_name>
@@ -41,7 +47,7 @@ liboqs-python does not depend on any other python packages. The package isn't ho
 Running
 -------
 
-The liboqs-python project should be in the PYTHONPATH:
+The liboqs-python project should be in the `PYTHONPATH`:
 
 	export PYTHONPATH=/some/dir/liboqs-python
 
@@ -89,3 +95,11 @@ Contributors to the liboqs-python wrapper include:
 
 - Ben Davies (University of Waterloo)
 - Christian Paquin (Microsoft Research)
+
+### Support
+
+Financial support for the development of Open Quantum Safe has been provided by Amazon Web Services and the Tutte Institute for Mathematics and Computing.
+
+We'd like to make a special acknowledgement to the companies who have dedicated programmer time to contribute source code to OQS, including Amazon Web Services, evolutionQ, and Microsoft Research.
+
+Research projects which developed specific components of OQS have been supported by various research grants, including funding from the Natural Sciences and Engineering Research Council of Canada (NSERC); see the source papers for funding acknowledgments.
