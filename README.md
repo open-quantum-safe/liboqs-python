@@ -5,9 +5,26 @@ liboqs-python
 
 ---
 
-**liboqs-python** offers a Python module wrapping the [Open Quantum Safe](https://openquantumsafe.org/) [liboqs](https://github.com/open-quantum-safe/liboqs/) C library, which is a C library for quantum-resistant cryptographic algorithms.
+**liboqs-python** offers a Python module providing quantum-resistant cryptographic algorithms via liboqs.
 
-## Pre-requisites
+Overview
+--------
+
+The **Open Quantum Safe (OQS) project** has the goal of developing and prototyping quantum-resistant cryptography.
+
+**liboqs** is an open source C library for quantum-resistant cryptographic algorithms.  See more about liboqs at [https://github.com/open-quantum-safe/liboqs/](https://github.com/open-quantum-safe/liboqs/), including a list of supported algorithms.
+
+**liboqs-python** is an open source Python 3 wrapper for the liboqs C library.  liboqs-python provides:
+
+- a common API for post-quantum key encapsulation mechanisms and digital signature schemes
+- a collection of open source implementations of post-quantum cryptography algorithms
+
+The OQS project also provides prototype integrations into application-level protocols to enable testing of quantum-resistant cryptography.
+
+More information on OQS can be found on our website: [https://openquantumsafe.org/](https://openquantumsafe.org/).
+
+Pre-requisites
+--------------
 
 liboqs-python depends on the [liboqs](https://github.com/open-quantum-safe/liboqs) C library; liboqs master branch must first be compiled as a Linux/macOS/Windows library, see the specific platform building instructions below.
 
