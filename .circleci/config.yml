@@ -41,3 +41,14 @@ workflows:
     jobs:
       - amd64-buster
       - x86_64-xenial
+  nightly:
+    triggers:
+      - schedule:
+          cron: "0 1 * * *"
+          filters:
+            branches:
+              only:
+                - master
+    jobs:
+      - amd64-buster
+      - x86_64-xenial
