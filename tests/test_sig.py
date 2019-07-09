@@ -39,11 +39,11 @@ def check_wrong_signature(alg_name):
     assert not(sig.verify(message, wrong_signature, public_key))
     sig.free()
 
-def test_wrong_wrong_public_key():
+def test_wrong_public_key():
     for alg_name in oqs.get_enabled_sig_mechanisms():
-        yield (check_wrong_wrong_public_key, alg_name)
+        yield (check_wrong_public_key, alg_name)
 
-def check_wrong_wrong_public_key(alg_name):
+def check_wrong_public_key(alg_name):
     message = bytes(random.getrandbits(8) for _ in range(100))
     sig = oqs.Signature(alg_name)
     public_key = sig.generate_keypair()
