@@ -308,7 +308,7 @@ class Signature(ct.Structure):
         my_message = ct.create_string_buffer(message, len(message))
         message_len = ct.c_int(len(my_message))
         signature = ct.create_string_buffer(self._sig.contents.length_signature)
-        sig_len = ct.c_int(0)
+        sig_len = ct.c_int(self._sig.contents.length_signature) # initialize to maximum signature size
         rv = liboqs.OQS_SIG_sign(self._sig, ct.byref(signature),
                                  ct.byref(sig_len), my_message,
                                  message_len, self.secret_key)
