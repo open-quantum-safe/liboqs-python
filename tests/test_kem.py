@@ -26,21 +26,6 @@ def check_wrong_ciphertext(alg_name):
     assert shared_secret_client != shared_secret_server
     kem.free()
 
-def test_wrong_secret_key():
-    for alg_name in oqs.get_enabled_KEM_mechanisms():
-        yield (check_wrong_secret_key, alg_name)
-
-def check_wrong_secret_key(alg_name):
-    kem = oqs.KeyEncapsulation(alg_name)
-    public_key = kem.generate_keypair()
-    ciphertext, shared_secret_server = kem.encap_secret(public_key)
-    wrong_secret_key = bytes(random.getrandbits(8) for _ in range(kem.details['length_secret_key']))
-    kem2 = oqs.KeyEncapsulation(alg_name, wrong_secret_key)
-    shared_secret_client = kem2.decap_secret(ciphertext)
-    assert shared_secret_client != shared_secret_server
-    kem.free()
-    kem2.free()
-
 def test_not_supported():
     try:
         kem = oqs.KeyEncapsulation('bogus')
