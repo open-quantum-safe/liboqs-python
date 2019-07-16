@@ -47,8 +47,7 @@ workflows:
           cron: "0 1 * * *"
           filters:
             branches:
-              only:
-                - master
+              only: master
     jobs:
       - amd64-buster
       - x86_64-xenial
