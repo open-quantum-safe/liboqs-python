@@ -15,7 +15,7 @@ version: 2
         command: |
           cd /root/liboqs
           autoreconf -i
-          ./configure
+          ./configure --enable-silent-rules
           make clean
           make -j
     - run:
@@ -23,31 +23,36 @@ version: 2
         environment:
           LIBOQS_INSTALL_PATH: /root/liboqs/.libs/liboqs.so
           PYTHONPATH: /root/project
-        command: python3 -m nose --rednose --verbose
+        command: |
+          mkdir -p test-results
+          python3 -m nose --rednose --verbose --with-xunit --xunit-file=test-results/nosetests.xml
+    - store_test_results: # Note that this command will fail when running CircleCI locally, that is expected behaviour
+        path: test-results
 
 jobs:
-  amd64-buster:
+  debian-buster-amd64:
     <<: *myjob
     environment:
-      IMAGE: dstebila/liboqs:amd64-buster-0.0.1
-  x86_64-xenial:
+      IMAGE: dstebila/liboqs:debian-buster-amd64-0.1.0
+  ubuntu-xenial-x86_64:
     <<: *myjob
     environment:
-      IMAGE: dstebila/liboqs:x86_64-xenial-0.0.2
+      IMAGE: dstebila/liboqs:ubuntu-xenial-x86_64-0.1.0
 
 workflows:
   version: 2
   build:
     jobs:
-      - amd64-buster
-      - x86_64-xenial
+      - debian-buster-amd64
+      - ubuntu-xenial-x86_64
   nightly:
     triggers:
       - schedule:
           cron: "0 1 * * *"
           filters:
             branches:
-              only: master
+              only: 
+                - master
     jobs:
-      - amd64-buster
-      - x86_64-xenial
+      - debian-buster-amd64
+      - ubuntu-xenial-x86_64
