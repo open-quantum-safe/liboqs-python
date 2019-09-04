@@ -56,7 +56,8 @@ liboqs-python depends on the liboqs C library; it must be compiled as a Linux/ma
 liboqs-python does not depend on any other Python packages. The package isn't hosted on PyPI yet, but can be installed into a virtualenv using:
 
 	# create & activate virtual environment, e.g.:
-	python3 -venv <virtualenv_name>
+	python3 -m venv <virtualenv_name>
+    source <virtualenv_name>/bin/activate
 
 	cd /some/dir/liboqs-python
 	python3 setup.py install
