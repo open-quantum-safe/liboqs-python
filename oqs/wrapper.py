@@ -198,14 +198,7 @@ def is_KEM_enabled(alg_name):
 
     :param alg_name: a KEM mechanism algorithm name
     """
-    try:
-        kem = liboqs.OQS_KEM_new(ct.create_string_buffer(alg_name.encode()))
-        if kem.contents:
-            liboqs.OQS_KEM_free(kem)
-            return True
-    except ValueError:
-        pass
-    return False
+    return liboqs.OQS_KEM_alg_is_enabled(ct.create_string_buffer(alg_name.encode()))
 
 
 _KEM_alg_ids = [liboqs.OQS_KEM_alg_identifier(i) for i in range(liboqs.OQS_KEM_alg_count())]
@@ -354,14 +347,7 @@ def is_sig_enabled(alg_name):
 
     :param alg_name: a signature mechanism algorithm name
     """
-    try:
-        sig = liboqs.OQS_SIG_new(ct.create_string_buffer(alg_name.encode()))
-        if sig.contents:
-            liboqs.OQS_SIG_free(sig)
-            return True
-    except ValueError:
-        pass
-    return False
+    return liboqs.OQS_SIG_alg_is_enabled(ct.create_string_buffer(alg_name.encode()))
 
 
 _sig_alg_ids = [liboqs.OQS_SIG_alg_identifier(i) for i in range(liboqs.OQS_SIG_alg_count())]
