@@ -1,4 +1,4 @@
-liboqs-python version 0.1.0
+liboqs-python version 0.2.0-rc1
 ===========================
 
 About
@@ -13,13 +13,11 @@ The **Open Quantum Safe (OQS) project** has the goal of developing and prototypi
 Release notes
 =============
 
-This release of liboqs-python was released on April 23, 2019.  Its release page on GitHub is https://github.com/open-quantum-safe/liboqs-python/releases/tag/0.1.0.
+This release of liboqs-python was released on TODO.  Its release page on GitHub is https://github.com/open-quantum-safe/liboqs-python/releases/tag/0.2.0.
 
 What's New
 ----------
 
-This is the first release of liboqs-python.
+This is the second release of liboqs-python.
 
-It contains a Python 3 module wrapper for the liboqs C library, along with examples and tests.
-
-liboqs-python can be compiled against liboqs master branch, and makes available all digital signature schemes and key encapsulation mechanisms from liboqs.
+This release updates for compatibility with liboqs 0.2.0, which contains new/updated algorithms based on NIST Round 2 submissions.
