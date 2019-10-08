@@ -1,4 +1,4 @@
-liboqs-python version 0.2.0-rc1
+liboqs-python version 0.2.0
 ===========================
 
 About
@@ -13,7 +13,7 @@ The **Open Quantum Safe (OQS) project** has the goal of developing and prototypi
 Release notes
 =============
 
-This release of liboqs-python was released on TODO.  Its release page on GitHub is https://github.com/open-quantum-safe/liboqs-python/releases/tag/0.2.0.
+This release of liboqs-python was released on October 8, 2019.  Its release page on GitHub is https://github.com/open-quantum-safe/liboqs-python/releases/tag/0.2.0.
 
 What's New
 ----------
