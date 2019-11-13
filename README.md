@@ -33,25 +33,29 @@ Contents
 
 The project contains the following files:
 
- - **`oqs/wrapper.py`: a Python 3 module wrapper for the liboqs C library.**
- - `examples/example.py`: illustrates the usage of the liboqs-python wrapper.
- - `tests/test_*.py`: unit tests for the liboqs-python wrapper.
+ - **`oqs/oqs.py`: a Python 3 module wrapper for the liboqs C library.**
+ - `oqs/rand.py`: a Python 3 module supporting RNGs from `<oqs/rand.h>`
+ - `examples/kem.py`: key encapsulation example
+ - `examples/rand.py`: RNG example
+ - `examples/sig.py`: signature example
+ - `tests`: unit tests
 
 Usage
 -----
 
-liboqs-python defines two main classes: `KeyEncapsulation` and `Signature`, providing post-quantum key encapsulation and signture mechanisms, respectively. Each must be instantiated with a string identifying one of mechanisms supported by liboqs; these can be enumerated using the `get_enabled_KEM_mechanisms` and `get_enabled_sig_mechanisms` functions. The `example.py` file demonstrates the wrapper's API.
+liboqs-python defines two main classes: `KeyEncapsulation` and `Signature`, providing post-quantum key encapsulation and signture mechanisms, respectively. Each must be instantiated with a string identifying one of mechanisms supported by liboqs; these can be enumerated using the `get_enabled_KEM_mechanisms` and `get_enabled_sig_mechanisms` functions. The files in `examples/` demonstrate the wrapper's API.
+Support for alternative RNGs is provided via the `randombytes[*]` functions.
 
 liboqs installation
 -------------------
 
 liboqs-python depends on the liboqs C library; it must be compiled as a Linux/macOS library or Windows DLL, and installed in one of:
 
-- any file path specified by the `LIBOQS_INSTALL_PATH` environment variable (e.g. `LIBOQS_INSTALL_PATH="/path/to/liboqs.so"`)
+- any file path specified by the `LIBOQS_INSTALL_PATH` environment variable (e.g. `LIBOQS_INSTALL_PATH="/usr/local/bin/liboqs.so"`; **do not forget to specify `liboqs.so` at the end**)
 - system-wide folder
 - the liboqs Python module's current folder
 
-`wrapper.py` checks the above locations in that order. At present, only liboqs master branch can be installed; see the [liboqs project](https://github.com/open-quantum-safe/liboqs/) for installation instructions.
+`oqs/oqs.py` checks the above locations in that order. At present, only liboqs master branch can be installed; see the [liboqs project](https://github.com/open-quantum-safe/liboqs/) for installation instructions.
 
 liboqs-python does not depend on any other Python packages. The package isn't hosted on PyPI yet, but can be installed into a virtualenv using:
 
@@ -71,9 +75,9 @@ The liboqs-python project should be in the `PYTHONPATH`:
 
 As any python module, liboqs wrapper components can be imported into python programs with `import oqs`.
 
-To run the example program:
+To run an example program:
 
-	python3 examples/example.py
+	python3 examples/kem.py
 
 To run the unit tests with a test runner (e.g. nose or rednose (`apt install python3-nose python3-rednose` or `pip3 install nose rednose`)):
 
@@ -113,6 +117,7 @@ Contributors to the liboqs-python wrapper include:
 
 - Ben Davies (University of Waterloo)
 - Christian Paquin (Microsoft Research)
+- Vlad Gheorghiu (evolutionQ, University of Waterloo)
 
 ### Support
 

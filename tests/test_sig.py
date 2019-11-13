@@ -1,9 +1,11 @@
 import oqs
 import random
 
+
 def test_correctness():
     for alg_name in oqs.get_enabled_sig_mechanisms():
-        yield (check_correctness, alg_name)
+        yield check_correctness, alg_name
+
 
 def check_correctness(alg_name):
     message = bytes(random.getrandbits(8) for _ in range(100))
@@ -13,9 +15,11 @@ def check_correctness(alg_name):
     assert sig.verify(message, signature, public_key)
     sig.free()
 
+
 def test_wrong_message():
     for alg_name in oqs.get_enabled_sig_mechanisms():
-        yield (check_wrong_message, alg_name)
+        yield check_wrong_message, alg_name
+
 
 def check_wrong_message(alg_name):
     message = bytes(random.getrandbits(8) for _ in range(100))
@@ -23,12 +27,14 @@ def check_wrong_message(alg_name):
     public_key = sig.generate_keypair()
     signature = sig.sign(message)
     wrong_message = bytes(random.getrandbits(8) for _ in range(100))
-    assert not(sig.verify(wrong_message, signature, public_key))
+    assert not (sig.verify(wrong_message, signature, public_key))
     sig.free()
+
 
 def test_wrong_signature():
     for alg_name in oqs.get_enabled_sig_mechanisms():
-        yield (check_wrong_signature, alg_name)
+        yield check_wrong_signature, alg_name
+
 
 def check_wrong_signature(alg_name):
     message = bytes(random.getrandbits(8) for _ in range(100))
@@ -36,12 +42,14 @@ def check_wrong_signature(alg_name):
     public_key = sig.generate_keypair()
     signature = sig.sign(message)
     wrong_signature = bytes(random.getrandbits(8) for _ in range(sig.details['length_signature']))
-    assert not(sig.verify(message, wrong_signature, public_key))
+    assert not (sig.verify(message, wrong_signature, public_key))
     sig.free()
+
 
 def test_wrong_public_key():
     for alg_name in oqs.get_enabled_sig_mechanisms():
-        yield (check_wrong_public_key, alg_name)
+        yield check_wrong_public_key, alg_name
+
 
 def check_wrong_public_key(alg_name):
     message = bytes(random.getrandbits(8) for _ in range(100))
@@ -49,8 +57,9 @@ def check_wrong_public_key(alg_name):
     public_key = sig.generate_keypair()
     signature = sig.sign(message)
     wrong_public_key = bytes(random.getrandbits(8) for _ in range(sig.details['length_public_key']))
-    assert not(sig.verify(message, signature, wrong_public_key))
+    assert not (sig.verify(message, signature, wrong_public_key))
     sig.free()
+
 
 def test_not_supported():
     try:
@@ -76,10 +85,13 @@ def test_not_enabled():
             except E:
                 raise AssertionError("An unexpected exception was raised. " + E)
 
+
 if __name__ == '__main__':
     try:
         import nose2
+
         nose2.main()
     except ImportError:
         import nose
+
         nose.runmodule()
