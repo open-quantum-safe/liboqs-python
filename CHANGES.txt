@@ -1,0 +1,11 @@
+Version 0.2.1 - January 22, 2020
+    - Added a signature example
+    - Added partial support for RNGs from <oqs/rand.h>
+    - Added an RNG example
+
+Version 0.2.0 - October 8, 2019
+    - This release updates for compatibility with liboqs 0.2.0, which contains
+      new/updated algorithms based on NIST Round 2 submissions.
+
+Version 0.1.0 - April 23, 2019
+    - Initial release

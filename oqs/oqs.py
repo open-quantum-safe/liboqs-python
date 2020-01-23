@@ -15,13 +15,12 @@ import ctypes.util as ctu
 # import platform to learn the OS we're on
 import platform
 
-
-LIBOQS_SHARED_OBJ = 'oqs' if platform.system() == 'Windows' else 'liboqs.so'
-LIBOQS_INSTALL_PATH = 'LIBOQS_INSTALL_PATH'
-
+_LIBOQS_SHARED_OBJ = 'oqs' if platform.system() == 'Windows' else 'liboqs.so'
+_LIBOQS_INSTALL_PATH = 'LIBOQS_INSTALL_PATH'
 
 # expected return value from native OQS functions
-_OQS_SUCCESS = 0
+OQS_SUCCESS = 0
+OQS_ERROR = -1
 
 
 def _load_shared_obj():
@@ -29,11 +28,11 @@ def _load_shared_obj():
     paths = []
 
     # try custom env var first
-    if LIBOQS_INSTALL_PATH in os.environ:
-        paths.append(os.environ[LIBOQS_INSTALL_PATH])
+    if _LIBOQS_INSTALL_PATH in os.environ:
+        paths.append(os.environ[_LIBOQS_INSTALL_PATH])
 
     # search typical locations too
-    paths += [ctu.find_library('oqs'), os.path.join(os.curdir, LIBOQS_SHARED_OBJ)]
+    paths += [ctu.find_library('oqs'), os.path.join(os.curdir, _LIBOQS_SHARED_OBJ)]
     dll = ct.windll if platform.system() == 'Windows' else ct.cdll
 
     for path in paths:
@@ -59,20 +58,18 @@ class MechanismNotSupportedError(Exception):
 
     def __init__(self, alg_name):
         """
-        :param alg_name: requested algorithm name
+        :param alg_name: requested algorithm name.
         """
         self.alg_name = alg_name
         self.message = alg_name + ' is not supported by OQS'
 
 
 class MechanismNotEnabledError(MechanismNotSupportedError):
-    """
-    Exception raised when an algorithm is not supported but not enabled by OQS.
-    """
+    """Exception raised when an algorithm is not supported but not enabled by OQS."""
 
     def __init__(self, alg_name):
         """
-        :param alg_name: requested algorithm name
+        :param alg_name: requested algorithm name.
         """
         self.alg_name = alg_name
         self.message = alg_name + ' is not supported but not enabled by OQS'
@@ -108,9 +105,11 @@ class KeyEncapsulation(ct.Structure):
 
     def __init__(self, alg_name, secret_key=None):
         """
-        Create new KeyEncapsulation with the given algorithm.
-        :param alg_name: KEM mechanism algorithm name
-        :param secret_key: optional if generating by generate_keypair() later
+        Creates new KeyEncapsulation with the given algorithm.
+
+        :param alg_name: KEM mechanism algorithm name. Enabled KEM mechanisms can be obtained with
+        get_enabled_KEM_mechanisms().
+        :param secret_key: optional if generating by generate_keypair() later.
         """
         self.alg_name = alg_name
         if alg_name not in _enabled_KEMs:
@@ -126,7 +125,7 @@ class KeyEncapsulation(ct.Structure):
             'name': self._kem.contents.method_name.decode(),
             'version': self._kem.contents.alg_version.decode(),
             'claimed_nist_level': int(self._kem.contents.claimed_nist_level),
-            'is_ind_cca' : bool(self._kem.contents.ind_cca),
+            'is_ind_cca': bool(self._kem.contents.ind_cca),
             'length_public_key': int(self._kem.contents.length_public_key),
             'length_secret_key': int(self._kem.contents.length_secret_key),
             'length_ciphertext': int(self._kem.contents.length_ciphertext),
@@ -150,7 +149,7 @@ class KeyEncapsulation(ct.Structure):
         public_key = ct.create_string_buffer(self._kem.contents.length_public_key)
         self.secret_key = ct.create_string_buffer(self._kem.contents.length_secret_key)
         rv = liboqs.OQS_KEM_keypair(self._kem, ct.byref(public_key), ct.byref(self.secret_key))
-        return bytes(public_key) if rv == _OQS_SUCCESS else 0
+        return bytes(public_key) if rv == OQS_SUCCESS else 0
 
     def export_secret_key(self):
         """Exports the secret key."""
@@ -166,7 +165,7 @@ class KeyEncapsulation(ct.Structure):
         ciphertext = ct.create_string_buffer(self._kem.contents.length_ciphertext)
         shared_secret = ct.create_string_buffer(self._kem.contents.length_shared_secret)
         rv = liboqs.OQS_KEM_encaps(self._kem, ct.byref(ciphertext), ct.byref(shared_secret), my_public_key)
-        return bytes(ciphertext), bytes(shared_secret) if rv == _OQS_SUCCESS else 0
+        return bytes(ciphertext), bytes(shared_secret) if rv == OQS_SUCCESS else 0
 
     def decap_secret(self, ciphertext):
         """
@@ -177,7 +176,7 @@ class KeyEncapsulation(ct.Structure):
         my_ciphertext = ct.create_string_buffer(ciphertext, self._kem.contents.length_ciphertext)
         shared_secret = ct.create_string_buffer(self._kem.contents.length_shared_secret)
         rv = liboqs.OQS_KEM_decaps(self._kem, ct.byref(shared_secret), my_ciphertext, self.secret_key)
-        return bytes(shared_secret) if rv == _OQS_SUCCESS else 0
+        return bytes(shared_secret) if rv == OQS_SUCCESS else 0
 
     def free(self):
         """Releases the native resources."""
@@ -186,7 +185,7 @@ class KeyEncapsulation(ct.Structure):
             liboqs.OQS_MEM_cleanse(ct.byref(self.secret_key), self._kem.contents.length_secret_key)
 
     def __repr__(self):
-        return "Key encapsulation mechanism: " + self._kem.contents.method_name.decode()
+        return 'Key encapsulation mechanism: ' + self._kem.contents.method_name.decode()
 
 
 liboqs.OQS_KEM_new.restype = ct.POINTER(KeyEncapsulation)
@@ -194,9 +193,10 @@ liboqs.OQS_KEM_alg_identifier.restype = ct.c_char_p
 
 
 def is_KEM_enabled(alg_name):
-    """Returns True if the KEM algorithm is enabled.
+    """
+    Returns True if the KEM algorithm is enabled.
 
-    :param alg_name: a KEM mechanism algorithm name
+    :param alg_name: a KEM mechanism algorithm name.
     """
     return liboqs.OQS_KEM_alg_is_enabled(ct.create_string_buffer(alg_name.encode()))
 
@@ -212,7 +212,7 @@ def get_enabled_KEM_mechanisms():
 
 
 def get_supported_KEM_mechanisms():
-    """Returns list of supported KEM mechanisms."""
+    """Returns the list of supported KEM mechanisms."""
     return _supported_KEMs
 
 
@@ -243,12 +243,13 @@ class Signature(ct.Structure):
         ("verify_cb", ct.c_void_p)
     ]
 
-    def __init__(self, alg_name, secret_key = None):
+    def __init__(self, alg_name, secret_key=None):
         """
-        Create new Signature with the given algorithm.
-        :param alg_name: a signature mechanism algorithm name. Enabled signature
-        mechanisms can be obtained with get_enabled_KEM_mechanisms().
-        :param secret_key: optional, if generated by generate_keypair()
+        Creates new Signature with the given algorithm.
+
+        :param alg_name: a signature mechanism algorithm name. Enabled signature mechanisms can be obtained with
+        get_enabled_sig_mechanisms().
+        :param secret_key: optional, if generated by generate_keypair().
         """
         if alg_name not in _enabled_sigs:
             # perhaps it's a supported but not enabled alg
@@ -257,7 +258,7 @@ class Signature(ct.Structure):
             else:
                 raise MechanismNotSupportedError(alg_name)
 
-        self._sig = liboqs.OQS_SIG_new( ct.create_string_buffer(alg_name.encode()))
+        self._sig = liboqs.OQS_SIG_new(ct.create_string_buffer(alg_name.encode()))
         self.details = {
             'name': self._sig.contents.method_name.decode(),
             'version': self._sig.contents.alg_version.decode(),
@@ -285,7 +286,7 @@ class Signature(ct.Structure):
         public_key = ct.create_string_buffer(self._sig.contents.length_public_key)
         self.secret_key = ct.create_string_buffer(self._sig.contents.length_secret_key)
         rv = liboqs.OQS_SIG_keypair(self._sig, ct.byref(public_key), ct.byref(self.secret_key))
-        return bytes(public_key) if rv == _OQS_SUCCESS else 0
+        return bytes(public_key) if rv == OQS_SUCCESS else 0
 
     def export_secret_key(self):
         """Exports the secret key."""
@@ -301,12 +302,12 @@ class Signature(ct.Structure):
         my_message = ct.create_string_buffer(message, len(message))
         message_len = ct.c_int(len(my_message))
         signature = ct.create_string_buffer(self._sig.contents.length_signature)
-        sig_len = ct.c_int(self._sig.contents.length_signature) # initialize to maximum signature size
+        sig_len = ct.c_int(self._sig.contents.length_signature)  # initialize to maximum signature size
         rv = liboqs.OQS_SIG_sign(self._sig, ct.byref(signature),
                                  ct.byref(sig_len), my_message,
                                  message_len, self.secret_key)
 
-        return bytes(signature[:sig_len.value]) if rv == _OQS_SUCCESS else 0
+        return bytes(signature[:sig_len.value]) if rv == OQS_SUCCESS else 0
 
     def verify(self, message, signature, public_key):
         """
@@ -326,7 +327,7 @@ class Signature(ct.Structure):
         my_public_key = ct.create_string_buffer(public_key, self._sig.contents.length_public_key)
         rv = liboqs.OQS_SIG_verify(self._sig, my_message, message_len,
                                    my_signature, sig_len, my_public_key)
-        return True if rv == _OQS_SUCCESS else False
+        return True if rv == OQS_SUCCESS else False
 
     def free(self):
         """Releases the native resources."""
@@ -335,7 +336,7 @@ class Signature(ct.Structure):
             liboqs.OQS_MEM_cleanse(ct.byref(self.secret_key), self._sig.contents.length_secret_key)
 
     def __repr__(self):
-        return "Signature mechanism: " + self._sig.contents.method_name.decode()
+        return 'Signature mechanism: ' + self._sig.contents.method_name.decode()
 
 
 liboqs.OQS_SIG_new.restype = ct.POINTER(Signature)
@@ -343,9 +344,10 @@ liboqs.OQS_SIG_alg_identifier.restype = ct.c_char_p
 
 
 def is_sig_enabled(alg_name):
-    """Returns True if the signature algorithm is enabled.
+    """
+    Returns True if the signature algorithm is enabled.
 
-    :param alg_name: a signature mechanism algorithm name
+    :param alg_name: a signature mechanism algorithm name.
     """
     return liboqs.OQS_SIG_alg_is_enabled(ct.create_string_buffer(alg_name.encode()))
 
@@ -361,5 +363,5 @@ def get_enabled_sig_mechanisms():
 
 
 def get_supported_sig_mechanisms():
-    """Returns list of supported signature mechanisms."""
+    """Returns the list of supported signature mechanisms."""
     return _supported_sigs

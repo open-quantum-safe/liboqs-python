@@ -1,9 +1,11 @@
 import oqs
 import random
 
+
 def test_correctness():
     for alg_name in oqs.get_enabled_KEM_mechanisms():
-        yield (check_correctness, alg_name)
+        yield check_correctness, alg_name
+
 
 def check_correctness(alg_name):
     kem = oqs.KeyEncapsulation(alg_name)
@@ -13,9 +15,11 @@ def check_correctness(alg_name):
     assert shared_secret_client == shared_secret_server
     kem.free()
 
+
 def test_wrong_ciphertext():
     for alg_name in oqs.get_enabled_KEM_mechanisms():
-        yield (check_wrong_ciphertext, alg_name)
+        yield check_wrong_ciphertext, alg_name
+
 
 def check_wrong_ciphertext(alg_name):
     kem = oqs.KeyEncapsulation(alg_name)
@@ -26,6 +30,7 @@ def check_wrong_ciphertext(alg_name):
     assert shared_secret_client != shared_secret_server
     kem.free()
 
+
 def test_not_supported():
     try:
         kem = oqs.KeyEncapsulation('bogus')
@@ -34,7 +39,7 @@ def test_not_supported():
         pass
     except E:
         raise AssertionError("An unexpected exception was raised. " + E)
-    
+
 
 def test_not_enabled():
     # TODO: test broken as the compiled lib determines which algorithms are
@@ -50,10 +55,13 @@ def test_not_enabled():
             except E:
                 raise AssertionError("An unexpected exception was raised. " + E)
 
+
 if __name__ == '__main__':
     try:
         import nose2
+
         nose2.main()
     except ImportError:
         import nose
+
         nose.runmodule()
