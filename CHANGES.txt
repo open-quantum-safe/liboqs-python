@@ -1,4 +1,4 @@
-Version 0.2.1 - January xx, 2020
+Version 0.2.1 - January 22, 2020
     - Added a signature example
     - Added partial support for RNGs from <oqs/rand.h>
     - Added an RNG example

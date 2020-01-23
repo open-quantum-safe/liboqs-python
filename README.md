@@ -116,13 +116,14 @@ The Open Quantum Safe project is led by [Douglas Stebila](https://www.douglas.st
 Contributors to the liboqs-python wrapper include:
 
 - Ben Davies (University of Waterloo)
-- Christian Paquin (Microsoft Research)
 - Vlad Gheorghiu (evolutionQ, University of Waterloo)
+- Christian Paquin (Microsoft Research)
+- Douglas Stebila (University of Waterloo)
 
 ### Support
 
 Financial support for the development of Open Quantum Safe has been provided by Amazon Web Services and the Tutte Institute for Mathematics and Computing.
 
-We'd like to make a special acknowledgement to the companies who have dedicated programmer time to contribute source code to OQS, including Amazon Web Services, evolutionQ, and Microsoft Research.
+We'd like to make a special acknowledgement to the companies who have dedicated programmer time to contribute source code to OQS, including Amazon Web Services, Cisco Systems, evolutionQ, IBM Research, and Microsoft Research.
 
 Research projects which developed specific components of OQS have been supported by various research grants, including funding from the Natural Sciences and Engineering Research Council of Canada (NSERC); see the source papers for funding acknowledgments.
