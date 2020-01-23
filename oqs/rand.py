@@ -50,9 +50,3 @@ def randombytes_nist_kat_init(entropy_input, personalization_string=None):
                                                  oqs.ct.create_string_buffer(personalization_string), 256)
 
     oqs.liboqs.OQS_randombytes_nist_kat_init(oqs.ct.create_string_buffer(entropy_input), 0, 256)
-
-# def randombytes_in_place(random_array, bytes_to_read):
-#     raise NotImplementedError
-
-# def randombytes_custom_algorithm(fun):
-#     raise NotImplementedError
