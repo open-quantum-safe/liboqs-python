@@ -37,7 +37,7 @@ jobs:
   ubuntu-bionic-x86_64:
     <<: *myjob
     environment:
-      IMAGE: openquantumsafe/ci-ubuntu-bionic-x86_64:latest
+      IMAGE: openquantumsafe/ci-ubuntu-bionic-amd64:2
 
 workflows:
   version: 2
