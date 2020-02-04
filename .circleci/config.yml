@@ -34,17 +34,17 @@ jobs:
     <<: *myjob
     environment:
       IMAGE: dstebila/liboqs:debian-buster-amd64-0.1.0
-  ubuntu-xenial-x86_64:
+  ubuntu-bionic-x86_64:
     <<: *myjob
     environment:
-      IMAGE: dstebila/liboqs:ubuntu-xenial-x86_64-0.1.0
+      IMAGE: openquantumsafe/ci-ubuntu-bionic-amd64:2
 
 workflows:
   version: 2
   build:
     jobs:
       - debian-buster-amd64
-      - ubuntu-xenial-x86_64
+      - ubuntu-bionic-x86_64
   nightly:
     triggers:
       - schedule:
@@ -55,4 +55,4 @@ workflows:
                 - master
     jobs:
       - debian-buster-amd64
-      - ubuntu-xenial-x86_64
+      - ubuntu-bionic-x86_64

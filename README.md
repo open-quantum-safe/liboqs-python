@@ -88,7 +88,7 @@ To run the unit tests without a test runner:
 	python3 tests/test_kem.py
 	python3 tests/test_sig.py
 
-The module has been tested using Python 3 on Linux Debian 10 (Buster), Linux Ubuntu 16.04.5 (Xenial), macOS 10.14.3, and Windows 10.  We run continuous integration tests on CircleCI on Linux Debian 10 (Buster) and Linux Ubuntu 16.04.4 (Xenial) on x86_64.
+The module has been tested using Python 3 on Linux Debian 10 (Buster), Linux Ubuntu 18.04 (Bionic), macOS 10.14.3, and Windows 10.  We run continuous integration tests on CircleCI on Linux Debian 10 (Buster) and Linux Ubuntu 18.04 (Bionic) on x86_64.
 
 Limitations and security
 ------------------------
