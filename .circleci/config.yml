@@ -7,24 +7,16 @@ version: 2
     - checkout
     - run:
         name: Clone liboqs-master
-        command: |
-          .circleci/git_no_checkin_in_last_day.sh || (cd /root)
-          .circleci/git_no_checkin_in_last_day.sh || (git clone --branch master --single-branch https://github.com/open-quantum-safe/liboqs)
+        command: .circleci/git_no_checkin_in_last_day.sh || (cd /root && git clone --branch master --single-branch https://github.com/open-quantum-safe/liboqs)
     - run:
         name: Build liboqs-master
-        command: |
-          .circleci/git_no_checkin_in_last_day.sh || (cd /root/liboqs)
-          .circleci/git_no_checkin_in_last_day.sh || (mkdir build && cd build)
-          .circleci/git_no_checkin_in_last_day.sh || (cmake -GNinja -DBUILD_SHARED_LIBS=ON ..)
-          .circleci/git_no_checkin_in_last_day.sh || (ninja)
+        command: .circleci/git_no_checkin_in_last_day.sh || (cd /root/liboqs && mkdir build && cd build && cmake -GNinja -DBUILD_SHARED_LIBS=ON .. && ninja
     - run:
         name: Run liboqs-python unit tests
         environment:
           LIBOQS_INSTALL_PATH: /root/liboqs/build/lib/liboqs.so
           PYTHONPATH: /root/project
-        command: |
-          mkdir -p test-results
-          .circleci/git_no_checkin_in_last_day.sh || (python3 -m nose --rednose --verbose --with-xunit --xunit-file=test-results/nosetests.xml)
+        command: mkdir -p test-results && .circleci/git_no_checkin_in_last_day.sh || (python3 -m nose --rednose --verbose --with-xunit --xunit-file=test-results/nosetests.xml)
     - store_test_results: # Note that this command will fail when running CircleCI locally, that is expected behaviour
         path: test-results
 
