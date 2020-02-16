@@ -10,7 +10,7 @@ version: 2
         command: .circleci/git_no_checkin_in_last_day.sh || (cd /root && git clone --branch master --single-branch https://github.com/open-quantum-safe/liboqs)
     - run:
         name: Build liboqs-master
-        command: .circleci/git_no_checkin_in_last_day.sh || (cd /root/liboqs && mkdir build && cd build && cmake -GNinja -DBUILD_SHARED_LIBS=ON .. && ninja
+        command: .circleci/git_no_checkin_in_last_day.sh || (cd /root/liboqs && mkdir build && cd build && cmake -GNinja -DBUILD_SHARED_LIBS=ON .. && ninja)
     - run:
         name: Run liboqs-python unit tests
         environment:
