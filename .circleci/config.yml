@@ -7,25 +7,16 @@ version: 2
     - checkout
     - run:
         name: Clone liboqs-master
-        command: |
-          cd /root
-          git clone --branch master --single-branch https://github.com/open-quantum-safe/liboqs
+        command: .circleci/git_no_checkin_in_last_day.sh || (cd /root && git clone --branch master --single-branch https://github.com/open-quantum-safe/liboqs)
     - run:
         name: Build liboqs-master
-        command: |
-          cd /root/liboqs
-          autoreconf -i
-          ./configure --enable-silent-rules
-          make clean
-          make -j
+        command: .circleci/git_no_checkin_in_last_day.sh || (cd /root/liboqs && mkdir build && cd build && cmake -GNinja -DBUILD_SHARED_LIBS=ON .. && ninja)
     - run:
         name: Run liboqs-python unit tests
         environment:
-          LIBOQS_INSTALL_PATH: /root/liboqs/.libs/liboqs.so
+          LIBOQS_INSTALL_PATH: /root/liboqs/build/lib/liboqs.so
           PYTHONPATH: /root/project
-        command: |
-          mkdir -p test-results
-          python3 -m nose --rednose --verbose --with-xunit --xunit-file=test-results/nosetests.xml
+        command: mkdir -p test-results && .circleci/git_no_checkin_in_last_day.sh || (python3 -m nose --rednose --verbose --with-xunit --xunit-file=test-results/nosetests.xml)
     - store_test_results: # Note that this command will fail when running CircleCI locally, that is expected behaviour
         path: test-results
 
@@ -33,11 +24,11 @@ jobs:
   debian-buster-amd64:
     <<: *myjob
     environment:
-      IMAGE: dstebila/liboqs:debian-buster-amd64-0.1.0
+      IMAGE: openquantumsafe/ci-debian-buster-amd64:latest
   ubuntu-bionic-x86_64:
     <<: *myjob
     environment:
-      IMAGE: openquantumsafe/ci-ubuntu-bionic-amd64:2
+      IMAGE: openquantumsafe/ci-ubuntu-bionic-x86_64:latest
 
 workflows:
   version: 2
@@ -51,7 +42,7 @@ workflows:
           cron: "0 1 * * *"
           filters:
             branches:
-              only: 
+              only:
                 - master
     jobs:
       - debian-buster-amd64
