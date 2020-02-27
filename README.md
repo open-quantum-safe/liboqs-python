@@ -25,8 +25,8 @@ More information on OQS can be found on our website: [https://openquantumsafe.or
 
 Pre-requisites
 --------------
-
-liboqs-python depends on the [liboqs](https://github.com/open-quantum-safe/liboqs) C library; liboqs master branch must first be compiled as a Linux/macOS/Windows library, see the specific platform building instructions below.
+Python 3.x
+liboqs-python depends on the [liboqs](https://github.com/open-quantum-safe/liboqs) C library; liboqs master branch must first be compiled as a Linux/macOS/Windows library (i.e. using `ninja install` with `-DBUILD_SHARED_LIBS=ON` during configuration).
 
 Contents
 --------
@@ -51,7 +51,9 @@ liboqs installation
 
 liboqs-python depends on the liboqs C library; it must be compiled as a Linux/macOS library or Windows DLL, and installed in one of:
 
-- any file path specified by the `LIBOQS_INSTALL_PATH` environment variable (e.g. `LIBOQS_INSTALL_PATH="/usr/local/bin/liboqs.so"`; **do not forget to specify `liboqs.so` at the end**)
+- any file path specified by the `LIBOQS_INSTALL_PATH` environment variable. For examples:
+  - Linux: `LIBOQS_INSTALL_PATH="/usr/local/bin/liboqs.so"`; (**do not forget to specify `liboqs.so` at the end**)
+  - MacOS: `LIBOQS_INSTALL_PATH="/usr/local/lib/liboqs.dylib"`; (**again, do not forget `liboqs.dylib`**)
 - system-wide folder
 - the liboqs Python module's current folder
 
