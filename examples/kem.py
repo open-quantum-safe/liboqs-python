@@ -9,7 +9,7 @@ import oqs
 
 kems = oqs.get_enabled_KEM_mechanisms()
 
-print('Enabled KEM mechanisms:')
+print("Enabled KEM mechanisms:")
 pprint(kems)
 
 # create client and server with default KEM mechanisms
@@ -32,5 +32,5 @@ with oqs.KeyEncapsulation(kemalg) as client:
 
         # the client decapsulates the the server's ciphertext to obtain the shared secret
         shared_secret_client = client.decap_secret(ciphertext)
-        
+
         print("\nShared secretes coincide:", shared_secret_client == shared_secret_server)

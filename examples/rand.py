@@ -14,11 +14,11 @@ entropy_seed[20] = 200
 entropy_seed[47] = 150
 
 oqsrand.randombytes_nist_kat_init(bytes(entropy_seed))
-oqsrand.randombytes_switch_algorithm('NIST-KAT')
+oqsrand.randombytes_switch_algorithm("NIST-KAT")
 print('{:17s}'.format("NIST-KAT:"), ' '.join('{:02X}'.format(x) for x in oqsrand.randombytes(32)))
 
 # we do not yet support OpenSSL under Windows
-if platform.system() != 'Windows':
+if platform.system() != "Windows":
     oqsrand.randombytes_switch_algorithm("OpenSSL")
     print('{:17s}'.format("OpenSSL:"), ' '.join('{:02X}'.format(x) for x in oqsrand.randombytes(32)))
 

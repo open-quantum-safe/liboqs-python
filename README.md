@@ -12,9 +12,9 @@ Overview
 
 The **Open Quantum Safe (OQS) project** has the goal of developing and prototyping quantum-resistant cryptography.
 
-**liboqs** is an open source C library for quantum-resistant cryptographic algorithms.  See more about liboqs at [https://github.com/open-quantum-safe/liboqs/](https://github.com/open-quantum-safe/liboqs/), including a list of supported algorithms.
+**liboqs** is an open source C library for quantum-resistant cryptographic algorithms. See more about liboqs at [https://github.com/open-quantum-safe/liboqs/](https://github.com/open-quantum-safe/liboqs/), including a list of supported algorithms.
 
-**liboqs-python** is an open source Python 3 wrapper for the liboqs C library.  liboqs-python provides:
+**liboqs-python** is an open source Python 3 wrapper for the liboqs C library. liboqs-python provides:
 
 - a common API for post-quantum key encapsulation mechanisms and digital signature schemes
 - a collection of open source implementations of post-quantum cryptography algorithms
@@ -26,7 +26,8 @@ More information on OQS can be found on our website: [https://openquantumsafe.or
 Pre-requisites
 --------------
 Python 3.x
-liboqs-python depends on the [liboqs](https://github.com/open-quantum-safe/liboqs) C library; liboqs master branch must first be compiled as a Linux/macOS/Windows library (i.e. using `ninja install` with `-DBUILD_SHARED_LIBS=ON` during configuration).
+liboqs-python depends on the [liboqs](https://github.com/open-quantum-safe/liboqs) C library; liboqs master branch must 
+first be compiled as a Linux/macOS/Windows library (i.e. using `ninja install` with `-DBUILD_SHARED_LIBS=ON` during configuration).
 
 Contents
 --------
@@ -46,27 +47,31 @@ Usage
 liboqs-python defines two main classes: `KeyEncapsulation` and `Signature`, providing post-quantum key encapsulation and signture mechanisms, respectively. Each must be instantiated with a string identifying one of mechanisms supported by liboqs; these can be enumerated using the `get_enabled_KEM_mechanisms` and `get_enabled_sig_mechanisms` functions. The files in `examples/` demonstrate the wrapper's API.
 Support for alternative RNGs is provided via the `randombytes[*]` functions.
 
-liboqs installation
--------------------
+Installation
+------------
 
-liboqs-python depends on the liboqs C library; it must be compiled as a Linux/macOS library or Windows DLL, and installed in one of:
+liboqs-python depends on the liboqs C library, which must first be compiled as a Linux/macOS library or Windows DLL, see 
+the [liboqs project](https://github.com/open-quantum-safe/liboqs/) for installation instructions, and installed in one of:
 
 - any file path specified by the `LIBOQS_INSTALL_PATH` environment variable. For examples:
-  - Linux: `LIBOQS_INSTALL_PATH="/usr/local/bin/liboqs.so"`; (**do not forget to specify `liboqs.so` at the end**)
-  - MacOS: `LIBOQS_INSTALL_PATH="/usr/local/lib/liboqs.dylib"`; (**again, do not forget `liboqs.dylib`**)
+  - Linux: `export LIBOQS_INSTALL_PATH="/usr/local/bin/liboqs.so"`; (**do not forget to specify `liboqs.so` at the end**)
+  - MacOS: `export LIBOQS_INSTALL_PATH="/usr/local/lib/liboqs.dylib"`; (**again, do not forget `liboqs.dylib`**)
 - system-wide folder
 - the liboqs Python module's current folder
 
-`oqs/oqs.py` checks the above locations in that order. At present, only liboqs master branch can be installed; see the [liboqs project](https://github.com/open-quantum-safe/liboqs/) for installation instructions.
+`oqs/oqs.py` checks the above locations in that order.
 
-liboqs-python does not depend on any other Python packages. The package isn't hosted on PyPI yet, but can be installed into a virtualenv using:
+liboqs-python does not depend on any other Python packages. The package isn't hosted on PyPI yet. We recommend to install 
+it into a virtualenv using:
 
 	# create & activate virtual environment, e.g.:
 	python3 -m venv <virtualenv_name>
-    source <virtualenv_name>/bin/activate
-
+	source <virtualenv_name>/bin/activate
+	
 	cd /some/dir/liboqs-python
 	python3 setup.py install
+
+On Windows replace the command `source <virtualenv_name>/bin/activate` with `<virtualenv_name>\Scripts\activate.bat`.
 
 Running
 -------
@@ -90,7 +95,8 @@ To run the unit tests without a test runner:
 	python3 tests/test_kem.py
 	python3 tests/test_sig.py
 
-The module has been tested using Python 3 on Linux Debian 10 (Buster), Linux Ubuntu 18.04 (Bionic), macOS 10.14.3, and Windows 10.  We run continuous integration tests on CircleCI on Linux Debian 10 (Buster) and Linux Ubuntu 18.04 (Bionic) on x86_64.
+The module has been tested using Python 3 on Linux Debian 10 (Buster), Linux Ubuntu 18.04 (Bionic), macOS 10.14.3, 
+and Windows 10. We run continuous integration tests on CircleCI on Linux Debian 10 (Buster) and Linux Ubuntu 18.04 (Bionic) on x86_64.
 
 Limitations and security
 ------------------------

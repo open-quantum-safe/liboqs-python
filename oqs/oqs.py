@@ -9,48 +9,54 @@ This module provides a Python 3 interface to liboqs.
 
 import os
 import sys
-# import ctypes to call native
-import ctypes as ct
+import ctypes as ct  # to call native
 import ctypes.util as ctu
-# import platform to learn the OS we're on
-import platform
-
-_LIBOQS_SHARED_OBJ = 'oqs' if platform.system() == 'Windows' else 'liboqs.so'
-_LIBOQS_INSTALL_PATH = 'LIBOQS_INSTALL_PATH'
+import platform  # to learn the OS we're on
 
 # expected return value from native OQS functions
 OQS_SUCCESS = 0
 OQS_ERROR = -1
 
 
-def _load_shared_obj():
+def _load_shared_obj(name):
     """Attempts to load native OQS library."""
+    liboqs_shared_obj = "" if platform.system() == "Windows" else "lib" + name + ".so"
+    liboqs_install_path = "LIBOQS_INSTALL_PATH"
+
     paths = []
 
     # try custom env var first
-    if _LIBOQS_INSTALL_PATH in os.environ:
-        paths.append(os.environ[_LIBOQS_INSTALL_PATH])
+    if liboqs_install_path in os.environ:
+        paths.append(os.environ[liboqs_install_path])
 
     # search typical locations too
-    paths += [ctu.find_library('oqs'), os.path.join(os.curdir, _LIBOQS_SHARED_OBJ)]
-    dll = ct.windll if platform.system() == 'Windows' else ct.cdll
+    paths += [ctu.find_library("oqs"), os.path.join(os.curdir, liboqs_shared_obj)]
+    dll = ct.windll if platform.system() == "Windows" else ct.cdll
 
     for path in paths:
         if path and os.path.exists(path):
             lib = dll.LoadLibrary(path)
             return lib
 
-    raise RuntimeError('No liboqs.so found!')
+    raise RuntimeError("No liboqs.so found!")
 
 
 try:
-    # TODO: fix module 'global' liboqs
-    liboqs = _load_shared_obj()
-    assert liboqs
+    _liboqs = _load_shared_obj("oqs")
+    assert _liboqs
 except OSError as err:
-    sys.exit('Could not load liboqs shared library')
+    sys.exit("Could not load liboqs shared library")
 except RuntimeError as err:
-    sys.exit('No liboqs shared libraries found')
+    sys.exit("No liboqs shared libraries found")
+
+
+def native():
+    """Handle to native liboqs handler."""
+    return _liboqs
+
+
+# liboqs initialization
+native().OQS_init()
 
 
 class MechanismNotSupportedError(Exception):
@@ -61,7 +67,7 @@ class MechanismNotSupportedError(Exception):
         :param alg_name: requested algorithm name.
         """
         self.alg_name = alg_name
-        self.message = alg_name + ' is not supported by OQS'
+        self.message = alg_name + " is not supported by OQS"
 
 
 class MechanismNotEnabledError(MechanismNotSupportedError):
@@ -72,7 +78,7 @@ class MechanismNotEnabledError(MechanismNotSupportedError):
         :param alg_name: requested algorithm name.
         """
         self.alg_name = alg_name
-        self.message = alg_name + ' is not supported but not enabled by OQS'
+        self.message = alg_name + " is not supported but not enabled by OQS"
 
 
 class KeyEncapsulation(ct.Structure):
@@ -119,17 +125,17 @@ class KeyEncapsulation(ct.Structure):
             else:
                 raise MechanismNotSupportedError(alg_name)
 
-        self._kem = liboqs.OQS_KEM_new(ct.create_string_buffer(alg_name.encode()))
+        self._kem = native().OQS_KEM_new(ct.create_string_buffer(alg_name.encode()))
 
         self.details = {
-            'name': self._kem.contents.method_name.decode(),
-            'version': self._kem.contents.alg_version.decode(),
-            'claimed_nist_level': int(self._kem.contents.claimed_nist_level),
-            'is_ind_cca': bool(self._kem.contents.ind_cca),
-            'length_public_key': int(self._kem.contents.length_public_key),
-            'length_secret_key': int(self._kem.contents.length_secret_key),
-            'length_ciphertext': int(self._kem.contents.length_ciphertext),
-            'length_shared_secret': int(self._kem.contents.length_shared_secret)}
+            "name": self._kem.contents.method_name.decode(),
+            "version": self._kem.contents.alg_version.decode(),
+            "claimed_nist_level": int(self._kem.contents.claimed_nist_level),
+            "is_ind_cca": bool(self._kem.contents.ind_cca),
+            "length_public_key": int(self._kem.contents.length_public_key),
+            "length_secret_key": int(self._kem.contents.length_secret_key),
+            "length_ciphertext": int(self._kem.contents.length_ciphertext),
+            "length_shared_secret": int(self._kem.contents.length_shared_secret)}
 
         if secret_key:
             self.secret_key = ct.create_string_buffer(secret_key, self._kem.contents.length_secret_key)
@@ -148,7 +154,7 @@ class KeyEncapsulation(ct.Structure):
         """
         public_key = ct.create_string_buffer(self._kem.contents.length_public_key)
         self.secret_key = ct.create_string_buffer(self._kem.contents.length_secret_key)
-        rv = liboqs.OQS_KEM_keypair(self._kem, ct.byref(public_key), ct.byref(self.secret_key))
+        rv = native().OQS_KEM_keypair(self._kem, ct.byref(public_key), ct.byref(self.secret_key))
         return bytes(public_key) if rv == OQS_SUCCESS else 0
 
     def export_secret_key(self):
@@ -164,7 +170,7 @@ class KeyEncapsulation(ct.Structure):
         my_public_key = ct.create_string_buffer(public_key, self._kem.contents.length_public_key)
         ciphertext = ct.create_string_buffer(self._kem.contents.length_ciphertext)
         shared_secret = ct.create_string_buffer(self._kem.contents.length_shared_secret)
-        rv = liboqs.OQS_KEM_encaps(self._kem, ct.byref(ciphertext), ct.byref(shared_secret), my_public_key)
+        rv = native().OQS_KEM_encaps(self._kem, ct.byref(ciphertext), ct.byref(shared_secret), my_public_key)
         return bytes(ciphertext), bytes(shared_secret) if rv == OQS_SUCCESS else 0
 
     def decap_secret(self, ciphertext):
@@ -175,21 +181,21 @@ class KeyEncapsulation(ct.Structure):
         """
         my_ciphertext = ct.create_string_buffer(ciphertext, self._kem.contents.length_ciphertext)
         shared_secret = ct.create_string_buffer(self._kem.contents.length_shared_secret)
-        rv = liboqs.OQS_KEM_decaps(self._kem, ct.byref(shared_secret), my_ciphertext, self.secret_key)
+        rv = native().OQS_KEM_decaps(self._kem, ct.byref(shared_secret), my_ciphertext, self.secret_key)
         return bytes(shared_secret) if rv == OQS_SUCCESS else 0
 
     def free(self):
         """Releases the native resources."""
-        liboqs.OQS_KEM_free(self._kem)
-        if hasattr(self, 'secret_key'):
-            liboqs.OQS_MEM_cleanse(ct.byref(self.secret_key), self._kem.contents.length_secret_key)
+        native().OQS_KEM_free(self._kem)
+        if hasattr(self, "secret_key"):
+            native().OQS_MEM_cleanse(ct.byref(self.secret_key), self._kem.contents.length_secret_key)
 
     def __repr__(self):
-        return 'Key encapsulation mechanism: ' + self._kem.contents.method_name.decode()
+        return "Key encapsulation mechanism: " + self._kem.contents.method_name.decode()
 
 
-liboqs.OQS_KEM_new.restype = ct.POINTER(KeyEncapsulation)
-liboqs.OQS_KEM_alg_identifier.restype = ct.c_char_p
+native().OQS_KEM_new.restype = ct.POINTER(KeyEncapsulation)
+native().OQS_KEM_alg_identifier.restype = ct.c_char_p
 
 
 def is_KEM_enabled(alg_name):
@@ -198,10 +204,10 @@ def is_KEM_enabled(alg_name):
 
     :param alg_name: a KEM mechanism algorithm name.
     """
-    return liboqs.OQS_KEM_alg_is_enabled(ct.create_string_buffer(alg_name.encode()))
+    return native().OQS_KEM_alg_is_enabled(ct.create_string_buffer(alg_name.encode()))
 
 
-_KEM_alg_ids = [liboqs.OQS_KEM_alg_identifier(i) for i in range(liboqs.OQS_KEM_alg_count())]
+_KEM_alg_ids = [native().OQS_KEM_alg_identifier(i) for i in range(native().OQS_KEM_alg_count())]
 _supported_KEMs = [i.decode() for i in _KEM_alg_ids]
 _enabled_KEMs = [i for i in _supported_KEMs if is_KEM_enabled(i)]
 
@@ -258,15 +264,15 @@ class Signature(ct.Structure):
             else:
                 raise MechanismNotSupportedError(alg_name)
 
-        self._sig = liboqs.OQS_SIG_new(ct.create_string_buffer(alg_name.encode()))
+        self._sig = native().OQS_SIG_new(ct.create_string_buffer(alg_name.encode()))
         self.details = {
-            'name': self._sig.contents.method_name.decode(),
-            'version': self._sig.contents.alg_version.decode(),
-            'claimed_nist_level': int(self._sig.contents.claimed_nist_level),
-            'is_euf_cma': bool(self._sig.contents.euf_cma),
-            'length_public_key': int(self._sig.contents.length_public_key),
-            'length_secret_key': int(self._sig.contents.length_secret_key),
-            'length_signature': int(self._sig.contents.length_signature)}
+            "name": self._sig.contents.method_name.decode(),
+            "version": self._sig.contents.alg_version.decode(),
+            "claimed_nist_level": int(self._sig.contents.claimed_nist_level),
+            "is_euf_cma": bool(self._sig.contents.euf_cma),
+            "length_public_key": int(self._sig.contents.length_public_key),
+            "length_secret_key": int(self._sig.contents.length_secret_key),
+            "length_signature": int(self._sig.contents.length_signature)}
 
         if secret_key:
             self.secret_key = ct.create_string_buffer(secret_key, self._sig.contents.length_secret_key)
@@ -285,7 +291,7 @@ class Signature(ct.Structure):
         """
         public_key = ct.create_string_buffer(self._sig.contents.length_public_key)
         self.secret_key = ct.create_string_buffer(self._sig.contents.length_secret_key)
-        rv = liboqs.OQS_SIG_keypair(self._sig, ct.byref(public_key), ct.byref(self.secret_key))
+        rv = native().OQS_SIG_keypair(self._sig, ct.byref(public_key), ct.byref(self.secret_key))
         return bytes(public_key) if rv == OQS_SUCCESS else 0
 
     def export_secret_key(self):
@@ -303,9 +309,9 @@ class Signature(ct.Structure):
         message_len = ct.c_int(len(my_message))
         signature = ct.create_string_buffer(self._sig.contents.length_signature)
         sig_len = ct.c_int(self._sig.contents.length_signature)  # initialize to maximum signature size
-        rv = liboqs.OQS_SIG_sign(self._sig, ct.byref(signature),
-                                 ct.byref(sig_len), my_message,
-                                 message_len, self.secret_key)
+        rv = native().OQS_SIG_sign(self._sig, ct.byref(signature),
+                                   ct.byref(sig_len), my_message,
+                                   message_len, self.secret_key)
 
         return bytes(signature[:sig_len.value]) if rv == OQS_SUCCESS else 0
 
@@ -325,22 +331,22 @@ class Signature(ct.Structure):
         my_signature = ct.create_string_buffer(signature, len(signature))
         sig_len = ct.c_int(len(my_signature))
         my_public_key = ct.create_string_buffer(public_key, self._sig.contents.length_public_key)
-        rv = liboqs.OQS_SIG_verify(self._sig, my_message, message_len,
-                                   my_signature, sig_len, my_public_key)
+        rv = native().OQS_SIG_verify(self._sig, my_message, message_len,
+                                     my_signature, sig_len, my_public_key)
         return True if rv == OQS_SUCCESS else False
 
     def free(self):
         """Releases the native resources."""
-        liboqs.OQS_SIG_free(self._sig)
-        if hasattr(self, 'secret_key'):
-            liboqs.OQS_MEM_cleanse(ct.byref(self.secret_key), self._sig.contents.length_secret_key)
+        native().OQS_SIG_free(self._sig)
+        if hasattr(self, "secret_key"):
+            native().OQS_MEM_cleanse(ct.byref(self.secret_key), self._sig.contents.length_secret_key)
 
     def __repr__(self):
-        return 'Signature mechanism: ' + self._sig.contents.method_name.decode()
+        return "Signature mechanism: " + self._sig.contents.method_name.decode()
 
 
-liboqs.OQS_SIG_new.restype = ct.POINTER(Signature)
-liboqs.OQS_SIG_alg_identifier.restype = ct.c_char_p
+native().OQS_SIG_new.restype = ct.POINTER(Signature)
+native().OQS_SIG_alg_identifier.restype = ct.c_char_p
 
 
 def is_sig_enabled(alg_name):
@@ -349,10 +355,10 @@ def is_sig_enabled(alg_name):
 
     :param alg_name: a signature mechanism algorithm name.
     """
-    return liboqs.OQS_SIG_alg_is_enabled(ct.create_string_buffer(alg_name.encode()))
+    return native().OQS_SIG_alg_is_enabled(ct.create_string_buffer(alg_name.encode()))
 
 
-_sig_alg_ids = [liboqs.OQS_SIG_alg_identifier(i) for i in range(liboqs.OQS_SIG_alg_count())]
+_sig_alg_ids = [native().OQS_SIG_alg_identifier(i) for i in range(native().OQS_SIG_alg_count())]
 _supported_sigs = [i.decode() for i in _sig_alg_ids]
 _enabled_sigs = [i for i in _supported_sigs if is_sig_enabled(i)]
 
