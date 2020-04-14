@@ -1,8 +1,8 @@
 Pre-release
-    - Increased stack size (due to crashes of McEliece and Rainbow under
-      Windows)
+    - Disabled unit testing for McEliece and Rainbow-IIIc/Vc under Windows
+      (stack size too small)
     - The liboqs handle has now module-private visibility in oqs.py so clients
-      can not access it directly; can now be accessed via the new oqs.native()
+      can not access it directly; can be accessed via the new oqs.native()
       function
     - Closing #7 https://github.com/open-quantum-safe/liboqs-python/issues/7,
       all issues addressed
