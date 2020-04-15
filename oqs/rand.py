@@ -19,7 +19,7 @@ def randombytes(bytes_to_read):
     :return: random bytes.
     """
     result = oqs.ct.create_string_buffer(bytes_to_read)
-    oqs.liboqs.OQS_randombytes(result, oqs.ct.c_int(bytes_to_read))
+    oqs.native().OQS_randombytes(result, oqs.ct.c_int(bytes_to_read))
     return bytes(result)
 
 
@@ -29,7 +29,8 @@ def randombytes_switch_algorithm(alg_name):
 
     :param alg_name: algorithm name, possible values are "system", "NIST-KAT", "OpenSSL".
     """
-    if oqs.liboqs.OQS_randombytes_switch_algorithm(oqs.ct.create_string_buffer(alg_name.encode())) != oqs.OQS_SUCCESS:
+    if oqs.native().OQS_randombytes_switch_algorithm(
+            oqs.ct.create_string_buffer(alg_name.encode())) != oqs.OQS_SUCCESS:
         raise RuntimeError('Can not switch algorithm')
 
 
@@ -46,7 +47,7 @@ def randombytes_nist_kat_init(entropy_input, personalization_string=None):
     if personalization_string is not None:
         if len(personalization_string) < 48:
             raise ValueError('The personalization string must be either empty or at least 48 bytes long')
-        oqs.liboqs.OQS_randombytes_nist_kat_init(oqs.ct.create_string_buffer(entropy_input),
-                                                 oqs.ct.create_string_buffer(personalization_string), 256)
+        oqs.native().OQS_randombytes_nist_kat_init(oqs.ct.create_string_buffer(entropy_input),
+                                                   oqs.ct.create_string_buffer(personalization_string), 256)
 
-    oqs.liboqs.OQS_randombytes_nist_kat_init(oqs.ct.create_string_buffer(entropy_input), 0, 256)
+    oqs.native().OQS_randombytes_nist_kat_init(oqs.ct.create_string_buffer(entropy_input), 0, 256)
