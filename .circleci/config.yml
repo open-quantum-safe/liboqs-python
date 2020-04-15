@@ -13,8 +13,9 @@ version: 2
         command: .circleci/git_no_checkin_in_last_day.sh || (cd /root/liboqs && mkdir build && cd build && cmake -GNinja -DBUILD_SHARED_LIBS=ON .. && ninja)
     - run:
         name: Run liboqs-python unit tests
+        command: |
+          echo 'export PATH=/root/liboqs/build/lib:$PATH' >> $BASH_ENV
         environment:
-          PATH: $PATH:/root/liboqs/build/lib
           PYTHONPATH: /root/project
         command: mkdir -p test-results && .circleci/git_no_checkin_in_last_day.sh || (python3 -m nose --rednose --verbose --with-xunit --xunit-file=test-results/nosetests.xml)
     - store_test_results: # Note that this command will fail when running CircleCI locally, that is expected behaviour
