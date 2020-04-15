@@ -20,17 +20,10 @@ OQS_ERROR = -1
 
 def _load_shared_obj(name):
     """Attempts to load native OQS library."""
-    liboqs_shared_obj = "" if platform.system() == "Windows" else "lib" + name + ".so"
-    liboqs_install_path = "LIBOQS_INSTALL_PATH"
-
     paths = []
 
-    # try custom env var first
-    if liboqs_install_path in os.environ:
-        paths.append(os.environ[liboqs_install_path])
-
-    # search typical locations too
-    paths += [ctu.find_library("oqs"), os.path.join(os.curdir, liboqs_shared_obj)]
+    # search typical locations
+    paths += [ctu.find_library("oqs")]
     dll = ct.windll if platform.system() == "Windows" else ct.cdll
 
     for path in paths:
@@ -38,13 +31,14 @@ def _load_shared_obj(name):
             lib = dll.LoadLibrary(path)
             return lib
 
-    raise RuntimeError("No liboqs.so found!")
+    raise RuntimeError("No liboqs shared libraries found")
 
 
 try:
     _liboqs = _load_shared_obj("oqs")
     assert _liboqs
 except OSError as err:
+    print(_liboqs)
     sys.exit("Could not load liboqs shared library")
 except RuntimeError as err:
     sys.exit("No liboqs shared libraries found")

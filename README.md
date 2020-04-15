@@ -2,6 +2,7 @@ liboqs-python
 =============
 
 [![Build status - CircleCI Linux](https://circleci.com/gh/open-quantum-safe/liboqs-python.svg?style=svg)](https://circleci.com/gh/open-quantum-safe/liboqs-python)
+[![Build status](https://ci.appveyor.com/api/projects/status/xvfc8fn96fip52md?svg=true)](https://ci.appveyor.com/project/vsoftco/liboqs-python)
 
 ---
 
@@ -51,15 +52,16 @@ Installation
 ------------
 
 liboqs-python depends on the liboqs C library, which must first be compiled as a Linux/macOS library or Windows DLL, see 
-the [liboqs project](https://github.com/open-quantum-safe/liboqs/) for installation instructions, and installed in one of:
+the [liboqs project](https://github.com/open-quantum-safe/liboqs/) for installation instructions, and be made visible by exporting the `PATH` associated to the static (`.a`) or shared library (`.so`/`.dll`), e.g. on Linux/macOS type in a terminal 
+	
+	export PATH="$PATH:/home/user/liboqs/build/lib"
+	
+or on Windows use the "Edit the system environment variables" Control Panel tool or type in a Command Prompt
+	
+	set PATH="%PATH%;C:\liboqs\build\bin"
+	
+of course replacing the paths with the ones corresponding to your system. On macOS/Linux you can skip this step if you installed liboqs with `sudo ninja install` after compiling it.
 
-- any file path specified by the `LIBOQS_INSTALL_PATH` environment variable. For examples:
-  - Linux: `export LIBOQS_INSTALL_PATH="/usr/local/bin/liboqs.so"`; (**do not forget to specify `liboqs.so` at the end**)
-  - MacOS: `export LIBOQS_INSTALL_PATH="/usr/local/lib/liboqs.dylib"`; (**again, do not forget `liboqs.dylib`**)
-- system-wide folder
-- the liboqs Python module's current folder
-
-`oqs/oqs.py` checks the above locations in that order.
 
 liboqs-python does not depend on any other Python packages. The package isn't hosted on PyPI yet. We recommend to install 
 it into a virtualenv using:

@@ -10,7 +10,7 @@ import oqs
 kems = oqs.get_enabled_KEM_mechanisms()
 
 print("Enabled KEM mechanisms:")
-pprint(kems)
+pprint(kems, compact="True")
 
 # create client and server with default KEM mechanisms
 kemalg = "DEFAULT"

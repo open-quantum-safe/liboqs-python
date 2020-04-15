@@ -10,7 +10,7 @@ import oqs
 sigs = oqs.get_enabled_sig_mechanisms()
 
 print("Enabled signature mechanisms:")
-pprint(sigs)
+pprint(sigs, compact="True")
 
 message = "This is the message to sign".encode()
 

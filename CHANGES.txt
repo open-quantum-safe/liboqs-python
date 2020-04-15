@@ -6,6 +6,7 @@ Pre-release
       function
     - Closing #7 https://github.com/open-quantum-safe/liboqs-python/issues/7,
       all issues addressed
+    - Added AppVeyor continuous integration
 
 Version 0.2.1 - January 22, 2020
     - Added a signature example
