@@ -27,7 +27,7 @@ def _load_shared_obj(name):
     dll = ct.windll if platform.system() == "Windows" else ct.cdll
 
     for path in paths:
-        if path and os.path.exists(path):
+        if path:
             lib = dll.LoadLibrary(path)
             return lib
 
@@ -38,7 +38,6 @@ try:
     _liboqs = _load_shared_obj("oqs")
     assert _liboqs
 except OSError as err:
-    print(_liboqs)
     sys.exit("Could not load liboqs shared library")
 except RuntimeError as err:
     sys.exit("No liboqs shared libraries found")

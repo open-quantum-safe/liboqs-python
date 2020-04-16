@@ -51,17 +51,22 @@ Support for alternative RNGs is provided via the `randombytes[*]` functions.
 Installation
 ------------
 
-liboqs-python depends on the liboqs C library, which must first be compiled as a Linux/macOS library or Windows DLL, see 
-the [liboqs project](https://github.com/open-quantum-safe/liboqs/) for installation instructions, and be made visible by exporting the `PATH` associated to the static (`.a`) or shared library (`.so`/`.dll`), e.g. on Linux/macOS type in a terminal 
-	
-	export PATH="$PATH:/home/user/liboqs/build/lib"
-	
-or on Windows use the "Edit the system environment variables" Control Panel tool or type in a Command Prompt
+First, you must build the master branch of liboqs according to the [liboqs building instructions](https://github.com/open-quantum-safe/liboqs#linuxmacos) 
+with shared library support enabled (add `-DBUILD_SHARED_LIBS=ON` to the `cmake` command), followed (optionally) by a `sudo ninja install` 
+to ensure that the shared library is visible system-wide (by default it installs under `/usr/local/include` and `/usr/local/lib` on Linux/macOS). 
+
+On Linux/macOS you may need to set the `LD_LIBRARY_PATH` (`DYLD_LIBRARY_PATH` on macOS) environment variable to point to the path to liboqs' library directory, e.g.
+
+    export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
+
+assuming `liboqs.so.*` were installed in `/usr/local/lib` (true if you ran `sudo ninja install` after building liboqs).
+
+On Windows ensure that the liboqs shared library is visible system-wide. Use the "Edit the system environment variables" Control Panel 
+tool or type in a Command Prompt
 	
 	set PATH="%PATH%;C:\liboqs\build\bin"
 	
-of course replacing the paths with the ones corresponding to your system. On macOS/Linux you can skip this step if you installed liboqs with `sudo ninja install` after compiling it.
-
+of course replacing the paths with the ones corresponding to your system.
 
 liboqs-python does not depend on any other Python packages. The package isn't hosted on PyPI yet. We recommend to install 
 it into a virtualenv using:
@@ -81,6 +86,11 @@ Running
 The liboqs-python project should be in the `PYTHONPATH`:
 
 	export PYTHONPATH=/some/dir/liboqs-python
+	
+or, for Windows platforms, use the "Edit the system environment variables" Control Panel 
+tool or type in a Command Prompt
+
+    set PYTHONPATH="C:\some\dir\liboqs-python"
 
 As any python module, liboqs wrapper components can be imported into python programs with `import oqs`.
 
@@ -98,7 +108,8 @@ To run the unit tests without a test runner:
 	python3 tests/test_sig.py
 
 The module has been tested using Python 3 on Linux Debian 10 (Buster), Linux Ubuntu 18.04 (Bionic), macOS 10.14.3, 
-and Windows 10. We run continuous integration tests on CircleCI on Linux Debian 10 (Buster) and Linux Ubuntu 18.04 (Bionic) on x86_64.
+and Windows 10. We run continuous integration tests on CircleCI on Linux Debian 10 (Buster) and Linux Ubuntu 18.04 (Bionic) on x86_64,
+and AppVeyor on Windows. 
 
 Limitations and security
 ------------------------
