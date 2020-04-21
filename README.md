@@ -64,7 +64,7 @@ assuming `liboqs.so.*` were installed in `/usr/local/lib` (true if you ran `sudo
 On Windows ensure that the liboqs shared library `oqs.dll` is visible system-wide. Use the "Edit the system environment variables" Control Panel 
 tool or type in a Command Prompt
 	
-	set PATH="%PATH%;C:\liboqs\build\bin"
+	set PATH="%PATH%;C:\some\dir\liboqs\build\bin"
 	
 of course replacing the paths with the ones corresponding to your system.
 
