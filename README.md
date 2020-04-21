@@ -61,7 +61,7 @@ On Linux/macOS you may need to set the `LD_LIBRARY_PATH` (`DYLD_LIBRARY_PATH` on
 
 assuming `liboqs.so.*` were installed in `/usr/local/lib` (true if you ran `sudo ninja install` after building liboqs).
 
-On Windows ensure that the liboqs shared library is visible system-wide. Use the "Edit the system environment variables" Control Panel 
+On Windows ensure that the liboqs shared library `oqs.dll` is visible system-wide. Use the "Edit the system environment variables" Control Panel 
 tool or type in a Command Prompt
 	
 	set PATH="%PATH%;C:\liboqs\build\bin"
