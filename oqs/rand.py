@@ -47,7 +47,7 @@ def randombytes_nist_kat_init(entropy_input, personalization_string=None):
     if personalization_string is not None:
         if len(personalization_string) < 48:
             raise ValueError('The personalization string must be either empty or at least 48 bytes long')
-        oqs.native().OQS_randombytes_nist_kat_init(oqs.ct.create_string_buffer(entropy_input),
-                                                   oqs.ct.create_string_buffer(personalization_string), 256)
+        oqs.native().OQS_randombytes_nist_kat_init_256bit(oqs.ct.create_string_buffer(entropy_input),
+                                                   oqs.ct.create_string_buffer(personalization_string))
 
-    oqs.native().OQS_randombytes_nist_kat_init(oqs.ct.create_string_buffer(entropy_input), 0, 256)
+    oqs.native().OQS_randombytes_nist_kat_init_256bit(oqs.ct.create_string_buffer(entropy_input), 0)
