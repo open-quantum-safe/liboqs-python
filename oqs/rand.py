@@ -34,9 +34,9 @@ def randombytes_switch_algorithm(alg_name):
         raise RuntimeError('Can not switch algorithm')
 
 
-def randombytes_nist_kat_init(entropy_input, personalization_string=None):
+def randombytes_nist_kat_init_256bit(entropy_input, personalization_string=None):
     """
-    Initializes the NIST DRBG with the an entropy seed.
+    Initializes the NIST DRBG with the an entropy seed. The security parameter is 256 bits.
 
     :param entropy_input: entropy input seed, must be exactly 48 bytes long.
     :param personalization_string: optional personalization string, which, if present, must be at least 48 bytes long.
