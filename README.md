@@ -1,4 +1,4 @@
-liboqs-python: Python3 bindings for liboqs
+liboqs-python: Python 3 bindings for liboqs
 ==========================================
 
 [![Build status - CircleCI Linux](https://circleci.com/gh/open-quantum-safe/liboqs-python.svg?style=svg)](https://circleci.com/gh/open-quantum-safe/liboqs-python)
