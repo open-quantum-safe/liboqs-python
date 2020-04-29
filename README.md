@@ -27,8 +27,7 @@ More information on OQS can be found on our website: [https://openquantumsafe.or
 Pre-requisites
 --------------
 Python 3.x
-liboqs-python depends on the [liboqs](https://github.com/open-quantum-safe/liboqs) C library; liboqs master branch must 
-first be compiled as a Linux/macOS/Windows library (i.e. using `ninja install` with `-DBUILD_SHARED_LIBS=ON` during configuration).
+liboqs-python depends on the [liboqs](https://github.com/open-quantum-safe/liboqs) C library; liboqs master branch must first be compiled as a Linux/macOS/Windows library  (i.e. using `ninja install` with `-DBUILD_SHARED_LIBS=ON` during configuration), see the specific platform building instructions below.
 
 Contents
 --------
