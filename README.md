@@ -86,7 +86,7 @@ The liboqs-python project should be in the `PYTHONPATH`:
 
 	export PYTHONPATH=/some/dir/liboqs-python
 	
-or, for Windows platforms, use the "Edit the system environment variables" Control Panel 
+or, on Windows platforms, use the "Edit the system environment variables" Control Panel 
 tool or type in a Command Prompt
 
     set PYTHONPATH="C:\some\dir\liboqs-python"
