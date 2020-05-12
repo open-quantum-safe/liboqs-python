@@ -1,5 +1,5 @@
 liboqs-python: Python 3 bindings for liboqs
-==========================================
+===========================================
 
 [![Build status - CircleCI Linux](https://circleci.com/gh/open-quantum-safe/liboqs-python.svg?style=svg)](https://circleci.com/gh/open-quantum-safe/liboqs-python)
 [![Build status](https://ci.appveyor.com/api/projects/status/jjo1ti9l5e0grgln?svg=true)](https://ci.appveyor.com/project/vsoftco/liboqs-python)
@@ -27,7 +27,7 @@ More information on OQS can be found on our website: [https://openquantumsafe.or
 Pre-requisites
 --------------
 Python 3.x
-liboqs-python depends on the [liboqs](https://github.com/open-quantum-safe/liboqs) C library; liboqs master branch must first be compiled as a Linux/macOS/Windows library (i.e. using `ninja install` with `-DBUILD_SHARED_LIBS=ON` during configuration), see the specific platform building instructions below.
+liboqs-python depends on the [liboqs](https://github.com/open-quantum-safe/liboqs) C library; liboqs must first be compiled as a Linux/macOS/Windows library (i.e. using `ninja install` with `-DBUILD_SHARED_LIBS=ON` during configuration), see the specific platform building instructions below.
 
 Contents
 --------
@@ -50,7 +50,7 @@ Support for alternative RNGs is provided via the `randombytes[*]` functions.
 Installation
 ------------
 
-First, you must build the master branch of liboqs according to the [liboqs building instructions](https://github.com/open-quantum-safe/liboqs#linuxmacos) 
+First, you must build liboqs according to the [liboqs building instructions](https://github.com/open-quantum-safe/liboqs#linuxmacos) 
 with shared library support enabled (add `-DBUILD_SHARED_LIBS=ON` to the `cmake` command), followed (optionally) by a `sudo ninja install` 
 to ensure that the shared library is visible system-wide (by default it installs under `/usr/local/include` and `/usr/local/lib` on Linux/macOS). 
 
