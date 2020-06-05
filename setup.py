@@ -3,7 +3,7 @@ from setuptools import find_packages
 from distutils.core import setup
 
 setup(
-    name='liboqs-python',
+    name='liboqsp',
     version='0.2.1',
     author='Open Quantum Safe project',
     author_email='contact@openquantumsafe.org',
