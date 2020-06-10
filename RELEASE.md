@@ -1,4 +1,4 @@
-liboqs-python version 0.2.1
+liboqs-python version 0.3.0
 ===========================
 
 About
@@ -13,13 +13,13 @@ The **Open Quantum Safe (OQS) project** has the goal of developing and prototypi
 Release notes
 =============
 
-This release of liboqs-python was released on January 22, 2020. Its release page on GitHub is https://github.com/open-quantum-safe/liboqs-python/releases/tag/0.2.1.
+This release of liboqs-python was released on June 10, 2020. Its release page on GitHub is https://github.com/open-quantum-safe/liboqs-python/releases/tag/0.3.0.
 
 What's New
 ----------
 
-This is the third release of liboqs-python. 
+This is the fourth release of liboqs-python. 
 
-This release added partial support for RNGs from `<oqs/rand.h>`, together with a signature example and an RNG example.
+This release added AppVeyor continuous integration and it is now fully supported on Windows.
 
 For a list of changes see [CHANGES.txt](https://github.com/open-quantum-safe/liboqs-python/blob/master/CHANGES.txt).
