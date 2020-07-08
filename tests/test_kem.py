@@ -17,12 +17,11 @@ def test_correctness():
 
 
 def check_correctness(alg_name):
-    kem = oqs.KeyEncapsulation(alg_name)
-    public_key = kem.generate_keypair()
-    ciphertext, shared_secret_server = kem.encap_secret(public_key)
-    shared_secret_client = kem.decap_secret(ciphertext)
-    assert shared_secret_client == shared_secret_server
-    kem.free()
+    with oqs.KeyEncapsulation(alg_name) as kem:
+        public_key = kem.generate_keypair()
+        ciphertext, shared_secret_server = kem.encap_secret(public_key)
+        shared_secret_client = kem.decap_secret(ciphertext)
+        assert shared_secret_client == shared_secret_server
 
 
 def test_wrong_ciphertext():
@@ -33,19 +32,18 @@ def test_wrong_ciphertext():
 
 
 def check_wrong_ciphertext(alg_name):
-    kem = oqs.KeyEncapsulation(alg_name)
-    public_key = kem.generate_keypair()
-    ciphertext, shared_secret_server = kem.encap_secret(public_key)
-    wrong_ciphertext = bytes(random.getrandbits(8) for _ in range(kem.details['length_ciphertext']))
-    shared_secret_client = kem.decap_secret(wrong_ciphertext)
-    assert shared_secret_client != shared_secret_server
-    kem.free()
+    with oqs.KeyEncapsulation(alg_name) as kem:
+        public_key = kem.generate_keypair()
+        ciphertext, shared_secret_server = kem.encap_secret(public_key)
+        wrong_ciphertext = bytes(random.getrandbits(8) for _ in range(kem.details['length_ciphertext']))
+        shared_secret_client = kem.decap_secret(wrong_ciphertext)
+        assert shared_secret_client != shared_secret_server
 
 
 def test_not_supported():
     try:
-        kem = oqs.KeyEncapsulation("bogus")
-        raise AssertionError("oqs.MechanismNotSupportedError was not raised.")
+        with oqs.KeyEncapsulation("bogus") as kem:
+            raise AssertionError("oqs.MechanismNotSupportedError was not raised.")
     except oqs.MechanismNotSupportedError:
         pass
     except E:
@@ -58,8 +56,8 @@ def test_not_enabled():
         if alg_name not in oqs.get_enabled_KEM_mechanisms():
             # found a non-enabled but supported alg
             try:
-                kem = oqs.KeyEncapsulation(alg_name)
-                raise AssertionError("oqs.MechanismNotEnabledError was not raised.")
+                with oqs.KeyEncapsulation(alg_name) as kem:
+                    raise AssertionError("oqs.MechanismNotEnabledError was not raised.")
             except oqs.MechanismNotEnabledError:
                 pass
             except E:

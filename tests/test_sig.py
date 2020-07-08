@@ -17,12 +17,11 @@ def test_correctness():
 
 
 def check_correctness(alg_name):
-    message = bytes(random.getrandbits(8) for _ in range(100))
-    sig = oqs.Signature(alg_name)
-    public_key = sig.generate_keypair()
-    signature = sig.sign(message)
-    assert sig.verify(message, signature, public_key)
-    sig.free()
+    with oqs.Signature(alg_name) as sig:
+        message = bytes(random.getrandbits(8) for _ in range(100))
+        public_key = sig.generate_keypair()
+        signature = sig.sign(message)
+        assert sig.verify(message, signature, public_key)
 
 
 def test_wrong_message():
@@ -33,13 +32,12 @@ def test_wrong_message():
 
 
 def check_wrong_message(alg_name):
-    message = bytes(random.getrandbits(8) for _ in range(100))
-    sig = oqs.Signature(alg_name)
-    public_key = sig.generate_keypair()
-    signature = sig.sign(message)
-    wrong_message = bytes(random.getrandbits(8) for _ in range(100))
-    assert not (sig.verify(wrong_message, signature, public_key))
-    sig.free()
+    with oqs.Signature(alg_name) as sig:
+        message = bytes(random.getrandbits(8) for _ in range(100))
+        public_key = sig.generate_keypair()
+        signature = sig.sign(message)
+        wrong_message = bytes(random.getrandbits(8) for _ in range(100))
+        assert not (sig.verify(wrong_message, signature, public_key))
 
 
 def test_wrong_signature():
@@ -50,13 +48,12 @@ def test_wrong_signature():
 
 
 def check_wrong_signature(alg_name):
-    message = bytes(random.getrandbits(8) for _ in range(100))
-    sig = oqs.Signature(alg_name)
-    public_key = sig.generate_keypair()
-    signature = sig.sign(message)
-    wrong_signature = bytes(random.getrandbits(8) for _ in range(sig.details['length_signature']))
-    assert not (sig.verify(message, wrong_signature, public_key))
-    sig.free()
+    with oqs.Signature(alg_name) as sig:
+        message = bytes(random.getrandbits(8) for _ in range(100))
+        public_key = sig.generate_keypair()
+        signature = sig.sign(message)
+        wrong_signature = bytes(random.getrandbits(8) for _ in range(sig.details['length_signature']))
+        assert not (sig.verify(message, wrong_signature, public_key))
 
 
 def test_wrong_public_key():
@@ -67,19 +64,18 @@ def test_wrong_public_key():
 
 
 def check_wrong_public_key(alg_name):
-    message = bytes(random.getrandbits(8) for _ in range(100))
-    sig = oqs.Signature(alg_name)
-    public_key = sig.generate_keypair()
-    signature = sig.sign(message)
-    wrong_public_key = bytes(random.getrandbits(8) for _ in range(sig.details['length_public_key']))
-    assert not (sig.verify(message, signature, wrong_public_key))
-    sig.free()
+    with oqs.Signature(alg_name) as sig:
+        message = bytes(random.getrandbits(8) for _ in range(100))
+        public_key = sig.generate_keypair()
+        signature = sig.sign(message)
+        wrong_public_key = bytes(random.getrandbits(8) for _ in range(sig.details['length_public_key']))
+        assert not (sig.verify(message, signature, wrong_public_key))
 
 
 def test_not_supported():
     try:
-        sig = oqs.Signature("bogus")
-        raise AssertionError("oqs.MechanismNotSupportedError was not raised.")
+        with oqs.Signature("bogus") as sig:
+            raise AssertionError("oqs.MechanismNotSupportedError was not raised.")
     except oqs.MechanismNotSupportedError:
         pass
     except E:
@@ -92,8 +88,8 @@ def test_not_enabled():
         if alg_name not in oqs.get_enabled_sig_mechanisms():
             # found a non-enabled but supported alg
             try:
-                sig = oqs.Signature(alg_name)
-                raise AssertionError("oqs.MechanismNotEnabledError was not raised.")
+                with oqs.Signature(alg_name) as sig:
+                    raise AssertionError("oqs.MechanismNotEnabledError was not raised.")
             except oqs.MechanismNotEnabledError:
                 pass
             except E:
