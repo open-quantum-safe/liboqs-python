@@ -35,7 +35,7 @@ def check_wrong_ciphertext(alg_name):
     with oqs.KeyEncapsulation(alg_name) as kem:
         public_key = kem.generate_keypair()
         ciphertext, shared_secret_server = kem.encap_secret(public_key)
-        wrong_ciphertext = bytes(random.getrandbits(8) for _ in range(kem.details['length_ciphertext']))
+        wrong_ciphertext = bytes(random.getrandbits(8) for _ in range(len(ciphertext)))
         shared_secret_client = kem.decap_secret(wrong_ciphertext)
         assert shared_secret_client != shared_secret_server
 

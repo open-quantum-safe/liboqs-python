@@ -36,7 +36,7 @@ def check_wrong_message(alg_name):
         message = bytes(random.getrandbits(8) for _ in range(100))
         public_key = sig.generate_keypair()
         signature = sig.sign(message)
-        wrong_message = bytes(random.getrandbits(8) for _ in range(100))
+        wrong_message = bytes(random.getrandbits(8) for _ in range(len(message)))
         assert not (sig.verify(wrong_message, signature, public_key))
 
 
@@ -52,7 +52,7 @@ def check_wrong_signature(alg_name):
         message = bytes(random.getrandbits(8) for _ in range(100))
         public_key = sig.generate_keypair()
         signature = sig.sign(message)
-        wrong_signature = bytes(random.getrandbits(8) for _ in range(sig.details['length_signature']))
+        wrong_signature = bytes(random.getrandbits(8) for _ in range(len(signature)))
         assert not (sig.verify(message, wrong_signature, public_key))
 
 
@@ -68,7 +68,7 @@ def check_wrong_public_key(alg_name):
         message = bytes(random.getrandbits(8) for _ in range(100))
         public_key = sig.generate_keypair()
         signature = sig.sign(message)
-        wrong_public_key = bytes(random.getrandbits(8) for _ in range(sig.details['length_public_key']))
+        wrong_public_key = bytes(random.getrandbits(8) for _ in range(len(public_key)))
         assert not (sig.verify(message, signature, wrong_public_key))
 
 
