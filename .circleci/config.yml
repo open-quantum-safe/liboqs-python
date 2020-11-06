@@ -1,54 +1,33 @@
-version: 2
-
-.my_job: &myjob
-  docker:
-    - image: ${IMAGE}
-  general:
-    branches:
-      only:
-        - master
-  steps:
-    - checkout
-    - run:
-        name: Clone liboqs-master
-        command: .circleci/git_no_checkin_in_last_day.sh || (cd /root && git clone --branch master --single-branch https://github.com/open-quantum-safe/liboqs)
-    - run:
-        name: Build liboqs-master
-        command: .circleci/git_no_checkin_in_last_day.sh || (cd /root/liboqs && mkdir build && cd build && cmake -GNinja -DBUILD_SHARED_LIBS=ON .. && ninja)
-    - run:
-        name: Run liboqs-python unit tests
-        environment:
-          PYTHONPATH: /root/project
-        command: |
-          export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/root/liboqs/build/lib
-          mkdir -p test-results && .circleci/git_no_checkin_in_last_day.sh || (python3 -m nose --rednose --verbose --with-xunit --xunit-file=test-results/nosetests.xml)
-    - store_test_results: # Note that this command will fail when running CircleCI locally, that is expected behaviour
-        path: test-results
+version: 2.1
 
 jobs:
-  debian-buster-amd64:
-    <<: *myjob
-    environment:
-      IMAGE: openquantumsafe/ci-debian-buster-amd64:latest
-  ubuntu-bionic-x86_64:
-    <<: *myjob
-    environment:
-      IMAGE: openquantumsafe/ci-ubuntu-bionic-x86_64:latest
+  ubuntu_bionic:
+    description: A template for running liboqs-python tests on an OQS Ubuntu Bionic Docker Image
+    docker:
+      - image: openquantumsafe/ci-ubuntu-bionic-x86_64:latest
+        auth:
+          username: $DOCKER_LOGIN
+          password: $DOCKER_PASSWORD
+    steps:
+      - checkout # change this from "checkout" to "*localCheckout" when running CircleCI locally
+      - run:
+          name: Clone liboqs
+          command: git clone --branch main --single-branch --depth 1 https://github.com/open-quantum-safe/liboqs.git
+          working_directory: /root
+      - run:
+          name: Build liboqs
+          command: mkdir build && cd build && cmake .. -G"Ninja" -DBUILD_SHARED_LIBS=ON -DOQS_BUILD_ONLY_LIB=ON && ninja
+          working_directory: /root/liboqs
+      - run:
+          name: Run liboqs-python unit tests
+          environment:
+            PYTHONPATH: /root/project
+          command: env LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/root/liboqs/build/lib python3 -m nose --rednose --verbose
 
 workflows:
-  version: 2
+  version: 2.1
   build:
     jobs:
-      - debian-buster-amd64
-      - ubuntu-bionic-x86_64
-  nightly:
-    triggers:
-      - schedule:
-          cron: "0 1 * * *"
-          filters:
-            branches:
-              only:
-                - master
-    jobs:
-      - debian-buster-amd64
-      - ubuntu-bionic-x86_64
+      - ubuntu_bionic:
+          name: ubuntu-bionic
+          context: openquantumsafe
