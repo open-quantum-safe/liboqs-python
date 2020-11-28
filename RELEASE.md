@@ -18,8 +18,8 @@ This release of liboqs-python was released on November 28, 2020. Its release pag
 What's New
 ----------
 
-This is the fifth release of liboqs-python. 
+This is the fifth release of liboqs-python.
 
-This release added AppVeyor continuous integration and it is now fully supported on Windows.
+This is an incremental minor change release.
 
-For a list of changes see [CHANGES.txt](https://github.com/open-quantum-safe/liboqs-python/blob/main/CHANGES.txt).
+For a list of changes see [CHANGES.txt](https://github.com/open-quantum-safe/liboqs-python/blob/master/CHANGES.txt).
