@@ -12,7 +12,7 @@ jobs:
       - checkout # change this from "checkout" to "*localCheckout" when running CircleCI locally
       - run:
           name: Clone liboqs
-          command: git clone --branch main --single-branch --depth 1 https://github.com/open-quantum-safe/liboqs.git
+          command: git clone --branch main --single-branch --depth 1 https://github.com/open-quantum-safe/liboqs
           working_directory: /root
       - run:
           name: Build liboqs
