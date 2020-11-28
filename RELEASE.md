@@ -22,4 +22,4 @@ This is the fifth release of liboqs-python.
 
 This is an incremental minor change release.
 
-For a list of changes see [CHANGES.txt](https://github.com/open-quantum-safe/liboqs-python/blob/master/CHANGES.txt).
+For a list of changes see [CHANGES.txt](https://github.com/open-quantum-safe/liboqs-python/blob/main/CHANGES.txt).
