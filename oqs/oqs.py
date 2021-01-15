@@ -7,11 +7,10 @@ https://github.com/open-quantum-safe/liboqs
 This module provides a Python 3 interface to liboqs.
 """
 
-import os
-import sys
 import ctypes as ct  # to call native
 import ctypes.util as ctu
 import platform  # to learn the OS we're on
+import sys
 
 # expected return value from native OQS functions
 OQS_SUCCESS = 0
