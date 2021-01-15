@@ -6,7 +6,7 @@ import random
 disabled_sig_patterns = []
 
 if platform.system() == "Windows":
-    disabled_sig_patterns = ["Rainbow-III", "Rainbow-V"]
+    disabled_sig_patterns = ["Rainbow-V"]
 
 
 def test_correctness():
