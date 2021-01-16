@@ -1,8 +1,18 @@
 version: 2.1
 
+# CircleCI doesn't handle large file sets properly for local builds
+# https://github.com/CircleCI-Public/circleci-cli/issues/281#issuecomment-472808051
+localCheckout: &localCheckout
+  run: |-
+    PROJECT_PATH=$(cd ${CIRCLE_WORKING_DIRECTORY}; pwd)
+    mkdir -p ${PROJECT_PATH}
+    cd /tmp/_circleci_local_build_repo
+    git ls-files -z | xargs -0 -s 2090860 tar -c | tar -x -C ${PROJECT_PATH}
+    cp -a /tmp/_circleci_local_build_repo/.git ${PROJECT_PATH}
+
 jobs:
   ubuntu_bionic:
-    description: A template for running liboqs-python tests on an OQS Ubuntu Bionic Docker Image
+    description: A template for building and testing liboqs-python on Ubuntu Linux
     docker:
       - image: openquantumsafe/ci-ubuntu-bionic-x86_64:latest
         auth:
@@ -11,23 +21,70 @@ jobs:
     steps:
       - checkout # change this from "checkout" to "*localCheckout" when running CircleCI locally
       - run:
-          name: Clone liboqs
-          command: git clone --branch main --single-branch --depth 1 https://github.com/open-quantum-safe/liboqs
-          working_directory: /root
+          name: Authenticate to Docker
+          command: |
+            echo $DOCKER_PASSWORD | docker login --username $DOCKER_LOGIN --password-stdin
       - run:
-          name: Build liboqs
-          command: mkdir build && cd build && cmake .. -G"Ninja" -DBUILD_SHARED_LIBS=ON -DOQS_BUILD_ONLY_LIB=ON && ninja
-          working_directory: /root/liboqs
+          name: Build and install liboqs
+          command: |
+            git clone --branch main --single-branch --depth 1 https://github.com/open-quantum-safe/liboqs
+            cd liboqs && mkdir build && cd build
+            cmake .. -GNinja -DBUILD_SHARED_LIBS=ON -DOQS_BUILD_ONLY_LIB=ON
+            ninja install
       - run:
-          name: Run liboqs-python unit tests
-          environment:
-            PYTHONPATH: /root/project
-          command: env LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/root/liboqs/build/lib python3 -m nose --rednose --verbose
+          name: Run examples
+          command: |
+            export LD_LIBRARY_PATH=/usr/local/lib
+            apt-get -y install python3-venv
+            python3 -m venv venv && source venv/bin/activate && python setup.py install
+            python examples/kem.py
+            python examples/sig.py
+            python examples/rand.py
+      - run:
+          name: Run unit tests
+          command: |
+            export LD_LIBRARY_PATH=/usr/local/lib
+            source venv/bin/activate && pip install nose rednose
+            python -m nose --rednose --verbose
+
+  macOS:
+    description: A template for building and testing liboqs-python on macOS
+    macos:
+      xcode: "11.3.0"
+    steps:
+      - checkout # change this from "checkout" to "*localCheckout" when running CircleCI locally
+      - run:
+          name: Install dependencies
+          command: |
+            brew update && brew install ninja cmake
+      - run:
+          name: Build and install liboqs
+          command: |
+            git clone --branch main --single-branch --depth 1 https://github.com/open-quantum-safe/liboqs
+            cd liboqs && mkdir build && cd build
+            cmake .. -GNinja -DBUILD_SHARED_LIBS=ON -DOQS_BUILD_ONLY_LIB=ON
+            ninja install
+      - run:
+          name: Run examples
+          command: |
+            export LD_LIBRARY_PATH=/usr/local/lib
+            python3 -m venv venv && source venv/bin/activate && python setup.py install
+            python examples/kem.py
+            python examples/sig.py
+            python examples/rand.py
+      - run:
+          name: Run unit tests
+          command: |
+            export LD_LIBRARY_PATH=/usr/local/lib
+            source venv/bin/activate && pip install nose rednose
+            python -m nose --rednose --verbose
 
 workflows:
-  version: 2.1
   build:
     jobs:
       - ubuntu_bionic:
           name: ubuntu-bionic
+          context: openquantumsafe
+      - macOS:
+          name: macOS-base
           context: openquantumsafe

@@ -17,7 +17,7 @@ install:
       git clone https://github.com/open-quantum-safe/liboqs %LIBOQS_INSTALL_PATH%
       mkdir %LIBOQS_BUILD_DIR%
       cd %LIBOQS_BUILD_DIR%
-      cmake .. -DCMAKE_BUILD_TYPE=Optimized -DBUILD_SHARED_LIBS=ON -G"Ninja"
+      cmake .. -DCMAKE_BUILD_TYPE=Optimized -DBUILD_SHARED_LIBS=ON -DOQS_BUILD_ONLY_LIB=ON -G"Ninja"
       ninja 1> nul
 
 build_script:
