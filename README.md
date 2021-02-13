@@ -163,8 +163,8 @@ Contributors to the liboqs-python wrapper include:
 
 ### Support
 
-Financial support for the development of Open Quantum Safe has been provided by Amazon Web Services and the Tutte
-Institute for Mathematics and Computing.
+Financial support for the development of Open Quantum Safe has been provided by Amazon Web Services and the 
+Canadian Centre for Cyber Security.
 
 We'd like to make a special acknowledgement to the companies who have dedicated programmer time to contribute source
 code to OQS, including Amazon Web Services, Cisco Systems, evolutionQ, IBM Research, and Microsoft Research.
