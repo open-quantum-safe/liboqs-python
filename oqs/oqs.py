@@ -63,14 +63,14 @@ class MechanismNotSupportedError(Exception):
 
 
 class MechanismNotEnabledError(MechanismNotSupportedError):
-    """Exception raised when an algorithm is not supported but not enabled by OQS."""
+    """Exception raised when an algorithm is supported but not enabled by OQS."""
 
     def __init__(self, alg_name):
         """
         :param alg_name: requested algorithm name.
         """
         self.alg_name = alg_name
-        self.message = alg_name + " is not supported but not enabled by OQS"
+        self.message = alg_name + " is supported but not enabled by OQS"
 
 
 class KeyEncapsulation(ct.Structure):
