@@ -35,6 +35,7 @@ jobs:
           name: Run examples
           command: |
             export LD_LIBRARY_PATH=/usr/local/lib
+            apt-get update
             apt-get -y install python3-venv
             python3 -m venv venv && source venv/bin/activate && python setup.py install
             python examples/kem.py
