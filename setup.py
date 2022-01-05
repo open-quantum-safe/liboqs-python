@@ -4,7 +4,7 @@ from distutils.core import setup
 
 setup(
     name='liboqs-python',
-    version='0.4.0',
+    version='0.7.1',
     author='Open Quantum Safe project',
     author_email='contact@openquantumsafe.org',
     packages=find_packages(exclude=('tests', 'docs', 'examples')),
