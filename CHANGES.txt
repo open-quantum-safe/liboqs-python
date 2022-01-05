@@ -1,4 +1,5 @@
-Pre-release
+Version 0.7.1 - January 5, 2022
+    - Release numbering updated to match liboqs
     - Added macOS support on CircleCI, we now support macOS & Linux (CircleCI)
       and Windows (AppVeyor)
 
