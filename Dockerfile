@@ -1,7 +1,7 @@
 # Multi-stage build: First the full builder image:
 
-# liboqs build type variant; maximum portability of image:
-ARG LIBOQS_BUILD_DEFINES="-DOQS_DIST_BUILD=ON -DBUILD_SHARED_LIBS=ON"
+# liboqs build type variant; maximum portability of image; no openssl dependency:
+ARG LIBOQS_BUILD_DEFINES="-DOQS_DIST_BUILD=ON -DBUILD_SHARED_LIBS=ON -DOQS_USE_OPENSSL=OFF"
 
 FROM alpine:3.11 as intermediate
 # Take in all global args
@@ -14,10 +14,7 @@ ENV DEBIAN_FRONTEND noninteractive
 RUN apk update && apk upgrade
 
 # Get all software packages required for builing all components:
-RUN apk add build-base linux-headers \
-            cmake ninja \
-            openssl openssl-dev python3 \
-            git
+RUN apk add build-base linux-headers cmake ninja git
 
 # get all sources
 WORKDIR /opt
@@ -34,7 +31,7 @@ FROM alpine:3.11
 RUN apk update && apk upgrade
 
 # Get all software packages required for running all components:
-RUN apk add openssl python3 
+RUN apk add python3 
 
 # Only retain the binary contents in the final image
 COPY --from=intermediate /usr/local /usr/local
