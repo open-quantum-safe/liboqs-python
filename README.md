@@ -120,6 +120,11 @@ To run the unit tests without a test runner:
 liboqs-python has been extensively tested on Linux, macOS and Windows platforms. Continuous integration is provided via
 CircleCI and AppVeyor.
 
+Docker image
+------------
+
+If you have `docker` installed, as a simplified quick-start, just build all code by executing `docker build -t oqs-python .` and run the code for example by executing `docker run -it oqs-python sh -c "python3 examples/sig.py"`.
+
 Limitations and security
 ------------------------
 
