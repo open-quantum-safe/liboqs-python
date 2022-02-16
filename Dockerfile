@@ -1,0 +1,49 @@
+# Multi-stage build: First the full builder image:
+
+# liboqs build type variant; maximum portability of image; no openssl dependency:
+ARG LIBOQS_BUILD_DEFINES="-DOQS_DIST_BUILD=ON -DBUILD_SHARED_LIBS=ON -DOQS_USE_OPENSSL=OFF"
+
+FROM alpine:3.11 as intermediate
+# Take in all global args
+ARG LIBOQS_BUILD_DEFINES
+
+LABEL version="2"
+
+ENV DEBIAN_FRONTEND noninteractive
+
+RUN apk update && apk upgrade
+
+# Get all software packages required for builing all components:
+RUN apk add build-base linux-headers cmake ninja git
+
+# get all sources
+WORKDIR /opt
+RUN git clone --depth 1 --branch main https://github.com/open-quantum-safe/liboqs && \
+    git clone --depth 1 --branch main https://github.com/open-quantum-safe/liboqs-python.git 
+
+# build liboqs 
+WORKDIR /opt/liboqs
+RUN mkdir build && cd build && cmake -G"Ninja" .. ${LIBOQS_BUILD_DEFINES} && ninja install
+
+## second stage: Only create minimal image without build tooling and intermediate build results generated above:
+FROM alpine:3.11
+
+RUN apk update && apk upgrade
+
+# Get all software packages required for running all components:
+RUN apk add python3 
+
+# Only retain the binary contents in the final image
+COPY --from=intermediate /usr/local /usr/local
+COPY --from=intermediate /opt/liboqs-python /opt/liboqs-python
+
+ENV PYTHONPATH=/opt/liboqs-python
+
+WORKDIR /opt/liboqs-python
+
+# Enable a normal user 
+RUN addgroup -g 1000 -S oqs && adduser --uid 1000 -S oqs -G oqs 
+
+USER oqs
+
+
