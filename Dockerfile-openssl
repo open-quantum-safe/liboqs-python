@@ -51,10 +51,9 @@ ENV PYTHONPATH=/opt/liboqs-python
 # Enable a normal user 
 RUN addgroup -g 1000 -S oqs && adduser --uid 1000 -S oqs -G oqs 
 
-#USER oqs
+USER oqs
 WORKDIR /home/oqs
 COPY minitest.py /home/oqs/minitest.py
 COPY --from=intermediate /opt/isrgrootx1.pem /home/oqs/isrgrootx1.pem
 
 CMD ["python3", "minitest.py"]
-#CMD ["sh"]
