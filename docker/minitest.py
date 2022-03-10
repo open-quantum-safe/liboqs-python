@@ -32,3 +32,5 @@ for sigs, kexs in assignments.items():
                print("Failed to test %s successfully" % (kex))
             else:
                print("Success testing %s at port %d" % (kex, port))
+    if "SHORT_TEST" in os.environ:
+        exit(0)
