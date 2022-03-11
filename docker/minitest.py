@@ -2,6 +2,28 @@ import ssl
 import urllib.request
 import json
 import os
+import oqs
+
+# Example code testing oqs signature functionality. See more example code at
+# https://github.com/open-quantum-safe/liboqs-python/tree/main/examples
+
+message = "This is the message to sign".encode()
+
+# create signer and verifier with sample signature mechanisms
+sigalg = "Dilithium2"
+with oqs.Signature(sigalg) as signer:
+    with oqs.Signature(sigalg) as verifier:
+        signer_public_key = signer.generate_keypair()
+        signature = signer.sign(message)
+        is_valid = verifier.verify(message, signature, signer_public_key)
+
+if (not is_valid):
+    print("Failed to validate signature. Exiting.")
+    exit(1)
+else:
+    print("Validated signature for OQS algorithm %s" % (sigalg))
+
+# Example code iterating over all supported OQS algorithms integrated into TLS
 
 sslContext= ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
 sslContext.verify_mode = ssl.CERT_REQUIRED
