@@ -32,7 +32,7 @@ RUN mkdir build && cd build && cmake -GNinja .. ${LIBOQS_BUILD_DEFINES} && ninja
 WORKDIR /opt
 RUN git clone --depth 1 --branch OQS-OpenSSL_1_1_1-stable https://github.com/open-quantum-safe/openssl.git && cd liboqs && mkdir build-openssl && cd build-openssl && cmake -G"Ninja" .. ${LIBOQS_BUILD_DEFINES} -DCMAKE_INSTALL_PREFIX=/opt/openssl/oqs && ninja install
 
-RUN apk add automake autoconf && cd /opt/openssl && LDFLAGS="-Wl,-rpath -Wl,/usr/local/lib" ./Configure shared linux-x86_64 -lm && make ${MAKE_DEFINES} && make install_sw
+RUN apk add automake autoconf && cd /opt/openssl && LDFLAGS="-Wl,-rpath -Wl,/usr/local/lib64" ./Configure shared linux-x86_64 -lm && make ${MAKE_DEFINES} && make install_sw
 
 # Get LetsEncrypt root
 RUN wget https://letsencrypt.org/certs/isrgrootx1.pem
@@ -47,9 +47,6 @@ RUN apk update && apk upgrade && apk add python3
 COPY --from=intermediate /usr/local /usr/local
 COPY --from=intermediate /opt/liboqs-python /opt/liboqs-python
 
-# Replace standard OpenSSL libs:
-RUN rm /lib/libssl.so.1.1 /lib/libcrypto.so.1.1 && ln -s /usr/local/lib64/libcrypto.so.1.1 /lib && ln -s /usr/local/lib64/libssl.so.1.1 /lib && ln -s /usr/local/lib64/liboqs.so /lib && ln -s /usr/local/lib64/liboqs.so.0 /lib
-
 ENV PYTHONPATH=/opt/liboqs-python
 
 # Enable a normal user 
@@ -60,4 +57,6 @@ WORKDIR /home/oqs
 COPY minitest.py /home/oqs/minitest.py
 COPY --from=intermediate /opt/isrgrootx1.pem /home/oqs/isrgrootx1.pem
 
+# ensure oqs libs are found. Unset if interested in using stock openssl:
+ENV LD_LIBRARY_PATH=/usr/local/lib64
 CMD ["python3", "minitest.py"]
