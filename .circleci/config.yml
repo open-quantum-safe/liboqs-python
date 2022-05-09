@@ -103,10 +103,14 @@ jobs:
           name: Test docker image
           command: |
             docker run -e SHORT_TEST="Yes" oqs-python
-      - run:
-          name: Push docker image
-          command: |
-            docker tag oqs-python $TARGETNAME/python:latest && docker push $TARGETNAME/python:latest
+      - when:
+          condition:
+            equal: [ main, << pipeline.git.branch >> ]
+          steps:
+            - run:
+                name: Push docker image
+                command: |
+                   docker tag oqs-python $TARGETNAME/python:latest && docker push $TARGETNAME/python:latest
 
 workflows:
   build:
