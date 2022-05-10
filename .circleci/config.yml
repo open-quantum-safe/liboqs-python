@@ -110,7 +110,11 @@ jobs:
             - run:
                 name: Push docker image
                 command: |
-                   docker tag oqs-python $TARGETNAME/python:latest && docker push $TARGETNAME/python:latest
+                   export SHORT_GITID=`git rev-parse --short HEAD`
+                   docker tag oqs-python $TARGETNAME/python:latest && \
+                   docker push $TARGETNAME/python:latest && \
+                   docker tag oqs-python $TARGETNAME/python:$SHORT_GITID && \
+                   docker push $TARGETNAME/python:$SHORT_GITID
 
 workflows:
   build:
