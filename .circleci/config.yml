@@ -103,10 +103,18 @@ jobs:
           name: Test docker image
           command: |
             docker run -e SHORT_TEST="Yes" oqs-python
-      - run:
-          name: Push docker image
-          command: |
-            docker tag oqs-python $TARGETNAME/python:latest && docker push $TARGETNAME/python:latest
+      - when:
+          condition:
+            equal: [ main, << pipeline.git.branch >> ]
+          steps:
+            - run:
+                name: Push docker image
+                command: |
+                   export SHORT_GITID=`git rev-parse --short HEAD`
+                   docker tag oqs-python $TARGETNAME/python:latest && \
+                   docker push $TARGETNAME/python:latest && \
+                   docker tag oqs-python $TARGETNAME/python:$SHORT_GITID && \
+                   docker push $TARGETNAME/python:$SHORT_GITID
 
 workflows:
   build:
