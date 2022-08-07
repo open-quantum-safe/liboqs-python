@@ -49,10 +49,14 @@ for sigs, kexs in assignments.items():
        if (kex != "*"): # '*' denoting any classic KEX alg
             # Enable use of the specific QSC KEX algorithm
             os.environ["TLS_DEFAULT_GROUPS"]=kex
-       with urllib.request.urlopen('https://test.openquantumsafe.org:'+str(port), context=sslContext) as response:
+       try:
+          with urllib.request.urlopen('https://test.openquantumsafe.org:'+str(port), context=sslContext) as response:
             if response.getcode() != 200:
                print("Failed to test %s successfully" % (kex))
             else:
                print("Success testing %s at port %d" % (kex, port))
+       except:
+          print("Test of algorithm combination SIG %s/KEX %s failed. Are all algorithms supported by current OQS library?" % (sigs, kex))
+
     if "SHORT_TEST" in os.environ:
         exit(0)
