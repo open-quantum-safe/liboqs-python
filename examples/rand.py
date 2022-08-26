@@ -2,6 +2,7 @@
 
 import platform  # to learn the OS we're on
 import oqs.rand as oqsrand  # must be explicitly imported
+from oqs import oqs_version, oqs_python_version
 
 #######################################################################
 # randomness example
@@ -15,6 +16,8 @@ entropy_seed[47] = 150
 
 oqsrand.randombytes_nist_kat_init_256bit(bytes(entropy_seed))
 oqsrand.randombytes_switch_algorithm("NIST-KAT")
+print("liboqs version:", oqs_version())
+print("liboqs-python version:", oqs_python_version())
 print('{:17s}'.format("NIST-KAT:"), ' '.join('{:02X}'.format(x) for x in oqsrand.randombytes(32)))
 
 # we do not yet support OpenSSL under Windows

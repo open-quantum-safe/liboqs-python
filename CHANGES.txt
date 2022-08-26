@@ -1,3 +1,8 @@
+Version 0.7.2 - August 26, 2022
+    - Added library version retrieval functions
+          oqs_version()
+          oqs_python_version()
+
 Version 0.7.1 - January 5, 2022
     - Release numbering updated to match liboqs
     - Added macOS support on CircleCI, we now support macOS & Linux (CircleCI)

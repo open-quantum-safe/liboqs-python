@@ -51,6 +51,18 @@ def native():
 native().OQS_init()
 
 
+def oqs_version():
+    """liboqs version string."""
+    native().OQS_version.restype = ct.c_char_p
+    return ct.c_char_p(native().OQS_version()).value.decode('UTF-8')
+
+
+def oqs_python_version():
+    """liboqs-python version string."""
+    from pkg_resources import require as pkg_resources_require
+    return pkg_resources_require("liboqs-python")[0].version
+
+
 class MechanismNotSupportedError(Exception):
     """Exception raised when an algorithm is not supported by OQS."""
 

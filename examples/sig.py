@@ -7,9 +7,10 @@ import oqs
 # signature example
 #######################################################################
 
-sigs = oqs.get_enabled_sig_mechanisms()
-
+print("liboqs version:", oqs.oqs_version())
+print("liboqs version:", oqs.oqs_python_version())
 print("Enabled signature mechanisms:")
+sigs = oqs.get_enabled_sig_mechanisms()
 pprint(sigs, compact="True")
 
 message = "This is the message to sign".encode()
@@ -19,7 +20,7 @@ sigalg = "Dilithium2"
 with oqs.Signature(sigalg) as signer:
     with oqs.Signature(sigalg) as verifier:
         print("\nSignature details:")
-        pprint(signer.details)
+        pprint(signer.details, sort_dicts=False)
 
         # signer generates its keypair
         signer_public_key = signer.generate_keypair()

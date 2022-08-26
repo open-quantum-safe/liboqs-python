@@ -7,9 +7,10 @@ import oqs
 # KEM example
 #######################################################################
 
-kems = oqs.get_enabled_KEM_mechanisms()
-
+print("liboqs version:", oqs.oqs_version())
+print("liboqs-python version:", oqs.oqs_python_version())
 print("Enabled KEM mechanisms:")
+kems = oqs.get_enabled_KEM_mechanisms()
 pprint(kems, compact="True")
 
 # create client and server with sample KEM mechanisms
@@ -17,7 +18,7 @@ kemalg = "Kyber512"
 with oqs.KeyEncapsulation(kemalg) as client:
     with oqs.KeyEncapsulation(kemalg) as server:
         print("\nKey encapsulation details:")
-        pprint(client.details)
+        pprint(client.details, sort_dicts=False)
 
         # client generates its keypair
         public_key = client.generate_keypair()
@@ -30,7 +31,7 @@ with oqs.KeyEncapsulation(kemalg) as client:
         # the server encapsulates its secret using the client's public key
         ciphertext, shared_secret_server = server.encap_secret(public_key)
 
-        # the client decapsulates the the server's ciphertext to obtain the shared secret
+        # the client decapsulates the server's ciphertext to obtain the shared secret
         shared_secret_client = client.decap_secret(ciphertext)
 
         print("\nShared secretes coincide:", shared_secret_client == shared_secret_server)

@@ -162,7 +162,7 @@ and [Michele Mosca](http://faculty.iqc.uwaterloo.ca/mmosca/) at the University o
 Contributors to the liboqs-python wrapper include:
 
 - Ben Davies (University of Waterloo)
-- Vlad Gheorghiu (evolutionQ, University of Waterloo)
+- Vlad Gheorghiu (softwareQ Inc., University of Waterloo)
 - Christian Paquin (Microsoft Research)
 - Douglas Stebila (University of Waterloo)
 
@@ -172,7 +172,7 @@ Financial support for the development of Open Quantum Safe has been provided by 
 Canadian Centre for Cyber Security.
 
 We'd like to make a special acknowledgement to the companies who have dedicated programmer time to contribute source
-code to OQS, including Amazon Web Services, Cisco Systems, evolutionQ, IBM Research, and Microsoft Research.
+code to OQS, including Amazon Web Services, Cisco Systems, evolutionQ, softwareQ, IBM Research, and Microsoft Research.
 
 Research projects which developed specific components of OQS have been supported by various research grants, including
 funding from the Natural Sciences and Engineering Research Council of Canada (NSERC); see the source papers for funding
