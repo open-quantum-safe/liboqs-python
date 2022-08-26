@@ -23,6 +23,7 @@ def _load_shared_obj(name):
 
     # search typical locations
     paths += [ctu.find_library("oqs")]
+    paths += [ctu.find_library("liboqs")]
     dll = ct.windll if platform.system() == "Windows" else ct.cdll
 
     for path in paths:
