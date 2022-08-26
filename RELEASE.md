@@ -13,7 +13,7 @@ The **Open Quantum Safe (OQS) project** has the goal of developing and prototypi
 Release notes
 =============
 
-This release of liboqs-python was released on August 26, 2022. Its release page on GitHub is https://github.com/open-quantum-safe/liboqs-python/releases/tag/0.7.1.
+This release of liboqs-python was released on August 26, 2022. Its release page on GitHub is https://github.com/open-quantum-safe/liboqs-python/releases/tag/0.7.2.
 
 What's New
 ----------
