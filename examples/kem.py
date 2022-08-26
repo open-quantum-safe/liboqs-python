@@ -1,8 +1,7 @@
 # key encapsulation Python example
 
-import pprint
 import oqs
-pp = pprint.PrettyPrinter(sort_dicts=False)
+from pprint import pprint
 
 #######################################################################
 # KEM example
@@ -12,14 +11,14 @@ print("liboqs version:", oqs.oqs_version())
 print("liboqs-python version:", oqs.oqs_python_version())
 print("Enabled KEM mechanisms:")
 kems = oqs.get_enabled_KEM_mechanisms()
-pp.pprint(kems)
+pprint(kems, compact=True)
 
 # create client and server with sample KEM mechanisms
 kemalg = "Kyber512"
 with oqs.KeyEncapsulation(kemalg) as client:
     with oqs.KeyEncapsulation(kemalg) as server:
         print("\nKey encapsulation details:")
-        pp.pprint(client.details)
+        pprint(client.details)
 
         # client generates its keypair
         public_key = client.generate_keypair()

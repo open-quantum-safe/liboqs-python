@@ -1,18 +1,17 @@
 # signature Python example
 
-import pprint
 import oqs
-pp = pprint.PrettyPrinter(sort_dicts=False)
+from pprint import pprint
 
 #######################################################################
 # signature example
 #######################################################################
 
 print("liboqs version:", oqs.oqs_version())
-print("liboqs-python version:", oqs.oqs_python_version())
+print("libboost-python version:", oqs.oqs_python_version())
 print("Enabled signature mechanisms:")
 sigs = oqs.get_enabled_sig_mechanisms()
-pp.pprint(sigs)
+pprint(sigs, compact=True)
 
 message = "This is the message to sign".encode()
 
@@ -21,7 +20,7 @@ sigalg = "Dilithium2"
 with oqs.Signature(sigalg) as signer:
     with oqs.Signature(sigalg) as verifier:
         print("\nSignature details:")
-        pp.pprint(signer.details)
+        pprint(signer.details)
 
         # signer generates its keypair
         signer_public_key = signer.generate_keypair()
