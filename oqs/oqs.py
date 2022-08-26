@@ -11,6 +11,7 @@ import ctypes as ct  # to call native
 import ctypes.util as ctu
 import platform  # to learn the OS we're on
 import sys
+import warnings
 
 # expected return value from native OQS functions
 OQS_SUCCESS = 0
@@ -62,6 +63,11 @@ def oqs_python_version():
     """liboqs-python version string."""
     from pkg_resources import require as pkg_resources_require
     return pkg_resources_require("liboqs-python")[0].version
+
+
+# warn the use if the liboqs version differs from liboqs-python version
+if oqs_version() != oqs_python_version():
+    warnings.warn("liboqs version {} differs from liboqs-python version {}".format(oqs_version(), oqs_python_version()))
 
 
 class MechanismNotSupportedError(Exception):
