@@ -8,7 +8,7 @@ from pprint import pprint
 #######################################################################
 
 print("liboqs version:", oqs.oqs_version())
-print("libboost-python version:", oqs.oqs_python_version())
+print("liboqs-python version:", oqs.oqs_python_version())
 print("Enabled signature mechanisms:")
 sigs = oqs.get_enabled_sig_mechanisms()
 pprint(sigs, compact=True)

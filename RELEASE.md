@@ -18,7 +18,7 @@ This release of liboqs-python was released on August 26, 2022. Its release page 
 What's New
 ----------
 
-This is the seventh release of liboqs-python.
+This is the 7th release of liboqs-python.
 
 This is an incremental minor change release.
 
