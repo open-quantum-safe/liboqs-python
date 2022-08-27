@@ -9,6 +9,7 @@ This module provides a Python 3 interface to liboqs.
 
 import ctypes as ct  # to call native
 import ctypes.util as ctu
+import pkg_resources  # to determine the module's version
 import platform  # to learn the OS we're on
 import sys
 import warnings
@@ -61,8 +62,12 @@ def oqs_version():
 
 def oqs_python_version():
     """liboqs-python version string."""
-    from pkg_resources import require as pkg_resources_require
-    return pkg_resources_require("liboqs-python")[0].version
+    try:
+        result = pkg_resources.require("liboqs-python")[0].version
+    except pkg_resources.DistributionNotFound:
+        warnings.warn("Please install liboqs-python using setup.py")
+        return None
+    return result
 
 
 # warn the use if the liboqs version differs from liboqs-python version

@@ -1,4 +1,4 @@
-Version 0.7.2 - August 26, 2022
+Version 0.7.2 - August 27, 2022
     - Added library version retrieval functions
           oqs_version()
           oqs_python_version()
