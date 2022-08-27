@@ -49,6 +49,9 @@ COPY --from=intermediate /opt/liboqs-python /opt/liboqs-python
 
 ENV PYTHONPATH=/opt/liboqs-python
 
+# Install liboqs-python
+RUN cd /opt/liboqs-python && python3 setup.py install
+
 # Enable a normal user 
 RUN addgroup -g 1000 -S oqs && adduser --uid 1000 -S oqs -G oqs 
 
