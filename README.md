@@ -88,7 +88,8 @@ install it into a virtualenv using:
 	cd /some/dir/liboqs-python
 	python3 setup.py install
 
-On Windows replace the command `source <virtualenv_name>/bin/activate` with `<virtualenv_name>\Scripts\activate.bat`.
+On Windows replace the command `source <virtualenv_name>/bin/activate` with `<virtualenv_name>\Scripts\activate.bat`. 
+Some users may also needs to install `setuptools` (`pip3 install setuptools`) in order to run `python3 setup.py install`.
 
 Running
 -------
