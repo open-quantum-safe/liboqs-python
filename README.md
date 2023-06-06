@@ -89,7 +89,7 @@ install it into a virtualenv using:
 	cd /some/dir/liboqs-python
 	python3 setup.py install
 
-On Windows replace the command `source <virtualenv_name>/bin/activate` with `<virtualenv_name>\Scripts\activate.bat`. 
+On Windows replace the command `source <virtualenv_name>/bin/activate` with `<virtualenv_name>\Scripts\activate.bat`.
 It may be necessary to also install `setuptools` (`pip3 install setuptools`) in order to run `python3 setup.py install`.
 
 Running
@@ -125,7 +125,9 @@ CircleCI and AppVeyor.
 Docker image
 ------------
 
-If you have `docker` installed, as a simplified quick-start, just build all code by executing `docker build -t oqs-python .` and run the code for example by executing `docker run -it oqs-python sh -c "python3 examples/sig.py"`.
+If you have `docker` installed, as a simplified quick-start, just build all code by
+executing `docker build -t oqs-python .` and run the code for example by
+executing `docker run -it oqs-python sh -c "python3 examples/sig.py"`.
 
 Limitations and security
 ------------------------
@@ -170,7 +172,7 @@ Contributors to the liboqs-python wrapper include:
 
 ### Support
 
-Financial support for the development of Open Quantum Safe has been provided by Amazon Web Services and the 
+Financial support for the development of Open Quantum Safe has been provided by Amazon Web Services and the
 Canadian Centre for Cyber Security.
 
 We'd like to make a special acknowledgement to the companies who have dedicated programmer time to contribute source
