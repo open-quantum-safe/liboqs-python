@@ -1,6 +1,7 @@
 liboqs-python: Python 3 bindings for liboqs
 ===========================================
 
+[![GitHub actions](https://github.com/open-quantum-safe/liboqs-python/actions/workflows/python.yml/badge.svg)](https://github.com/open-quantum-safe/liboqs-python/actions)
 [![Build status - CircleCI Linux/macOS](https://circleci.com/gh/open-quantum-safe/liboqs-python.svg?style=svg)](https://circleci.com/gh/open-quantum-safe/liboqs-python)
 [![Build status](https://ci.appveyor.com/api/projects/status/jjo1ti9l5e0grgln?svg=true)](https://ci.appveyor.com/project/vsoftco/liboqs-python)
 
