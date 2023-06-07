@@ -31,8 +31,10 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install flake8 pytest nose rednose
+          pip install flake8 pytest
           python -m venv venv
+          source venv/bin/activate
+          pip install nose rednose
 
       - name: Install liboqs POSIX
         if: matrix.os != 'windows-latest'
@@ -70,10 +72,14 @@ jobs:
           set "PATH=${{env.WIN_LIBOQS_INSTALL_PATH}}\bin;%PATH%"
           venv\Scripts\activate.bat
           python setup.py install
-          
+          python examples/kem.py
+          python examples/sig.py
+          python examples/rand.py
 
       - name: Run unit tests Windows
         shell: cmd
         if: matrix.os == 'windows-latest'
         run: |
           set "PATH=${{env.WIN_LIBOQS_INSTALL_PATH}}\bin;%PATH%"
+          venv\Scripts\activate.bat
+          python -m nose --rednose --verbose
