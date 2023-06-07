@@ -37,14 +37,14 @@ jobs:
           pip install nose rednose
 
       - name: Install liboqs POSIX
-        if: matrix.os != 'windows-latest'
+        if: !startsWith(matrix.os, 'windows')
         run: |
           git clone --branch main --single-branch --depth 1 https://github.com/open-quantum-safe/liboqs
           cmake -S liboqs -B liboqs/build -DBUILD_SHARED_LIBS=ON -DOQS_BUILD_ONLY_LIB=ON
           sudo cmake --build liboqs/build --parallel 4 --target install      
 
       - name: Run examples POSIX
-        if: matrix.os != 'windows-latest'
+        if: !startsWith(matrix.os, 'windows')
         run: |
             source venv/bin/activate && python setup.py install
             python examples/kem.py
@@ -52,13 +52,13 @@ jobs:
             python examples/rand.py
 
       - name: Run unit tests POSIX
-        if: matrix.os != 'windows-latest'
+        if: !startsWith(matrix.os, 'windows')
         run: |
           source venv/bin/activate
           python -m nose --rednose --verbose
 
       - name: Install liboqs Windows
-        if: matrix.os == 'windows-latest'
+        if: startsWith(matrix.os, 'windows')
         shell: cmd
         run: |
           git clone --branch main --single-branch --depth 1 https://github.com/open-quantum-safe/liboqs
@@ -66,7 +66,7 @@ jobs:
           cmake --build liboqs\build --parallel 4 --target install
 
       - name: Run examples Windows
-        if: matrix.os == 'windows-latest'
+        if: startsWith(matrix.os, 'windows')
         shell: cmd
         run: |
           set "PATH=${{env.WIN_LIBOQS_INSTALL_PATH}}\bin;%PATH%"
@@ -78,7 +78,7 @@ jobs:
 
       - name: Run unit tests Windows
         shell: cmd
-        if: matrix.os == 'windows-latest'
+        if: startsWith(matrix.os, 'windows')
         run: |
           set "PATH=${{env.WIN_LIBOQS_INSTALL_PATH}}\bin;%PATH%"
           venv\Scripts\activate.bat
