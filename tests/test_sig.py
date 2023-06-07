@@ -78,8 +78,8 @@ def test_not_supported():
             raise AssertionError("oqs.MechanismNotSupportedError was not raised.")
     except oqs.MechanismNotSupportedError:
         pass
-    except E:
-        raise AssertionError("An unexpected exception was raised. " + E)
+    except Exception as ex:
+        raise AssertionError("An unexpected exception was raised. " + ex)
 
 
 def test_not_enabled():
@@ -92,8 +92,8 @@ def test_not_enabled():
                     raise AssertionError("oqs.MechanismNotEnabledError was not raised.")
             except oqs.MechanismNotEnabledError:
                 pass
-            except E:
-                raise AssertionError("An unexpected exception was raised. " + E)
+            except Exception as ex:
+                raise AssertionError("An unexpected exception was raised. " + ex)
 
 
 if __name__ == '__main__':
