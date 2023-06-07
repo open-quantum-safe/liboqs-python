@@ -9,10 +9,18 @@ on:
 permissions:
   contents: read
 
+env:
+  LD_LIBRARY_PATH: /usr/local/lib
+  WIN_LIBOQS_INSTALL_PATH: C:\liboqs
+  WIN_PKG_CONFIG_PATH: C:\Strawberry\c\lib\pkgconfig
+
+
 jobs:
   build:
-
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [ ubuntu-latest, windows-latest ]
+    runs-on: ${{ matrix.os }}
 
     steps:
     - uses: actions/checkout@v3
