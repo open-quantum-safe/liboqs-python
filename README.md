@@ -1,6 +1,7 @@
 liboqs-python: Python 3 bindings for liboqs
 ===========================================
 
+[![GitHub actions](https://github.com/open-quantum-safe/liboqs-python/actions/workflows/python.yml/badge.svg)](https://github.com/open-quantum-safe/liboqs-python/actions)
 [![Build status - CircleCI Linux/macOS](https://circleci.com/gh/open-quantum-safe/liboqs-python.svg?style=svg)](https://circleci.com/gh/open-quantum-safe/liboqs-python)
 [![Build status](https://ci.appveyor.com/api/projects/status/jjo1ti9l5e0grgln?svg=true)](https://ci.appveyor.com/project/vsoftco/liboqs-python)
 
@@ -88,7 +89,7 @@ install it into a virtualenv using:
 	cd /some/dir/liboqs-python
 	python3 setup.py install
 
-On Windows replace the command `source <virtualenv_name>/bin/activate` with `<virtualenv_name>\Scripts\activate.bat`. 
+On Windows replace the command `source <virtualenv_name>/bin/activate` with `<virtualenv_name>\Scripts\activate.bat`.
 It may be necessary to also install `setuptools` (`pip3 install setuptools`) in order to run `python3 setup.py install`.
 
 Running
@@ -119,12 +120,14 @@ To run the unit tests without a test runner:
 	python3 tests/test_sig.py
 
 liboqs-python has been extensively tested on Linux, macOS and Windows platforms. Continuous integration is provided via
-CircleCI and AppVeyor.
+GitHub actions.
 
 Docker image
 ------------
 
-If you have `docker` installed, as a simplified quick-start, just build all code by executing `docker build -t oqs-python .` and run the code for example by executing `docker run -it oqs-python sh -c "python3 examples/sig.py"`.
+If you have `docker` installed, as a simplified quick-start, just build all code by
+executing `docker build -t oqs-python .` and run the code for example by
+executing `docker run -it oqs-python sh -c "python3 examples/sig.py"`.
 
 Limitations and security
 ------------------------
@@ -169,7 +172,7 @@ Contributors to the liboqs-python wrapper include:
 
 ### Support
 
-Financial support for the development of Open Quantum Safe has been provided by Amazon Web Services and the 
+Financial support for the development of Open Quantum Safe has been provided by Amazon Web Services and the
 Canadian Centre for Cyber Security.
 
 We'd like to make a special acknowledgement to the companies who have dedicated programmer time to contribute source
