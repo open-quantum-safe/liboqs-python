@@ -31,7 +31,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install flake8 pytest nose2
+          pip install nose2
 
       - name: Install liboqs POSIX
         if: matrix.os != 'windows-latest'
@@ -43,7 +43,7 @@ jobs:
       - name: Run examples POSIX
         if: matrix.os != 'windows-latest'
         run: |
-          python setup.py install
+          pip install .
           python examples/kem.py
           echo
           python examples/sig.py
@@ -68,7 +68,7 @@ jobs:
         shell: cmd
         run: |
           set "PATH=${{env.WIN_LIBOQS_INSTALL_PATH}}\bin;%PATH%"
-          python setup.py install
+          pip install .
           python examples/kem.py
           echo.
           python examples/sig.py

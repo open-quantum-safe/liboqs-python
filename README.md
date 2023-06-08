@@ -120,7 +120,7 @@ To run the unit tests without a test runner:
 	python3 tests/test_sig.py
 
 liboqs-python has been extensively tested on Linux, macOS and Windows platforms. Continuous integration is provided via
-CircleCI and AppVeyor.
+GitHub actions.
 
 Docker image
 ------------
