@@ -1,4 +1,4 @@
-liboqs-python version 0.7.2
+liboqs-python version 0.8.0
 ===========================
 
 About
@@ -26,7 +26,7 @@ is https://github.com/open-quantum-safe/liboqs-python/releases/tag/0.7.2.
 What's New
 ----------
 
-This is the 7th release of liboqs-python.
+This is the 8th release of liboqs-python.
 
 This is an incremental minor change release.
 

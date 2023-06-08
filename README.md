@@ -66,26 +66,32 @@ and `/usr/local/lib` on Linux/macOS).
 On Linux/macOS you may need to set the `LD_LIBRARY_PATH` (`DYLD_LIBRARY_PATH` on macOS) environment variable to point to
 the path to liboqs' library directory, e.g.
 
-    export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
+```shell
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
+```
 
 assuming `liboqs.so.*` were installed in `/usr/local/lib` (true if you ran `sudo ninja install` after building liboqs).
 
 On Windows ensure that the liboqs shared library `oqs.dll` is visible system-wide. Use the "Edit the system environment
 variables" Control Panel tool or type in a Command Prompt
 
-	set PATH="%PATH%;C:\some\dir\liboqs\build\bin"
+```shell
+set PATH="%PATH%;C:\some\dir\liboqs\build\bin"
+```
 
 of course replacing the paths with the ones corresponding to your system.
 
 liboqs-python does not depend on any other Python packages. The package isn't hosted on PyPI yet. We recommend to
 install it into a virtualenv using:
 
-	# create & activate virtual environment, e.g.:
-	python3 -m venv <virtualenv_name>
-	source <virtualenv_name>/bin/activate
-	
-	cd /some/dir/liboqs-python
-	python3 setup.py install
+```shell
+# create & activate virtual environment, e.g.:
+python3 -m venv <virtualenv_name>
+source <virtualenv_name>/bin/activate
+
+cd /some/dir/liboqs-python
+python3 setup.py install
+```
 
 On Windows replace the command `source <virtualenv_name>/bin/activate` with `<virtualenv_name>\Scripts\activate.bat`.
 It may be necessary to also install `setuptools` (`pip3 install setuptools`) in order to run `python3 setup.py install`.
@@ -95,27 +101,37 @@ Running
 
 The liboqs-python project should be in the `PYTHONPATH`:
 
-	export PYTHONPATH=/some/dir/liboqs-python
+```shell
+export PYTHONPATH=/some/dir/liboqs-python
+```
 
 or, on Windows platforms, use the "Edit the system environment variables" Control Panel tool or type in a Command Prompt
 
-    set PYTHONPATH="C:\some\dir\liboqs-python"
+```shell
+set PYTHONPATH="C:\some\dir\liboqs-python"
+```
 
 As any python module, liboqs wrapper components can be imported into python programs with `import oqs`.
 
 To run an example program:
 
-	python3 examples/kem.py
+```shell
+python3 examples/kem.py
+```
 
 To run the unit tests with a test runner (e.g. nose or rednose (`apt install python3-nose python3-rednose`
 or `pip3 install nose rednose`)):
 
-	python3 -m nose --rednose --verbose
+```shell
+python3 -m nose --rednose --verbose
+```
 
 To run the unit tests without a test runner:
 
-	python3 tests/test_kem.py
-	python3 tests/test_sig.py
+```shell
+python3 tests/test_kem.py
+python3 tests/test_sig.py
+```
 
 liboqs-python has been extensively tested on Linux, macOS and Windows platforms. Continuous integration is provided via
 GitHub actions.
@@ -124,8 +140,17 @@ Docker image
 ------------
 
 If you have `docker` installed, as a simplified quick-start, just build all code by
-executing `docker build -t oqs-python .` and run the code for example by
-executing `docker run -it oqs-python sh -c "python3 examples/sig.py"`.
+executing
+
+```shell
+docker build -t oqs-python .
+``` 
+
+and run the code for example by executing
+
+```shell
+docker run -it oqs-python sh -c "python3 examples/sig.py"
+````
 
 Limitations and security
 ------------------------
