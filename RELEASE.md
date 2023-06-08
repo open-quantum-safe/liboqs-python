@@ -28,5 +28,5 @@ is https://github.com/open-quantum-safe/liboqs-python/releases/tag/0.8.0.
 
 ## What's New
 
-This is the 8th release of liboqs-python. This is an incremental minor change release. For a list of changes
+This is the 8th release of liboqs-python. For a list of changes
 see [CHANGES.txt](https://github.com/open-quantum-safe/liboqs-python/blob/main/CHANGES.txt).
