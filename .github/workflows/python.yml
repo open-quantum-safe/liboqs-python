@@ -10,6 +10,7 @@ permissions:
   contents: read
 
 env:
+  BUILD_TYPE: Debug
   LD_LIBRARY_PATH: /usr/local/lib
   WIN_LIBOQS_INSTALL_PATH: C:\liboqs
 
@@ -37,7 +38,7 @@ jobs:
         if: matrix.os != 'windows-latest'
         run: |
           git clone --branch main --single-branch --depth 1 https://github.com/open-quantum-safe/liboqs
-          cmake -S liboqs -B liboqs/build -DBUILD_SHARED_LIBS=ON -DOQS_BUILD_ONLY_LIB=ON
+          cmake -S liboqs -B liboqs/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DBUILD_SHARED_LIBS=ON -DOQS_BUILD_ONLY_LIB=ON
           sudo cmake --build liboqs/build --parallel 4 --target install      
 
       - name: Run examples POSIX
@@ -60,7 +61,7 @@ jobs:
         shell: cmd
         run: |
           git clone --branch main --single-branch --depth 1 https://github.com/open-quantum-safe/liboqs
-          cmake -S liboqs -B liboqs\build -DCMAKE_INSTALL_PREFIX=${{env.WIN_LIBOQS_INSTALL_PATH}} -DBUILD_SHARED_LIBS=ON -DOQS_BUILD_ONLY_LIB=ON
+          cmake -S liboqs -B liboqs\build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_INSTALL_PREFIX=${{env.WIN_LIBOQS_INSTALL_PATH}} -DBUILD_SHARED_LIBS=ON -DOQS_BUILD_ONLY_LIB=ON
           cmake --build liboqs\build --parallel 4 --target install
 
       - name: Run examples Windows
