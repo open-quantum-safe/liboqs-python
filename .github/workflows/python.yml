@@ -67,7 +67,7 @@ jobs:
         if: matrix.os == 'windows-latest'
         shell: cmd
         run: |
-          set "PATH=${{env.WIN_LIBOQS_INSTALL_PATH}}\bin;%PATH%"
+          set "PATH=%PATH%;${{env.WIN_LIBOQS_INSTALL_PATH}}\bin"
           pip install .
           python examples/kem.py
           echo.
@@ -79,5 +79,5 @@ jobs:
         shell: cmd
         if: matrix.os == 'windows-latest'
         run: |
-          set "PATH=${{env.WIN_LIBOQS_INSTALL_PATH}}\bin;%PATH%"
+          set "PATH=%PATH%;${{env.WIN_LIBOQS_INSTALL_PATH}}\bin"
           nose2 --verbose
