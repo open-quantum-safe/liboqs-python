@@ -13,7 +13,7 @@ authors = [
     { name = "Open Quantum Safe project", email = "contact@openquantumsafe.org" },
 ]
 readme = "README.md"
-license = { file = "LICENSE.txt" }
+license = { file = "LICENSE" }
 dependencies = [
     "nose2",
 ]
