@@ -1,0 +1,25 @@
+[build-system]
+requires = [
+    "pybind11>=2.10.0",
+    "setuptools>=42",
+    "wheel",
+]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "liboqs-python"
+version = "0.8.0"
+description = "Python wrapper for liboqs, providing post-quantum public key cryptography algorithms"
+authors = [
+    { name = "Open Quantum Safe project", email = "contact@openquantumsafe.org" },
+]
+readme = "README.md"
+license = { file = "LICENSE.txt" }
+dependencies = []
+
+[project.urls]
+homepage = "https://github.com/open-quantum-safe/liboqs-python"
+repository = "https://github.com/open-quantum-safe/liboqs-python.git"
+
+[tool.setuptools]
+py-modules = []

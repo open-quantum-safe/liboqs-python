@@ -1,8 +1,8 @@
-liboqs-python version 0.7.2
-===========================
+# liboqs-python version 0.8.0
 
-About
------
+---
+
+## About
 
 The **Open Quantum Safe (OQS) project** has the goal of developing and prototyping quantum-resistant cryptography. More
 information on OQS can be found on our website: https://openquantumsafe.org/ and on Github
@@ -17,17 +17,16 @@ algorithms. Details about liboqs-python can be found
 in [README.md](https://github.com/open-quantum-safe/liboqs-python/blob/main/README.md). See in particular limitations on
 intended use.
 
-Release notes
-=============
+---
 
-This release of liboqs-python was released on August 27, 2022. Its release page on GitHub
-is https://github.com/open-quantum-safe/liboqs-python/releases/tag/0.7.2.
+## Release notes
 
-What's New
-----------
+This release of liboqs-python was released on July 5, 2023. Its release page on GitHub
+is https://github.com/open-quantum-safe/liboqs-python/releases/tag/0.8.0.
 
-This is the 7th release of liboqs-python.
+---
 
-This is an incremental minor change release.
+## What's New
 
-For a list of changes see [CHANGES.txt](https://github.com/open-quantum-safe/liboqs-python/blob/main/CHANGES.txt).
+This is the 8th release of liboqs-python. For a list of changes
+see [CHANGES.txt](https://github.com/open-quantum-safe/liboqs-python/blob/main/CHANGES.txt).
