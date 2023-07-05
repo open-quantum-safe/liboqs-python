@@ -1,4 +1,4 @@
-Version 0.8.0 - June x, 2023
+Version 0.8.0 - July 5, 2023
     - This is a maintenance release, minor fixes
     - Migrated installation method to pyproject.toml
     - Removed AppVeyor and CircleCI, all continuous integration is now done

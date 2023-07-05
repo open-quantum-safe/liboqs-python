@@ -21,7 +21,7 @@ intended use.
 
 ## Release notes
 
-This release of liboqs-python was released on June x, 2023. Its release page on GitHub
+This release of liboqs-python was released on July 5, 2023. Its release page on GitHub
 is https://github.com/open-quantum-safe/liboqs-python/releases/tag/0.8.0.
 
 ---
