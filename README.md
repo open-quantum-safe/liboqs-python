@@ -51,28 +51,26 @@ cmake --build liboqs/build --parallel 8
 cmake --build liboqs/build --target install
 ```
 
-The last line may require prefixing it by `sudo` on UNIX-like systems.
-Change `--parallel 8` to match the number of available cores on your system.
+The last line may require prefixing it by `sudo` on UNIX-like systems. Change `--parallel 8` to match the number of
+available cores on your system.
 
-On UNIX-like platforms, you may need to set
-the `LD_LIBRARY_PATH` (`DYLD_LIBRARY_PATH` on macOS) environment variable to
+On UNIX-like platforms, you may need to set the `LD_LIBRARY_PATH` (`DYLD_LIBRARY_PATH` on macOS) environment variable to
 point to the path to liboqs' library directory, e.g.,
 
 ```shell
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
 ```
 
-On Windows platforms, **you must ensure** that the liboqs shared
-library `oqs.dll` is visible system-wide, and that the following environment
-variable are being set. Use the "Edit the system environment variables" Control
-Panel tool or execute in a Command Prompt, e.g.,
+On Windows platforms, **you must ensure** that the liboqs shared library `oqs.dll` is visible system-wide, and that the
+following environment variable are being set. Use the "Edit the system environment variables" Control Panel tool or
+execute in a Command Prompt, e.g.,
 
 ```shell
 set PATH=%PATH%;C:\Program Files (x86)\liboqs\bin
 ```
 
-You can change liboqs' installation directory by configuring the build to use an
-alternative path, e.g., `C:\liboqs`, by replacing the first CMake line above by
+You can change liboqs' installation directory by configuring the build to use an alternative path, e.g., `C:\liboqs`, by
+replacing the first CMake line above by
 
 ```shell
 cmake -S liboqs -B liboqs/build -DCMAKE_INSTALL_PREFIX="C:\liboqs" -DBUILD_SHARED_LIBS=ON
@@ -100,7 +98,7 @@ by
 venv\Scripts\activate.bat
 ```
 
-### Install the wrapper
+### Configure and install the wrapper
 
 Execute in a Terminal/Console/Administrator Command Prompt
 
@@ -132,6 +130,12 @@ nose2 --verbose liboqs-python
 
 ## Usage in standalone applications
 
+liboqs-python can be imported into Python programs with
+
+```python
+import oqs
+```
+
 liboqs-python defines two main classes: `KeyEncapsulation` and `Signature`, providing post-quantum key encapsulation and
 signture mechanisms, respectively. Each must be instantiated with a string identifying one of mechanisms supported by
 liboqs; these can be enumerated using the `get_enabled_KEM_mechanisms()` and `get_enabled_sig_mechanisms()` functions.
@@ -151,8 +155,6 @@ Prompt
 ```shell
 set PYTHONPATH=%PYTHONPATH%;C:\path\to\liboqs-python
 ```
-
-As any python module, liboqs wrapper components can be imported into python programs with `import oqs`.
 
 ---
 
@@ -179,6 +181,13 @@ Or, run the unit tests with
 docker run -it oqs-python sh -c ". venv/bin/activate && nose2 --verbose liboqs-python"
 ```
 
+In case you want to use the Docker container as development environment, mount your current project in the Docker
+container with
+
+```shell
+docker run --rm -it --workdir=/app -v ${PWD}:/app oqs-python /bin/bash 
+```
+
 A more comprehensive Docker example is provided in the
 directory [`docker`](https://github.com/open-quantum-safe/liboqs-python/tree/main/docker).
 
@@ -186,44 +195,37 @@ directory [`docker`](https://github.com/open-quantum-safe/liboqs-python/tree/mai
 
 ## Limitations and security
 
-liboqs is designed for prototyping and evaluating quantum-resistant
-cryptography. Security of proposed quantum-resistant algorithms may rapidly
-change as research advances, and may ultimately be completely insecure against
-either classical or quantum computers.
+liboqs is designed for prototyping and evaluating quantum-resistant cryptography. Security of proposed quantum-resistant
+algorithms may rapidly change as research advances, and may ultimately be completely insecure against either classical
+or quantum computers.
 
-We believe that the NIST Post-Quantum Cryptography standardization project is
-currently the best avenue to identifying potentially quantum-resistant
-algorithms. liboqs does not intend to "pick winners", and we strongly recommend
-that applications and protocols rely on the outcomes of the NIST standardization
-project when deploying post-quantum cryptography.
+We believe that the NIST Post-Quantum Cryptography standardization project is currently the best avenue to identifying
+potentially quantum-resistant algorithms. liboqs does not intend to "pick winners", and we strongly recommend that
+applications and protocols rely on the outcomes of the NIST standardization project when deploying post-quantum
+cryptography.
 
-We acknowledge that some parties may want to begin deploying post-quantum
-cryptography prior to the conclusion of the NIST standardization project. We
-strongly recommend that any attempts to do make use of so-called **hybrid
-cryptography**, in which post-quantum public-key algorithms are used alongside
-traditional public key algorithms (like RSA or elliptic curves) so that the
-solution is at least no less secure than existing traditional cryptography.
+We acknowledge that some parties may want to begin deploying post-quantum cryptography prior to the conclusion of the
+NIST standardization project. We strongly recommend that any attempts to do make use of so-called
+**hybrid cryptography**, in which post-quantum public-key algorithms are used alongside traditional public key
+algorithms (like RSA or elliptic curves) so that the solution is at least no less secure than existing traditional
+cryptography.
 
 Just like liboqs, liboqs-python is provided "as is", without warranty of any kind.
-See [LICENSE](https://github.com/open-quantum-safe/liboqs-python/blob/main/LICENSE)
-for the full disclaimer.
+See [LICENSE](https://github.com/open-quantum-safe/liboqs-python/blob/main/LICENSE) for the full disclaimer.
 
 ---
 
 ## License
 
 liboqs-python is licensed under the MIT License;
-see [LICENSE](https://github.com/open-quantum-safe/liboqs-python/blob/main/LICENSE)
-for details.
+see [LICENSE](https://github.com/open-quantum-safe/liboqs-python/blob/main/LICENSE) for details.
 
 ---
 
 ## Team
 
-The Open Quantum Safe project is led
-by [Douglas Stebila](https://www.douglas.stebila.ca/research/)
-and [Michele Mosca](http://faculty.iqc.uwaterloo.ca/mmosca/) at the University
-of Waterloo.
+The Open Quantum Safe project is led by [Douglas Stebila](https://www.douglas.stebila.ca/research/)
+and [Michele Mosca](http://faculty.iqc.uwaterloo.ca/mmosca/) at the University of Waterloo.
 
 ### Contributors
 
@@ -238,14 +240,12 @@ Contributors to the liboqs-python wrapper include:
 
 ## Support
 
-Financial support for the development of Open Quantum Safe has been provided by
-Amazon Web Services and the Canadian Centre for Cyber Security.
+Financial support for the development of Open Quantum Safe has been provided by Amazon Web Services and the Canadian
+Centre for Cyber Security.
 
-We'd like to make a special acknowledgement to the companies who have dedicated
-programmer time to contribute source code to OQS, including Amazon Web Services,
-evolutionQ, softwareQ, and Microsoft Research.
+We'd like to make a special acknowledgement to the companies who have dedicated programmer time to contribute source
+code to OQS, including Amazon Web Services, evolutionQ, softwareQ, and Microsoft Research.
 
-Research projects which developed specific components of OQS have been supported
-by various research grants, including funding from the Natural Sciences and
-Engineering Research Council of Canada (NSERC); see the source papers for
-funding acknowledgments.
+Research projects which developed specific components of OQS have been supported by various research grants, including
+funding from the Natural Sciences and Engineering Research Council of Canada (NSERC); see the source papers for funding
+acknowledgments.
