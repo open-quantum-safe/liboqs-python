@@ -181,7 +181,7 @@ Or, run the unit tests with
 docker run -it oqs-python sh -c ". venv/bin/activate && nose2 --verbose liboqs-python"
 ```
 
-In case you want to use the Docker container as development environment, mount your current project in the Docker
+In case you want to use the Docker container as a development environment, mount your current project in the Docker
 container with
 
 ```shell
