@@ -1,4 +1,4 @@
-# liboqs-python version 0.8.0
+# liboqs-python version 0.9.0
 
 ---
 
@@ -21,12 +21,12 @@ intended use.
 
 ## Release notes
 
-This release of liboqs-python was released on July 5, 2023. Its release page on GitHub
-is https://github.com/open-quantum-safe/liboqs-python/releases/tag/0.8.0.
+This release of liboqs-python was released on October 30, 2023. Its release page on GitHub
+is https://github.com/open-quantum-safe/liboqs-python/releases/tag/0.9.0.
 
 ---
 
 ## What's New
 
-This is the 8th release of liboqs-python. For a list of changes
+This is the 9th release of liboqs-python. For a list of changes
 see [CHANGES.txt](https://github.com/open-quantum-safe/liboqs-python/blob/main/CHANGES.txt).
