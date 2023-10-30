@@ -10,7 +10,7 @@ from pprint import pprint
 print("liboqs version:", oqs.oqs_version())
 print("liboqs-python version:", oqs.oqs_python_version())
 print("Enabled KEM mechanisms:")
-kems = oqs.get_enabled_KEM_mechanisms()
+kems = oqs.get_enabled_kem_mechanisms()
 pprint(kems, compact=True)
 
 # create client and server with sample KEM mechanisms

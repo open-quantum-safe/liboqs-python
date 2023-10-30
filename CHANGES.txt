@@ -1,5 +1,14 @@
+Version 0.9.0 - October 30, 2023
+    - This is a maintenance release, minor deprecation fixes
+    - Python minimum required version is enforced to Python 3.8 in pyproject.toml
+    - To follow Python conventions, renamed in "oqs/oqs.py"
+        is_KEM_enabled()               -> is_kem_enabled()
+        get_enabled_KEM_mechanisms()   -> get_enabled_kem_mechanisms()
+        get_supported_KEM_mechanisms() -> get_supported_kem_mechanisms()
+
 Version 0.8.0 - July 5, 2023
     - This is a maintenance release, minor fixes
+    - Minimalistic Docker support
     - Migrated installation method to pyproject.toml
     - Removed AppVeyor and CircleCI, all continuous integration is now done
       via GitHub actions

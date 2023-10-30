@@ -10,7 +10,7 @@ if platform.system() == "Windows":
 
 
 def test_correctness():
-    for alg_name in oqs.get_enabled_KEM_mechanisms():
+    for alg_name in oqs.get_enabled_kem_mechanisms():
         if any(item in alg_name for item in disabled_KEM_patterns):
             continue
         yield check_correctness, alg_name
@@ -25,7 +25,7 @@ def check_correctness(alg_name):
 
 
 def test_wrong_ciphertext():
-    for alg_name in oqs.get_enabled_KEM_mechanisms():
+    for alg_name in oqs.get_enabled_kem_mechanisms():
         if any(item in alg_name for item in disabled_KEM_patterns):
             continue
         yield check_wrong_ciphertext, alg_name
@@ -52,8 +52,8 @@ def test_not_supported():
 
 def test_not_enabled():
     # TODO: test broken as the compiled lib determines which algorithms are supported and enabled
-    for alg_name in oqs.get_supported_KEM_mechanisms():
-        if alg_name not in oqs.get_enabled_KEM_mechanisms():
+    for alg_name in oqs.get_supported_kem_mechanisms():
+        if alg_name not in oqs.get_enabled_kem_mechanisms():
             # found a non-enabled but supported alg
             try:
                 with oqs.KeyEncapsulation(alg_name) as kem:
