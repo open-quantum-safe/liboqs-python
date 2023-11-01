@@ -5,7 +5,7 @@
 ## About
 
 The **Open Quantum Safe (OQS) project** has the goal of developing and prototyping quantum-resistant cryptography. More
-information on OQS can be found on our website: https://openquantumsafe.org/ and on GitHub
+information on OQS can be found on our website https://openquantumsafe.org/ and on GitHub
 at https://github.com/open-quantum-safe/.
 
 **liboqs** is an open source C library for quantum-resistant cryptographic algorithms. See more about liboqs
