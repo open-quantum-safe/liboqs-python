@@ -113,9 +113,9 @@ pip install .
 Execute
 
 ```shell
-python3 liboqs-pythonn/examples/kem.py
-python3 liboqs-pythonn/examples/sig.py
-python3 liboqs-pythonn/examples/rand.py
+python3 liboqs-python/examples/kem.py
+python3 liboqs-python/examples/sig.py
+python3 liboqs-python/examples/rand.py
 ```
 
 ### Run the unit test
