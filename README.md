@@ -45,8 +45,7 @@ The project contains the following files and directories:
 Execute in a Terminal/Console/Administrator Command Prompt
 
 ```shell
-git clone --depth=1 https://github.com/open-quantum-safe/liboqs
-cmake -S liboqs -B liboqs/build -DBUILD_SHARED_LIBS=ON
+cmake -S liboqs-0.9.0 -B liboqs/build -DBUILD_SHARED_LIBS=ON
 cmake --build liboqs/build --parallel 8
 cmake --build liboqs/build --target install
 ```
@@ -96,16 +95,6 @@ by
 
 ```shell
 venv\Scripts\activate.bat
-```
-
-### Configure and install the wrapper
-
-Execute in a Terminal/Console/Administrator Command Prompt
-
-```shell
-git clone --depth=1 https://github.com/open-quantum-safe/liboqs-python
-cd liboqs-python
-pip install .
 ```
 
 ### Run the examples
