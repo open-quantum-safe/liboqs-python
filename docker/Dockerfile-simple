@@ -3,7 +3,7 @@
 # liboqs build type variant; maximum portability of image; no openssl dependency:
 ARG LIBOQS_BUILD_DEFINES="-DOQS_DIST_BUILD=ON -DBUILD_SHARED_LIBS=ON -DOQS_USE_OPENSSL=OFF"
 
-FROM alpine:3.11 as intermediate
+FROM alpine:3.16 as intermediate
 # Take in all global args
 ARG LIBOQS_BUILD_DEFINES
 
@@ -26,7 +26,7 @@ WORKDIR /opt/liboqs
 RUN mkdir build && cd build && cmake -G"Ninja" .. ${LIBOQS_BUILD_DEFINES} && ninja install
 
 ## second stage: Only create minimal image without build tooling and intermediate build results generated above:
-FROM alpine:3.11
+FROM alpine:3.16
 
 RUN apk update && apk upgrade
 
