@@ -6,7 +6,7 @@ ARG LIBOQS_BUILD_DEFINES="-DOQS_DIST_BUILD=ON -DBUILD_SHARED_LIBS=ON -DOQS_USE_O
 # make build arguments: Adding -j here speeds up build but may tax hardware
 ARG MAKE_DEFINES="-j 2"
 
-FROM alpine:3.11 as intermediate
+FROM alpine:3.16 as intermediate
 # Take in all global args
 ARG LIBOQS_BUILD_DEFINES
 ARG MAKE_DEFINES
@@ -38,7 +38,7 @@ RUN apk add automake autoconf && cd /opt/openssl && LDFLAGS="-Wl,-rpath -Wl,/usr
 RUN wget https://letsencrypt.org/certs/isrgrootx1.pem
 
 ## second stage: Only create minimal image without build tooling and intermediate build results generated above:
-FROM alpine:3.11
+FROM alpine:3.16
 
 # Get all software packages required for running all components:
 RUN apk update && apk upgrade && apk add python3
