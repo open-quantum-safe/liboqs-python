@@ -29,9 +29,13 @@ def randombytes_switch_algorithm(alg_name):
 
     :param alg_name: algorithm name, possible values are "system", "NIST-KAT", "OpenSSL".
     """
-    if oqs.native().OQS_randombytes_switch_algorithm(
-            oqs.ct.create_string_buffer(alg_name.encode())) != oqs.OQS_SUCCESS:
-        raise RuntimeError('Can not switch algorithm')
+    if (
+        oqs.native().OQS_randombytes_switch_algorithm(
+            oqs.ct.create_string_buffer(alg_name.encode())
+        )
+        != oqs.OQS_SUCCESS
+    ):
+        raise RuntimeError("Can not switch algorithm")
 
 
 def randombytes_nist_kat_init_256bit(entropy_input, personalization_string=None):
@@ -42,12 +46,18 @@ def randombytes_nist_kat_init_256bit(entropy_input, personalization_string=None)
     :param personalization_string: optional personalization string, which, if present, must be at least 48 bytes long.
     """
     if len(entropy_input) != 48:
-        raise ValueError('The entropy source must be exactly 48 bytes long')
+        raise ValueError("The entropy source must be exactly 48 bytes long")
 
     if personalization_string is not None:
         if len(personalization_string) < 48:
-            raise ValueError('The personalization string must be either empty or at least 48 bytes long')
-        oqs.native().OQS_randombytes_nist_kat_init_256bit(oqs.ct.create_string_buffer(entropy_input),
-                                                   oqs.ct.create_string_buffer(personalization_string))
+            raise ValueError(
+                "The personalization string must be either empty or at least 48 bytes long"
+            )
+        oqs.native().OQS_randombytes_nist_kat_init_256bit(
+            oqs.ct.create_string_buffer(entropy_input),
+            oqs.ct.create_string_buffer(personalization_string),
+        )
 
-    oqs.native().OQS_randombytes_nist_kat_init_256bit(oqs.ct.create_string_buffer(entropy_input), 0)
+    oqs.native().OQS_randombytes_nist_kat_init_256bit(
+        oqs.ct.create_string_buffer(entropy_input), 0
+    )
