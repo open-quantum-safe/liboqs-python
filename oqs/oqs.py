@@ -25,7 +25,8 @@ def _load_shared_obj(name):
 
     # search typical locations
     paths += [ctu.find_library(name)]
-    paths += [ctu.find_library("lib" + name)]
+    if not paths:
+        paths += [ctu.find_library("lib" + name)]
     dll = ct.windll if platform.system() == "Windows" else ct.cdll
 
     for path in paths:
