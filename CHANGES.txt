@@ -5,6 +5,7 @@ Version 0.9.0 - October 30, 2023
         is_KEM_enabled()               -> is_kem_enabled()
         get_enabled_KEM_mechanisms()   -> get_enabled_kem_mechanisms()
         get_supported_KEM_mechanisms() -> get_supported_kem_mechanisms()
+    - Removed the NIST PRNG as the later is no longer exposed by liboqs' public API
 
 Version 0.8.0 - July 5, 2023
     - This is a maintenance release, minor fixes

@@ -81,7 +81,7 @@ cmake -S liboqs -B liboqs/build -DCMAKE_INSTALL_PREFIX="C:\liboqs" -DBUILD_SHARE
 Execute in a Terminal/Console/Administrator Command Prompt
 
 ```shell
-python3 -mvenv venv 
+python3 -mvenv venv
 . venv/bin/activate
 python3 -m ensurepip --upgrade
 ```
@@ -185,7 +185,7 @@ In case you want to use the Docker container as a development environment, mount
 container with
 
 ```shell
-docker run --rm -it --workdir=/app -v ${PWD}:/app oqs-python /bin/bash 
+docker run --rm -it --workdir=/app -v ${PWD}:/app oqs-python /bin/bash
 ```
 
 A more comprehensive Docker example is provided in the
@@ -232,7 +232,7 @@ and [Michele Mosca](http://faculty.iqc.uwaterloo.ca/mmosca/) at the University o
 Contributors to the liboqs-python wrapper include:
 
 - Ben Davies (University of Waterloo)
-- Vlad Gheorghiu (softwareQ Inc., University of Waterloo)
+- Vlad Gheorghiu ([softwareQ Inc.](https://www.softwareq.ca) and the University of Waterloo)
 - Christian Paquin (Microsoft Research)
 - Douglas Stebila (University of Waterloo)
 
