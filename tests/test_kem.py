@@ -54,7 +54,7 @@ def test_not_enabled():
     # TODO: test broken as the compiled lib determines which algorithms are supported and enabled
     for alg_name in oqs.get_supported_kem_mechanisms():
         if alg_name not in oqs.get_enabled_kem_mechanisms():
-            # found a non-enabled but supported alg
+            # Found a non-enabled but supported alg
             try:
                 with oqs.KeyEncapsulation(alg_name) as kem:
                     raise AssertionError("oqs.MechanismNotEnabledError was not raised.")
