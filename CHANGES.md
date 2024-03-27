@@ -5,6 +5,7 @@
   as we now use Markdown format to keep track of changes in new releases
 - Removed the NIST PRNG as the latter is no longer exposed by liboqs' public
   API
+- liboqs is now installed automatically if not detected at runtime
 
 # Version 0.9.0 - October 30, 2023
 
