@@ -23,7 +23,7 @@ def _load_shared_obj(name):
     """Attempts to load shared library."""
     paths = []
 
-    # search typical locations
+    # Search typical locations
     try:
         paths += [ctu.find_library(name)]
     except FileNotFoundError:
@@ -41,7 +41,6 @@ def _load_shared_obj(name):
             return lib
 
     raise RuntimeError("No " + name + " shared libraries found")
-
 
 try:
     _liboqs = _load_shared_obj("oqs")
