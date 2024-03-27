@@ -33,4 +33,4 @@ https://github.com/open-quantum-safe/liboqs-python/releases/tag/0.9.0.
 ## What's New
 
 This is the 10th release of liboqs-python. For a list of changes see
-[CHANGES.txt](https://github.com/open-quantum-safe/liboqs-python/blob/main/CHANGES.txt).
+[CHANGES.md](https://github.com/open-quantum-safe/liboqs-python/blob/main/CHANGES.md).
