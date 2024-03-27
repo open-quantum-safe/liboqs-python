@@ -55,7 +55,7 @@ def _load_shared_obj(name, already_installed_liboqs):
 
         git clone https://github.com/open-quantum-safe/liboqs --depth 1
         cmake -S liboqs -B liboqs/build -DBUILD_SHARED_LIBS=ON
-        cmake --build liboqs/build --parallel
+        cmake --build liboqs/build --parallel 4
         sudo cmake --build liboqs/build --target install
         """
         )
@@ -67,7 +67,7 @@ def _load_shared_obj(name, already_installed_liboqs):
 
         git clone https://github.com/open-quantum-safe/liboqs --depth 1
         cmake -S liboqs -B liboqs/build -DBUILD_SHARED_LIBS=ON
-        cmake --build liboqs/build --parallel
+        cmake --build liboqs/build --parallel 4
         cmake --build liboqs/build --target install
         """
         )
