@@ -10,8 +10,10 @@ This module provides a Python 3 interface to liboqs.
 import ctypes as ct  # to call native
 import ctypes.util as ctu
 import importlib.metadata  # to determine module version at runtime
+import os  # to run OS commands (install liboqs on demand if not found)
 import platform  # to learn the OS we're on
 import sys
+import tempfile  # to install liboqs on demand
 import warnings
 
 # Expected return value from native OQS functions
@@ -19,7 +21,7 @@ OQS_SUCCESS = 0
 OQS_ERROR = -1
 
 
-def _load_shared_obj(name):
+def _load_shared_obj(name, already_installed_liboqs):
     """Attempts to load shared library."""
     paths = []
 
@@ -40,11 +42,53 @@ def _load_shared_obj(name):
             lib = dll.LoadLibrary(path)
             return lib
 
-    raise RuntimeError("No " + name + " shared libraries found")
+    if already_installed_liboqs:
+        raise RuntimeError("No " + name + " shared libraries found")
+
+    # We don't have liboqs, so we try to install it
+
+    with tempfile.TemporaryDirectory() as tmpdirname:
+        oqs_install_str_UNIX = (
+            "cd "
+            + tmpdirname
+            + """ 
+
+        git clone https://github.com/open-quantum-safe/liboqs --depth 1
+        cmake -S liboqs -B liboqs/build -DBUILD_SHARED_LIBS=ON
+        cmake --build liboqs/build --parallel
+        sudo cmake --build liboqs/build --target install
+        """
+        )
+
+        oqs_install_str_Windows = (
+            "cd "
+            + tmpdirname
+            + """ 
+
+        git clone https://github.com/open-quantum-safe/liboqs --depth 1
+        cmake -S liboqs -B liboqs/build -DBUILD_SHARED_LIBS=ON
+        cmake --build liboqs/build --parallel
+        cmake --build liboqs/build --target install
+        """
+        )
+
+        oqs_install_str = (
+            oqs_install_str_Windows
+            if platform.system() == "Windows"
+            else oqs_install_str_UNIX
+        )
+
+        print("liboqs not found, downloading and installing liboqs in " + tmpdirname)
+        print("This process may ask for your admin password.")
+        input("Press ENTER to continue...")
+        os.system(oqs_install_str)
+        print("Done installing liboqs")
+
+    return _load_shared_obj(name, already_installed_liboqs=True)
 
 
 try:
-    _liboqs = _load_shared_obj("oqs")
+    _liboqs = _load_shared_obj(name="oqs", already_installed_liboqs=False)
     assert _liboqs
 except OSError as err:
     sys.exit("Could not load liboqs shared library")
