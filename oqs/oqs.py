@@ -14,7 +14,7 @@ import platform  # to learn the OS we're on
 import sys
 import warnings
 
-# expected return value from native OQS functions
+# Expected return value from native OQS functions
 OQS_SUCCESS = 0
 OQS_ERROR = -1
 
@@ -41,6 +41,7 @@ def _load_shared_obj(name):
             return lib
 
     raise RuntimeError("No " + name + " shared libraries found")
+
 
 try:
     _liboqs = _load_shared_obj("oqs")
@@ -76,7 +77,7 @@ def oqs_python_version():
     return result
 
 
-# warn the use if the liboqs version differs from liboqs-python version
+# Warn the use if the liboqs version differs from liboqs-python version
 if oqs_version() != oqs_python_version():
     warnings.warn(
         "liboqs version {} differs from liboqs-python version {}".format(
@@ -354,7 +355,7 @@ class Signature(ct.Structure):
 
         :param message: the message to sign.
         """
-        # provide length to avoid extra null char
+        # Provide length to avoid extra null char
         my_message = ct.create_string_buffer(message, len(message))
         message_len = ct.c_int(len(my_message))
         signature = ct.create_string_buffer(self._sig.contents.length_signature)
@@ -380,11 +381,11 @@ class Signature(ct.Structure):
         :param signature: the signature on the message.
         :param public_key: the signer's public key.
         """
-        # provide length to avoid extra null char
+        # Provide length to avoid extra null char
         my_message = ct.create_string_buffer(message, len(message))
         message_len = ct.c_int(len(my_message))
 
-        # provide length to avoid extra null char in sig
+        # Provide length to avoid extra null char in sig
         my_signature = ct.create_string_buffer(signature, len(signature))
         sig_len = ct.c_int(len(my_signature))
         my_public_key = ct.create_string_buffer(

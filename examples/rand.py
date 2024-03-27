@@ -4,10 +4,6 @@ import platform  # to learn the OS we're on
 import oqs.rand as oqsrand  # must be explicitly imported
 from oqs import oqs_version, oqs_python_version
 
-#######################################################################
-# Randomness example
-#######################################################################
-
 print("liboqs version:", oqs_version())
 print("liboqs-python version:", oqs_python_version())
 

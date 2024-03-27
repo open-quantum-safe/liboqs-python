@@ -64,7 +64,7 @@ def test_not_enabled():
                 raise AssertionError("An unexpected exception was raised. " + ex)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     try:
         import nose2
 
