@@ -33,7 +33,9 @@ cmake --build liboqs/build --parallel 4
     )
     cmake_install_cmd = "cmake --build liboqs/build --target install"
     if platform.system() == "Windows":
-        oqs_install_str += cmake_install_cmd
+        raise RuntimeError(
+            "Automatic installation of liboqs is not (yet) supported on Windows"
+        )
     else:
         oqs_install_str += "sudo " + cmake_install_cmd
 
@@ -67,8 +69,7 @@ def _load_shared_obj(name, tried_installing_liboqs):
     # We don't have liboqs, so we try to install it
     with tempfile.TemporaryDirectory() as tmpdirname:
         print("liboqs not found, downloading and installing liboqs in " + tmpdirname)
-        print("This process may ask for your admin password.")
-        input("Press ENTER to continue...")
+        input("You may be asked for your admin password. Press ENTER to continue...")
         _install_liboqs(tmpdirname)
         print("Done installing liboqs")
 
