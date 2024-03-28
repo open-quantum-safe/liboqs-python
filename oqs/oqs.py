@@ -67,6 +67,7 @@ sudo cmake --build liboqs/build --target install
         print("Installing liboqs...")
         # A bit hacky on Windows, but better than nothing
         if platform.system() == "Windows":
+            input("Press ENTER to continue...")
             os.system(oqs_install_str_Windows)
             oqs_path = r"C:\Program Files (x86)\liboqs"
             if not os.path.exists(oqs_path):
@@ -74,13 +75,9 @@ sudo cmake --build liboqs/build --target install
             src = tmpdirname + r"\liboqs\build\bin\Debug\oqs.dll"
             dest = oqs_path
             print("copying..")
-            copy_cmd = "copy " + src + " " + dest
-            print("copy command: ")
-            print(copy_cmd)
-            os.system('copy "' + src + '" "' + dest + '"')
-            print("done copying")
-            sys.path.append(oqs_path)
-            print("done path")
+            copy_cmd = 'copy "' + src + '" "' + dest + '"'
+            os.system(copy_cmd)
+            os.environ["PATH"] += os.pathsep + oqs_path
         else:
             input(
                 "You may be asked for your admin password. Press ENTER to continue..."
