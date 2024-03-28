@@ -73,8 +73,11 @@ sudo cmake --build liboqs/build --target install
                 os.makedirs(oqs_path)
             src = tmpdirname + r"\liboqs\build\bin\Debug\oqs.dll"
             dest = oqs_path
+            print("copying..")
             os.system("copy " + src + " " + dest)
+            print("done copying")
             sys.path.append(oqs_path)
+            print("done path")
         else:
             input(
                 "You may be asked for your admin password. Press ENTER to continue..."
