@@ -22,15 +22,22 @@ OQS_ERROR = -1
 
 
 def _install_liboqs(directory):
-    os.system("cd " + directory)
-    os.system("git clone https://github.com/open-quantum-safe/liboqs --depth 1")
-    os.system("cmake -S liboqs -B liboqs/build -DBUILD_SHARED_LIBS=ON")
-    os.system("cmake --build liboqs/build --parallel 4")
+    oqs_install_str = (
+        "cd "
+        + directory
+        + """
+git clone https://github.com/open-quantum-safe/liboqs --depth 1
+cmake -S liboqs -B liboqs/build -DBUILD_SHARED_LIBS=ON
+cmake --build liboqs/build --parallel 4
+"""
+    )
     cmake_install_cmd = "cmake --build liboqs/build --target install"
     if platform.system() == "Windows":
-        os.system(cmake_install_cmd)
+        oqs_install_str += cmake_install_cmd
     else:
-        os.system("sudo " + cmake_install_cmd)
+        oqs_install_str += "sudo " + cmake_install_cmd
+
+    os.system(oqs_install_str)
 
 
 def _load_shared_obj(name, tried_installing_liboqs):
