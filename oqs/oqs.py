@@ -50,7 +50,7 @@ def _install_liboqs():
     with tempfile.TemporaryDirectory() as tmpdirname:
         oqs_install_str_UNIX = (
             "cd "
-            + directory
+            + tmpdirname
             + """
 git clone https://github.com/open-quantum-safe/liboqs --depth 1
 cmake -S liboqs -B liboqs/build -DBUILD_SHARED_LIBS=ON
@@ -60,10 +60,11 @@ sudo cmake --build liboqs/build --target install
         )
         oqs_install_str_Windows = (
             "cd "
-            + directory
+            + tmpdirname
             + " && git clone https://github.com/open-quantum-safe/liboqs --depth 1 && cmake -S liboqs -B liboqs/build -DBUILD_SHARED_LIBS=ON && cmake --build liboqs/build --parallel 4 && cmake --build liboqs/build --target install"
         )
-        print("liboqs not found, downloading and installing liboqs in " + tmpdirname)
+        print("liboqs not found, downloading to " + tmpdirname)
+        print("Installing liboqs...")
         # A bit hacky on Windows, but better than nothing
         if platform.system() == "Windows":
             os.system(oqs_install_str_Windows)
