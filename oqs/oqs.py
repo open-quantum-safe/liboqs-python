@@ -77,7 +77,9 @@ sudo cmake --build liboqs/build --target install
             print("copying..")
             copy_cmd = 'copy "' + src + '" "' + dest + '"'
             os.system(copy_cmd)
-            os.environ["PATH"] += os.pathsep + oqs_path
+            #            os.environ["PATH"] += os.pathsep + oqs_path
+            set_path = r'set PATH="%PATH%;C:\Program Files (x86)\liboqs\"'
+            os.system(set_path)
         else:
             input(
                 "You may be asked for your admin password. Press ENTER to continue..."
