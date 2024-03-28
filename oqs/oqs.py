@@ -77,7 +77,7 @@ sudo cmake --build liboqs/build --target install
             copy_cmd = "copy " + src + " " + dest
             print("copy command: ")
             print(copy_cmd)
-            os.system("copy " + src + " " + dest)
+            os.system('copy "' + src + '" "' + dest + '"')
             print("done copying")
             sys.path.append(oqs_path)
             print("done path")
