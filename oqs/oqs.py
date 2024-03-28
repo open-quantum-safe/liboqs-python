@@ -74,6 +74,9 @@ sudo cmake --build liboqs/build --target install
             src = tmpdirname + r"\liboqs\build\bin\Debug\oqs.dll"
             dest = oqs_path
             print("copying..")
+            copy_cmd = "copy " + src + " " + dest
+            print("copy command: ")
+            print(copy_cmd)
             os.system("copy " + src + " " + dest)
             print("done copying")
             sys.path.append(oqs_path)
