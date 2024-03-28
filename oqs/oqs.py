@@ -47,19 +47,25 @@ def _load_shared_obj(name):
 
 def _install_liboqs(directory):
     """Attempts to install liboqs automatically."""
-    oqs_install_str = (
+    oqs_install_str_UNIX = (
         "cd "
         + directory
         + """
 git clone https://github.com/open-quantum-safe/liboqs --depth 1
 cmake -S liboqs -B liboqs/build -DBUILD_SHARED_LIBS=ON
 cmake --build liboqs/build --parallel 4
+sudo cmake --build liboqs/build --target install
 """
     )
-    cmake_install_cmd = "cmake --build liboqs/build --target install"
-    if platform.system() != "Windows":
-        oqs_install_str += "sudo " + cmake_install_cmd
-    os.system(oqs_install_str)
+    oqs_install_str_Windows = (
+        "cd "
+        + directory
+        + " && git clone https://github.com/open-quantum-safe/liboqs --depth 1 && cmake -S liboqs -B liboqs/build -DBUILD_SHARED_LIBS=ON && cmake --build liboqs/build --parallel 4 && cmake --build liboqs/build --target install"
+    )
+    if platform.system() == "Windows":
+        os.system(oqs_install_str_Windows)
+    else:
+        os.system(oqs_install_str_UNIX)
 
 
 try:
