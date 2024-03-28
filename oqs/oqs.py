@@ -76,7 +76,11 @@ except RuntimeError:
             oqs_path = r"C:\Program Files (x86)\liboqs"
             if not os.path.exists(oqs_path):
                 os.makedirs(oqs_path)
-            os.system("copy " + tmpdirname + "\\build\\bin\\Debug\\oqs.dll " + oqs_path)
+            src = tmpdirname + r"\build\bin\Debug\oqs.dll "
+            dest = oqs_path
+            print(src)
+            print(dest)
+            os.system("copy " + src + " " + dest)
             sys.path.append(oqs_path)
         print("Done installing liboqs")
     # Try loading it again
