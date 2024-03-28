@@ -1,5 +1,5 @@
 """
-Open Quantum Safe (OQS) Python Wrapper for liboqs
+Open Quantum Safe (OQS) Python wrapper for liboqs
 
 The liboqs project provides post-quantum public key cryptography algorithms:
 https://github.com/open-quantum-safe/liboqs
@@ -21,7 +21,19 @@ OQS_SUCCESS = 0
 OQS_ERROR = -1
 
 
-def _load_shared_obj(name, already_installed_liboqs):
+def _install_liboqs(directory):
+    os.system("cd " + directory)
+    os.system("git clone https://github.com/open-quantum-safe/liboqs --depth 1")
+    os.system("cmake -S liboqs -B liboqs/build -DBUILD_SHARED_LIBS=ON")
+    os.system("cmake --build liboqs/build --parallel 4")
+    cmake_install_cmd = "cmake --build liboqs/build --target install"
+    if platform.system() == "Windows":
+        os.system(cmake_install_cmd)
+    else:
+        os.system("sudo " + cmake_install_cmd)
+
+
+def _load_shared_obj(name, tried_installing_liboqs):
     """Attempts to load shared library."""
     paths = []
 
@@ -42,53 +54,22 @@ def _load_shared_obj(name, already_installed_liboqs):
             lib = dll.LoadLibrary(path)
             return lib
 
-    if already_installed_liboqs:
+    if tried_installing_liboqs:
         raise RuntimeError("No " + name + " shared libraries found")
 
     # We don't have liboqs, so we try to install it
-
     with tempfile.TemporaryDirectory() as tmpdirname:
-        oqs_install_str_UNIX = (
-            "cd "
-            + tmpdirname
-            + """ 
-
-        git clone https://github.com/open-quantum-safe/liboqs --depth 1
-        cmake -S liboqs -B liboqs/build -DBUILD_SHARED_LIBS=ON
-        cmake --build liboqs/build --parallel 4
-        sudo cmake --build liboqs/build --target install
-        """
-        )
-
-        oqs_install_str_Windows = (
-            "cd "
-            + tmpdirname
-            + """ 
-
-        git clone https://github.com/open-quantum-safe/liboqs --depth 1
-        cmake -S liboqs -B liboqs/build -DBUILD_SHARED_LIBS=ON
-        cmake --build liboqs/build --parallel 4
-        cmake --build liboqs/build --target install
-        """
-        )
-
-        oqs_install_str = (
-            oqs_install_str_Windows
-            if platform.system() == "Windows"
-            else oqs_install_str_UNIX
-        )
-
         print("liboqs not found, downloading and installing liboqs in " + tmpdirname)
         print("This process may ask for your admin password.")
         input("Press ENTER to continue...")
-        os.system(oqs_install_str)
+        _install_liboqs(tmpdirname)
         print("Done installing liboqs")
 
-    return _load_shared_obj(name, already_installed_liboqs=True)
+    return _load_shared_obj(name, tried_installing_liboqs=True)
 
 
 try:
-    _liboqs = _load_shared_obj(name="oqs", already_installed_liboqs=False)
+    _liboqs = _load_shared_obj(name="oqs", tried_installing_liboqs=False)
     assert _liboqs
 except OSError as err:
     sys.exit("Could not load liboqs shared library")
