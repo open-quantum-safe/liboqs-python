@@ -45,40 +45,28 @@ def _load_shared_obj(name):
     raise RuntimeError("No " + name + " shared libraries found")
 
 
-def _install_liboqs(directory):
+def _install_liboqs():
     """Attempts to install liboqs automatically."""
-    oqs_install_str_UNIX = (
-        "cd "
-        + directory
-        + """
+    with tempfile.TemporaryDirectory() as tmpdirname:
+        oqs_install_str_UNIX = (
+            "cd "
+            + directory
+            + """
 git clone https://github.com/open-quantum-safe/liboqs --depth 1
 cmake -S liboqs -B liboqs/build -DBUILD_SHARED_LIBS=ON
 cmake --build liboqs/build --parallel 4
 sudo cmake --build liboqs/build --target install
 """
-    )
-    oqs_install_str_Windows = (
-        "cd "
-        + directory
-        + " && git clone https://github.com/open-quantum-safe/liboqs --depth 1 && cmake -S liboqs -B liboqs/build -DBUILD_SHARED_LIBS=ON && cmake --build liboqs/build --parallel 4 && cmake --build liboqs/build --target install"
-    )
-    if platform.system() == "Windows":
-        os.system(oqs_install_str_Windows)
-    else:
-        os.system(oqs_install_str_UNIX)
-
-
-try:
-    _liboqs = _load_shared_obj(name="oqs")
-    assert _liboqs
-except RuntimeError:
-    # We don't have liboqs, so we try to install it
-    with tempfile.TemporaryDirectory() as tmpdirname:
+        )
+        oqs_install_str_Windows = (
+            "cd "
+            + directory
+            + " && git clone https://github.com/open-quantum-safe/liboqs --depth 1 && cmake -S liboqs -B liboqs/build -DBUILD_SHARED_LIBS=ON && cmake --build liboqs/build --parallel 4 && cmake --build liboqs/build --target install"
+        )
         print("liboqs not found, downloading and installing liboqs in " + tmpdirname)
-        input("You may be asked for your admin password. Press ENTER to continue...")
-        _install_liboqs(tmpdirname)
         # A bit hacky on Windows, but better than nothing
         if platform.system() == "Windows":
+            os.system(oqs_install_str_Windows)
             oqs_path = r"C:\Program Files (x86)\liboqs"
             if not os.path.exists(oqs_path):
                 os.makedirs(oqs_path)
@@ -86,7 +74,20 @@ except RuntimeError:
             dest = oqs_path
             os.system("copy " + src + " " + dest)
             sys.path.append(oqs_path)
+        else:
+            input(
+                "You may be asked for your admin password. Press ENTER to continue..."
+            )
+            os.system(oqs_install_str_UNIX)
         print("Done installing liboqs")
+
+
+try:
+    _liboqs = _load_shared_obj(name="oqs")
+    assert _liboqs
+except RuntimeError:
+    # We don't have liboqs, so we try to install it automatically
+    _install_liboqs()
     # Try loading it again
     try:
         _liboqs = _load_shared_obj(name="oqs")
