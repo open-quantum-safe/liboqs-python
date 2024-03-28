@@ -66,12 +66,17 @@ def _load_shared_obj(name, tried_installing_liboqs):
     if tried_installing_liboqs:
         raise RuntimeError("No " + name + " shared libraries found")
 
-    # We don't have liboqs, so we try to install it
-    with tempfile.TemporaryDirectory() as tmpdirname:
-        print("liboqs not found, downloading and installing liboqs in " + tmpdirname)
-        input("You may be asked for your admin password. Press ENTER to continue...")
-        _install_liboqs(tmpdirname)
-        print("Done installing liboqs")
+    # We don't have liboqs, so we try to install it (excludes Windows platforms)
+    if platform.system() != "Windows":
+        with tempfile.TemporaryDirectory() as tmpdirname:
+            print(
+                "liboqs not found, downloading and installing liboqs in " + tmpdirname
+            )
+            input(
+                "You may be asked for your admin password. Press ENTER to continue..."
+            )
+            _install_liboqs(tmpdirname)
+            print("Done installing liboqs")
 
     return _load_shared_obj(name, tried_installing_liboqs=True)
 
