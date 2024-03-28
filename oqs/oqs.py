@@ -21,28 +21,7 @@ OQS_SUCCESS = 0
 OQS_ERROR = -1
 
 
-def _install_liboqs(directory):
-    oqs_install_str = (
-        "cd "
-        + directory
-        + """
-git clone https://github.com/open-quantum-safe/liboqs --depth 1
-cmake -S liboqs -B liboqs/build -DBUILD_SHARED_LIBS=ON
-cmake --build liboqs/build --parallel 4
-"""
-    )
-    cmake_install_cmd = "cmake --build liboqs/build --target install"
-    if platform.system() == "Windows":
-        raise RuntimeError(
-            "Automatic installation of liboqs is not (yet) supported on Windows"
-        )
-    else:
-        oqs_install_str += "sudo " + cmake_install_cmd
-
-    os.system(oqs_install_str)
-
-
-def _load_shared_obj(name, tried_installing_liboqs):
+def _load_shared_obj(name):
     """Attempts to load shared library."""
     paths = []
 
@@ -63,9 +42,34 @@ def _load_shared_obj(name, tried_installing_liboqs):
             lib = dll.LoadLibrary(path)
             return lib
 
-    if tried_installing_liboqs:
-        raise RuntimeError("No " + name + " shared libraries found")
+    raise RuntimeError("No " + name + " shared libraries found")
 
+
+def _install_liboqs(directory):
+    """Attempts to install liboqs automatically."""
+    oqs_install_str = (
+        "cd "
+        + directory
+        + """
+git clone https://github.com/open-quantum-safe/liboqs --depth 1
+cmake -S liboqs -B liboqs/build -DBUILD_SHARED_LIBS=ON
+cmake --build liboqs/build --parallel 4
+"""
+    )
+    cmake_install_cmd = "cmake --build liboqs/build --target install"
+    if platform.system() == "Windows":
+        raise RuntimeError(
+            "Automatic installation of liboqs is not (yet) supported on Windows"
+        )
+    else:
+        oqs_install_str += "sudo " + cmake_install_cmd
+    os.system(oqs_install_str)
+
+
+try:
+    _liboqs = _load_shared_obj(name="oqs")
+    assert _liboqs
+except RuntimeError:
     # We don't have liboqs, so we try to install it (excludes Windows platforms)
     if platform.system() != "Windows":
         with tempfile.TemporaryDirectory() as tmpdirname:
@@ -77,17 +81,12 @@ def _load_shared_obj(name, tried_installing_liboqs):
             )
             _install_liboqs(tmpdirname)
             print("Done installing liboqs")
-
-    return _load_shared_obj(name, tried_installing_liboqs=True)
-
-
-try:
-    _liboqs = _load_shared_obj(name="oqs", tried_installing_liboqs=False)
-    assert _liboqs
-except OSError as err:
-    sys.exit("Could not load liboqs shared library")
-except RuntimeError as err:
-    sys.exit("No liboqs shared libraries found")
+    # Try loading it again
+    try:
+        _liboqs = _load_shared_obj(name="oqs")
+        assert _liboqs
+    except RuntimeError:
+        sys.exit("Could not load liboqs shared library")
 
 
 def native():
