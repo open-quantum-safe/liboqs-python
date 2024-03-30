@@ -94,7 +94,11 @@ def _install_liboqs(directory, oqs_version):
 
 home_dir = os.path.expanduser("~")
 oqs_install_dir = os.path.abspath(home_dir + os.path.sep + "oqs")  # $HOME/oqs
-oqs_lib_dir = os.path.abspath(oqs_install_dir + os.path.sep + "lib")  # $HOME/oqs/lib
+oqs_lib_dir = (
+    os.path.abspath(oqs_install_dir + os.path.sep + "bin")  # $HOME/oqs/bin
+    if platform.system() == "Windows"
+    else os.path.abspath(oqs_install_dir + os.path.sep + "lib")  # $HOME/oqs/lib
+)
 try:
     _liboqs = _load_shared_obj(name="oqs", additional_searching_paths=[oqs_lib_dir])
     assert _liboqs
