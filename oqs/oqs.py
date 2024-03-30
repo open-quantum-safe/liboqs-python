@@ -52,11 +52,14 @@ def _load_shared_obj(name, additional_searching_paths=None):
     # Search additional path, if any
     if additional_searching_paths:
         for path in additional_searching_paths:
-            paths.append(
-                os.path.abspath(path) + os.path.sep + "lib" + name + ".dylib"
-            )  # macOS/OS X
-            os.environ["LD_LIBRARY_PATH"] += os.path.abspath(path)  # Linux
-            os.environ["PATH"] += os.path.abspath(path)  # Windows
+            if platform.system() == "Darwin":
+                paths.append(
+                    os.path.abspath(path) + os.path.sep + "lib" + name + ".dylib"
+                )
+            if platform.system() == "Linux":
+                os.environ["LD_LIBRARY_PATH"] += os.path.abspath(path)  # Linux
+            if platform.system() == "Windows":
+                os.environ["PATH"] += os.path.abspath(path)  # Windows
 
     dll = ct.windll if platform.system() == "Windows" else ct.cdll
 
