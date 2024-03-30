@@ -14,13 +14,25 @@ import os  # to run OS commands (install liboqs on demand if not found)
 import platform  # to learn the OS we're on
 import sys
 import tempfile  # to install liboqs on demand
+import time
 import warnings
+
+# liboqs-python tries to automatically install this liboqs version in case no
+# other version is found
+OQS_VERSION = "0.10.0"
 
 # Expected return value from native OQS functions
 OQS_SUCCESS = 0
 OQS_ERROR = -1
 
-OQS_VERSION = "0.10.0"
+
+def _countdown(seconds):
+    while seconds > 0:
+        print(seconds, end=" ")
+        sys.stdout.flush()
+        seconds -= 1
+        time.sleep(1)
+    print()
 
 
 def _load_shared_obj(name, additional_searching_paths=None):
@@ -75,7 +87,7 @@ def _install_liboqs(directory, oqs_version):
             + " && cmake --build liboqs/build --parallel 4 && cmake --build liboqs/build --target install"
         )
         print("liboqs not found, installing it in " + directory)
-        input("Press ENTER to continue...")
+        _countdown(5)
         os.system(oqs_install_str)
         print("Done installing liboqs")
 
