@@ -39,16 +39,6 @@ def _load_shared_obj(name, additional_searching_paths=None):
     """Attempts to load shared library."""
     paths = []
 
-    # Search typical locations
-    try:
-        paths.append(ctu.find_library(name))
-    except FileNotFoundError:
-        pass
-    try:
-        paths.append(ctu.find_library("lib" + name))
-    except FileNotFoundError:
-        pass
-
     # Search additional path, if any
     if additional_searching_paths:
         for path in additional_searching_paths:
@@ -60,6 +50,16 @@ def _load_shared_obj(name, additional_searching_paths=None):
                 os.environ["LD_LIBRARY_PATH"] += os.path.abspath(path)  # Linux
             if platform.system() == "Windows":
                 os.environ["PATH"] += os.path.abspath(path)  # Windows
+    # Search typical locations
+
+    try:
+        paths.insert(0, ctu.find_library(name))
+    except FileNotFoundError:
+        pass
+    try:
+        paths.insert(0, ctu.find_library("lib" + name))
+    except FileNotFoundError:
+        pass
 
     dll = ct.windll if platform.system() == "Windows" else ct.cdll
 
