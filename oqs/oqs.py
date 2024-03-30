@@ -46,8 +46,8 @@ def _load_shared_obj(name, additional_searching_paths=None):
 
     dll = ct.windll if platform.system() == "Windows" else ct.cdll
 
-    for elem in paths:
-        print(elem)
+    # for elem in paths:
+    #     print(elem)
 
     for path in paths:
         if path:
@@ -58,32 +58,30 @@ def _load_shared_obj(name, additional_searching_paths=None):
 
 
 def _install_liboqs(directory):
-    """Install liboqs into HOME/directory."""
-    home_dir = os.path.expanduser("~")
-    oqs_install_dir = home_dir + "/" + directory
-
+    """Install liboqs in $HOME/directory."""
     with tempfile.TemporaryDirectory() as tmpdirname:
         oqs_install_str = (
             "cd "
             + tmpdirname
             + " && git clone https://github.com/open-quantum-safe/liboqs --depth 1 && cmake -S liboqs -B liboqs/build -DBUILD_SHARED_LIBS=ON -DCMAKE_INSTALL_PREFIX="
-            + oqs_install_dir
+            + directory
             + " && cmake --build liboqs/build --parallel 4 && cmake --build liboqs/build --target install"
         )
-        print("liboqs not found, installing it in " + oqs_install_dir)
+        print("liboqs not found, installing it in " + directory)
         input("Press ENTER to continue...")
         os.system(oqs_install_str)
         print("Done installing liboqs")
 
 
 home_dir = os.path.expanduser("~")
-oqs_lib_dir = home_dir + "/oqs/lib/"
+oqs_install_dir = os.path.abspath(home_dir + os.path.sep + "oqs")
+oqs_lib_dir = os.path.abspath(oqs_install_dir + os.path.sep + "lib")
 try:
     _liboqs = _load_shared_obj(name="oqs", additional_searching_paths=[oqs_lib_dir])
     assert _liboqs
 except RuntimeError:
-    # We don't have liboqs, so we try to install it automatically in HOME/oqs
-    _install_liboqs("oqs")
+    # We don't have liboqs, so we try to install it automatically in $HOME/oqs
+    _install_liboqs(oqs_install_dir)
     # Try loading it again
     try:
         _liboqs = _load_shared_obj(name="oqs", additional_searching_paths=[oqs_lib_dir])
