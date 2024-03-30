@@ -20,6 +20,8 @@ import warnings
 OQS_SUCCESS = 0
 OQS_ERROR = -1
 
+OQS_VERSION = "0.10.0"
+
 
 def _load_shared_obj(name, additional_searching_paths=None):
     """Attempts to load shared library."""
@@ -51,19 +53,24 @@ def _load_shared_obj(name, additional_searching_paths=None):
 
     for path in paths:
         if path:
-            lib = dll.LoadLibrary(path)
-            return lib
+            try:
+                lib = dll.LoadLibrary(path)
+                return lib
+            except OSError:
+                pass
 
     raise RuntimeError("No " + name + " shared libraries found")
 
 
-def _install_liboqs(directory):
+def _install_liboqs(directory, oqs_version):
     """Install liboqs in $HOME/directory."""
     with tempfile.TemporaryDirectory() as tmpdirname:
         oqs_install_str = (
             "cd "
             + tmpdirname
-            + " && git clone https://github.com/open-quantum-safe/liboqs --depth 1 && cmake -S liboqs -B liboqs/build -DBUILD_SHARED_LIBS=ON -DCMAKE_INSTALL_PREFIX="
+            + " && git clone https://github.com/open-quantum-safe/liboqs --branch "
+            + oqs_version
+            + " --depth 1 && cmake -S liboqs -B liboqs/build -DBUILD_SHARED_LIBS=ON -DCMAKE_INSTALL_PREFIX="
             + directory
             + " && cmake --build liboqs/build --parallel 4 && cmake --build liboqs/build --target install"
         )
@@ -74,14 +81,14 @@ def _install_liboqs(directory):
 
 
 home_dir = os.path.expanduser("~")
-oqs_install_dir = os.path.abspath(home_dir + os.path.sep + "oqs")
-oqs_lib_dir = os.path.abspath(oqs_install_dir + os.path.sep + "lib")
+oqs_install_dir = os.path.abspath(home_dir + os.path.sep + "oqs")  # $HOME/oqs
+oqs_lib_dir = os.path.abspath(oqs_install_dir + os.path.sep + "lib")  # $HOME/oqs/lib
 try:
     _liboqs = _load_shared_obj(name="oqs", additional_searching_paths=[oqs_lib_dir])
     assert _liboqs
 except RuntimeError:
     # We don't have liboqs, so we try to install it automatically in $HOME/oqs
-    _install_liboqs(oqs_install_dir)
+    _install_liboqs(directory=oqs_install_dir, oqs_version=OQS_VERSION)
     # Try loading it again
     try:
         _liboqs = _load_shared_obj(name="oqs", additional_searching_paths=[oqs_lib_dir])

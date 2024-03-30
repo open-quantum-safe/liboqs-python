@@ -150,12 +150,12 @@ import oqs
 ```
 
 liboqs-python defines two main classes: `KeyEncapsulation` and `Signature`,
-providing post-quantum key encapsulation and signture mechanisms, respectively.
-Each must be instantiated with a string identifying one of mechanisms supported
-by liboqs; these can be enumerated using the `get_enabled_KEM_mechanisms()` and
-`get_enabled_sig_mechanisms()` functions. The files in `examples/` demonstrate
-the wrapper's API. Support for alternative RNGs is provided via the
-`randombytes_*()` functions.
+providing post-quantum key encapsulation and signature mechanisms,
+respectively. Each must be instantiated with a string identifying one of
+mechanisms supported by liboqs; these can be enumerated using the
+`get_enabled_KEM_mechanisms()` and `get_enabled_sig_mechanisms()` functions.
+The files in `examples/` demonstrate the wrapper's API. Support for alternative
+RNGs is provided via the `randombytes_*()` functions.
 
 The liboqs-python project should be in the `PYTHONPATH`. To ensure this on
 UNIX-like systems, execute
