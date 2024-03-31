@@ -17,13 +17,20 @@ import tempfile  # to install liboqs on demand
 import time
 import warnings
 
+
+def oqs_python_version():
+    """liboqs-python version string."""
+    try:
+        result = importlib.metadata.version("liboqs-python")
+    except importlib.metadata.PackageNotFoundError:
+        warnings.warn("Please install liboqs-python using pip install")
+        return None
+    return result
+
+
 # liboqs-python tries to automatically install and load this liboqs version in
 # case no other version is found
-OQS_VERSION = "0.10.0"
-
-# Expected return value from native OQS functions
-OQS_SUCCESS = 0
-OQS_ERROR = -1
+OQS_VERSION = oqs_python_version()
 
 
 def _countdown(seconds):
@@ -121,6 +128,11 @@ except RuntimeError:
         sys.exit("Could not load liboqs shared library")
 
 
+# Expected return value from native OQS functions
+OQS_SUCCESS = 0
+OQS_ERROR = -1
+
+
 def native():
     """Handle to native liboqs handler."""
     return _liboqs
@@ -134,16 +146,6 @@ def oqs_version():
     """liboqs version string."""
     native().OQS_version.restype = ct.c_char_p
     return ct.c_char_p(native().OQS_version()).value.decode("UTF-8")
-
-
-def oqs_python_version():
-    """liboqs-python version string."""
-    try:
-        result = importlib.metadata.version("liboqs-python")
-    except importlib.metadata.PackageNotFoundError:
-        warnings.warn("Please install liboqs-python using pip install")
-        return None
-    return result
 
 
 # Warn the user if the liboqs version differs from liboqs-python version
