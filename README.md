@@ -85,10 +85,15 @@ cmake -S liboqs -B liboqs/build -DCMAKE_INSTALL_PREFIX="C:\liboqs" -DBUILD_SHARE
 
 ### Let liboqs-python install liboqs automatically
 
-If liboqs is not detected at runtime by liboqs-python, it will be downloaded,
+If you want to avoid installing liboqs manually (as detailed in the step
+above), then you can let the liboqs-python wrapper try to install it for you
+automatically, as follows.
+
+When liboqs is not detected at runtime by liboqs-python, it will be downloaded,
 configured and installed automatically (as a shared library). This process will
-be performed only once, at runtime, i.e., when loading the wrapper. The liboqs
-source directory will be automatically removed at the end of the process.
+be performed only once, at runtime, i.e., when loading the liboqs-python
+wrapper. The liboqs source directory will be automatically removed at the end
+of the process.
 
 ### Install and activate a Python virtual environment
 
