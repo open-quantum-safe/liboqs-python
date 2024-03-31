@@ -47,6 +47,7 @@ def _load_shared_obj(name, additional_searching_paths=None):
                     os.path.abspath(path) + os.path.sep + "lib" + name + ".dylib"
                 )
             if platform.system() == "Linux":
+                print(os.path.abspath(path))
                 os.environ["LD_LIBRARY_PATH"] += os.path.abspath(path)  # Linux
             if platform.system() == "Windows":
                 os.environ["PATH"] += os.path.abspath(path)  # Windows
