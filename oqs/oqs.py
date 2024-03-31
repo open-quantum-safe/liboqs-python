@@ -107,25 +107,33 @@ def _install_liboqs(target_directory, oqs_version=None):
         print("Done installing liboqs")
 
 
-home_dir = os.path.expanduser("~")
-oqs_install_dir = os.path.abspath(home_dir + os.path.sep + "_oqs")  # $HOME/_oqs
-oqs_lib_dir = (
-    os.path.abspath(oqs_install_dir + os.path.sep + "bin")  # $HOME/_oqs/bin
-    if platform.system() == "Windows"
-    else os.path.abspath(oqs_install_dir + os.path.sep + "lib")  # $HOME/_oqs/lib
-)
-try:
-    _liboqs = _load_shared_obj(name="oqs", additional_searching_paths=[oqs_lib_dir])
-    assert _liboqs
-except RuntimeError:
-    # We don't have liboqs, so we try to install it automatically
-    _install_liboqs(target_directory=oqs_install_dir, oqs_version=OQS_VERSION)
-    # Try loading it again
+def _load_liboqs():
+    home_dir = os.path.expanduser("~")
+    oqs_install_dir = os.path.abspath(home_dir + os.path.sep + "_oqs")  # $HOME/_oqs
+    oqs_lib_dir = (
+        os.path.abspath(oqs_install_dir + os.path.sep + "bin")  # $HOME/_oqs/bin
+        if platform.system() == "Windows"
+        else os.path.abspath(oqs_install_dir + os.path.sep + "lib")  # $HOME/_oqs/lib
+    )
     try:
         _liboqs = _load_shared_obj(name="oqs", additional_searching_paths=[oqs_lib_dir])
         assert _liboqs
     except RuntimeError:
-        sys.exit("Could not load liboqs shared library")
+        # We don't have liboqs, so we try to install it automatically
+        _install_liboqs(target_directory=oqs_install_dir, oqs_version=OQS_VERSION)
+        # Try loading it again
+        try:
+            _liboqs = _load_shared_obj(
+                name="oqs", additional_searching_paths=[oqs_lib_dir]
+            )
+            assert _liboqs
+        except RuntimeError:
+            sys.exit("Could not load liboqs shared library")
+
+    return _liboqs
+
+
+_liboqs = _load_liboqs()
 
 
 # Expected return value from native OQS functions
