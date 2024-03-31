@@ -1,6 +1,6 @@
 # liboqs-python: Python 3 bindings for liboqs
 
-[![GitHub actions](https://github.com/open-quantum-safe/liboqs-python/actions/workflows/python.yml/badge.svg)](https://github.com/open-quantum-safe/liboqs-python/actions)
+[![GitHub actions](https://github.com/open-quantum-safe/liboqs-python/actions/workflows/python_simplified.yml/badge.svg)](https://github.com/open-quantum-safe/liboqs-python/actions)
 
 ---
 
