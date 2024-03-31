@@ -47,14 +47,14 @@ def _load_shared_obj(name, additional_searching_paths=None):
                 paths.append(
                     os.path.abspath(path) + os.path.sep + "lib" + name + ".dylib"
                 )
-            if platform.system() == "Linux":
-                paths.append(os.path.abspath(path) + os.path.sep + "lib" + name + ".so")
-                # https://stackoverflow.com/questions/856116/changing-ld-library-path-at-runtime-for-ctypes
-                # os.environ["LD_LIBRARY_PATH"] += os.path.abspath(path)
-            if platform.system() == "Windows":
+            elif platform.system() == "Windows":
                 paths.append(os.path.abspath(path) + os.path.sep + name + ".dll")
                 # Does not work
                 # os.environ["PATH"] += os.path.abspath(path)
+            else:  # Linux/FreeBSD/UNIX-like
+                paths.append(os.path.abspath(path) + os.path.sep + "lib" + name + ".so")
+                # https://stackoverflow.com/questions/856116/changing-ld-library-path-at-runtime-for-ctypes
+                # os.environ["LD_LIBRARY_PATH"] += os.path.abspath(path)
 
     # Search typical locations
     try:
