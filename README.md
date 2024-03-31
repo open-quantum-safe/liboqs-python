@@ -65,18 +65,19 @@ liboqs' library directory, e.g.,
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
 ```
 
-On Windows platforms, **you must ensure** that the liboqs shared library
-`oqs.dll` is visible system-wide, and that the following environment variable
-are being set. Use the "Edit the system environment variables" Control Panel
-tool or execute in a Command Prompt, e.g.,
+On Windows platforms, **you must ensure** that you add the
+`-DCMAKE_WINDOWS_EXPORT_ALL_SYMBOLS=TRUE` flag to CMake, and that the liboqs
+shared library `oqs.dll` is visible system-wide, i.e., set the `PATH`
+environment variable accordingly by using the "Edit the system environment
+variables" Control Panel tool or executing in a Command Prompt
 
 ```shell
 set PATH=%PATH%;C:\Program Files (x86)\liboqs\bin
 ```
 
 You can change liboqs' installation directory by configuring the build to use
-an alternative path, e.g., `C:\liboqs`, by replacing the first CMake line above
-by
+an alternative path, e.g., `C:\liboqs`, by passing the
+`-DCMAKE_INSTALL_PREFIX=/path/to/liboqs` flag to CMake, e.g.,
 
 ```shell
 cmake -S liboqs -B liboqs/build -DCMAKE_INSTALL_PREFIX="C:\liboqs" -DBUILD_SHARED_LIBS=ON

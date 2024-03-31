@@ -51,6 +51,8 @@ def _load_shared_obj(name, additional_searching_paths=None):
                 # https://stackoverflow.com/questions/856116/changing-ld-library-path-at-runtime-for-ctypes
                 # os.environ["LD_LIBRARY_PATH"] += os.path.abspath(path)
             if platform.system() == "Windows":
+                paths.append(os.path.abspath(path) + os.path.sep + name + ".lib")
+                paths.append(os.path.abspath(path) + os.path.sep + name + ".dll")
                 os.environ["PATH"] += os.path.abspath(path)  # Windows
     # Search typical locations
 
@@ -110,7 +112,7 @@ try:
     _liboqs = _load_shared_obj(name="oqs", additional_searching_paths=[oqs_lib_dir])
     assert _liboqs
 except RuntimeError:
-    # We don't have liboqs, so we try to install it automatically in $HOME/oqs
+    # We don't have liboqs, so we try to install it automatically
     _install_liboqs(directory=oqs_install_dir, oqs_version=OQS_VERSION)
     # Try loading it again
     try:
