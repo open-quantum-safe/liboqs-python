@@ -31,9 +31,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install .
           python examples/kem.py
-          echo
           python examples/sig.py
-          echo
           python examples/rand.py
 
       - name: Run unit tests
