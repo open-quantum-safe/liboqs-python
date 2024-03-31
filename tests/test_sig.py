@@ -2,7 +2,7 @@ import oqs
 import platform  # to learn the OS we're on
 import random
 
-# sigs for which unit testing is disabled
+# Sigs for which unit testing is disabled
 disabled_sig_patterns = []
 
 if platform.system() == "Windows":
@@ -86,7 +86,7 @@ def test_not_enabled():
     # TODO: test broken as the compiled lib determines which algorithms are supported and enabled
     for alg_name in oqs.get_supported_sig_mechanisms():
         if alg_name not in oqs.get_enabled_sig_mechanisms():
-            # found a non-enabled but supported alg
+            # Found a non-enabled but supported alg
             try:
                 with oqs.Signature(alg_name) as sig:
                     raise AssertionError("oqs.MechanismNotEnabledError was not raised.")
@@ -96,7 +96,7 @@ def test_not_enabled():
                 raise AssertionError("An unexpected exception was raised. " + ex)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     try:
         import nose2
 

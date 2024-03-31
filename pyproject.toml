@@ -8,8 +8,8 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "liboqs-python"
 requires-python = ">=3.8"
-version = "0.9.0"
-description = "Python wrapper for liboqs, providing post-quantum public key cryptography algorithms"
+version = "0.10.0"
+description = "Python bindings for liboqs, providing post-quantum public key cryptography algorithms"
 authors = [
     { name = "Open Quantum Safe project", email = "contact@openquantumsafe.org" },
 ]
