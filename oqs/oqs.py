@@ -77,15 +77,18 @@ def _load_shared_obj(name, additional_searching_paths=None):
     raise RuntimeError("No " + name + " shared libraries found")
 
 
-def _install_liboqs(target_directory, oqs_version):
-    """Install liboqs version oqs_version in the target_directory."""
+def _install_liboqs(target_directory, oqs_version=None):
+    """Install liboqs version oqs_version (if None, installs latest at HEAD) in the target_directory."""
     with tempfile.TemporaryDirectory() as tmpdirname:
         oqs_install_str = (
             "cd "
             + tmpdirname
-            + " && git clone https://github.com/open-quantum-safe/liboqs --branch "
-            + oqs_version
-            + " --depth 1 && cmake -S liboqs -B liboqs/build -DBUILD_SHARED_LIBS=ON -DCMAKE_INSTALL_PREFIX="
+            + " && git clone https://github.com/open-quantum-safe/liboqs"
+        )
+        if oqs_version:
+            oqs_install_str += " --branch " + oqs_version
+        oqs_install_str += (
+            " --depth 1 && cmake -S liboqs -B liboqs/build -DBUILD_SHARED_LIBS=ON -DCMAKE_INSTALL_PREFIX="
             + target_directory
         )
         if platform.system() == "Windows":
