@@ -52,10 +52,10 @@ def _load_shared_obj(name, additional_searching_paths=None):
                 # os.environ["LD_LIBRARY_PATH"] += os.path.abspath(path)
             if platform.system() == "Windows":
                 paths.append(os.path.abspath(path) + os.path.sep + name + ".lib")
-                paths.append(os.path.abspath(path) + os.path.sep + name + ".dll")
+                #                paths.append(os.path.abspath(path) + os.path.sep + name + ".dll")
                 os.environ["PATH"] += os.path.abspath(path)  # Windows
-    # Search typical locations
 
+    # Search typical locations
     try:
         paths.insert(0, ctu.find_library(name))
     except FileNotFoundError:
