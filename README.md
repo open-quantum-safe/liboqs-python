@@ -86,8 +86,8 @@ cmake -S liboqs -B liboqs/build -DCMAKE_INSTALL_PREFIX="C:\liboqs" -DBUILD_SHARE
 ### Let liboqs-python install liboqs automatically
 
 If you want to avoid installing liboqs manually (as detailed in the step
-above), then you can let the liboqs-python wrapper try to install it for you
-automatically, as follows.
+above), then you can skip the step above and let the liboqs-python wrapper try
+to install it for you automatically, as follows.
 
 When liboqs is not detected at runtime by liboqs-python, it will be downloaded,
 configured and installed automatically (as a shared library). This process will
