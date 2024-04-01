@@ -1,12 +1,12 @@
-name: GitHub actions
+name: GitHub actions detailed
 
 on:
   push:
-    branches: [ "**" ]
+    branches: ["**"]
   pull_request:
-    branches: [ "**" ]
+    branches: ["**"]
   repository_dispatch:
-    types: [ "**" ]
+    types: ["**"]
 
 permissions:
   contents: read
@@ -20,7 +20,7 @@ jobs:
   build:
     strategy:
       matrix:
-        os: [ ubuntu-latest, macos-latest, windows-latest ]
+        os: [ubuntu-latest, macos-latest, windows-latest]
     runs-on: ${{ matrix.os }}
 
     steps:
@@ -42,7 +42,7 @@ jobs:
           git clone --branch main --single-branch --depth 1 https://github.com/open-quantum-safe/liboqs
           cmake -S liboqs -B liboqs/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DBUILD_SHARED_LIBS=ON -DOQS_BUILD_ONLY_LIB=ON
           cmake --build liboqs/build --parallel 4
-          sudo cmake --build liboqs/build --target install      
+          sudo cmake --build liboqs/build --target install
 
       - name: Run examples POSIX
         if: matrix.os != 'windows-latest'

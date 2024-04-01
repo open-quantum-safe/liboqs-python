@@ -29,6 +29,10 @@ def randombytes_switch_algorithm(alg_name):
 
     :param alg_name: algorithm name, possible values are "system" and "OpenSSL".
     """
-    if oqs.native().OQS_randombytes_switch_algorithm(
-            oqs.ct.create_string_buffer(alg_name.encode())) != oqs.OQS_SUCCESS:
-        raise RuntimeError('Can not switch algorithm')
+    if (
+        oqs.native().OQS_randombytes_switch_algorithm(
+            oqs.ct.create_string_buffer(alg_name.encode())
+        )
+        != oqs.OQS_SUCCESS
+    ):
+        raise RuntimeError("Can not switch algorithm")
