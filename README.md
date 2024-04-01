@@ -33,7 +33,8 @@ The project contains the following files and directories:
 ## Pre-requisites
 
 - [liboqs](https://github.com/open-quantum-safe/liboqs)
-- [CMake](https://cmake.org/)
+- [git](https://git-scm.com/) version control system
+- [CMake](https://cmake.org/) build system
 - C compliant compiler,
   e.g., [gcc](https://gcc.gnu.org/), [clang](https://clang.llvm.org),
   [MSVC](https://visualstudio.microsoft.com/vs/) etc.
@@ -80,20 +81,19 @@ an alternative path, e.g., `C:\liboqs`, by passing the
 `-DCMAKE_INSTALL_PREFIX=/path/to/liboqs` flag to CMake, e.g.,
 
 ```shell
-cmake -S liboqs -B liboqs/build -DCMAKE_INSTALL_PREFIX="C:\liboqs" -DBUILD_SHARED_LIBS=ON
+cmake -S liboqs -B liboqs/build -DCMAKE_INSTALL_PREFIX="C:\liboqs" -DCMAKE_WINDOWS_EXPORT_ALL_SYMBOLS=TRUE -DBUILD_SHARED_LIBS=ON
 ```
 
 ### Let liboqs-python install liboqs automatically
 
-If you want to avoid installing liboqs manually (as detailed in the step
-above), then you can skip the step above and let the liboqs-python wrapper try
-to install it for you automatically, as follows.
-
-When liboqs is not detected at runtime by liboqs-python, it will be downloaded,
+If liboqs is not detected at runtime by liboqs-python, it will be downloaded,
 configured and installed automatically (as a shared library). This process will
 be performed only once, at runtime, i.e., when loading the liboqs-python
 wrapper. The liboqs source directory will be automatically removed at the end
 of the process.
+
+This is convenient in case you want to avoid installing liboqs manually, as
+described in the subsection above.
 
 ### Install and activate a Python virtual environment
 

@@ -1,11 +1,11 @@
-# Version 0.10.0 - March 28, 2024
+# Version 0.10.0 - April 1, 2024
 
 - Replaced CHANGES by
   [CHANGES.md](https://github.com/open-quantum-safe/liboqs-python/blob/main/CHANGES.md),
   as we now use Markdown format to keep track of changes in new releases
 - Removed the NIST PRNG as the latter is no longer exposed by liboqs' public
   API
-- liboqs is now installed automatically if not detected at runtime
+- liboqs is installed automatically if it is not detected at runtime
 
 # Version 0.9.0 - October 30, 2023
 

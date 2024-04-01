@@ -95,7 +95,7 @@ def _install_liboqs(target_directory, oqs_version=None):
         if oqs_version:
             oqs_install_str += " --branch " + oqs_version
         oqs_install_str += (
-            " --depth 1 && cmake -S liboqs -B liboqs/build -DBUILD_SHARED_LIBS=ON -DCMAKE_INSTALL_PREFIX="
+            " --depth 1 && cmake -S liboqs -B liboqs/build -DBUILD_SHARED_LIBS=ON -DOQS_BUILD_ONLY_LIB=ON -DCMAKE_INSTALL_PREFIX="
             + target_directory
         )
         if platform.system() == "Windows":
