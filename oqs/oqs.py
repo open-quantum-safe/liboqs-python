@@ -30,7 +30,7 @@ def oqs_python_version():
 
 # liboqs-python tries to automatically install and load this liboqs version in
 # case no other version is found
-REQUIRE_OQS_VERSION = oqs_python_version()
+OQS_VERSION = oqs_python_version()
 
 
 def _countdown(seconds):
@@ -120,9 +120,7 @@ def _load_liboqs():
         assert _liboqs
     except RuntimeError:
         # We don't have liboqs, so we try to install it automatically
-        _install_liboqs(
-            target_directory=oqs_install_dir, oqs_version=REQUIRE_OQS_VERSION
-        )
+        _install_liboqs(target_directory=oqs_install_dir, oqs_version=OQS_VERSION)
         # Try loading it again
         try:
             _liboqs = _load_shared_obj(
