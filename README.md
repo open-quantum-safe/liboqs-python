@@ -100,7 +100,7 @@ described in the subsection above.
 Execute in a Terminal/Console/Administrator Command Prompt
 
 ```shell
-python3 -mvenv venv
+python3 -m venv venv
 . venv/bin/activate
 python3 -m ensurepip --upgrade
 ```
