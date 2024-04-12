@@ -33,9 +33,9 @@ The project contains the following files and directories:
 ## Pre-requisites
 
 - [liboqs](https://github.com/open-quantum-safe/liboqs)
-- [git](https://git-scm.com/) version control system
-- [CMake](https://cmake.org/) build system
-- C compliant compiler,
+- [git](https://git-scm.com/)
+- [CMake](https://cmake.org/)
+- C compiler,
   e.g., [gcc](https://gcc.gnu.org/), [clang](https://clang.llvm.org),
   [MSVC](https://visualstudio.microsoft.com/vs/) etc.
 - [Python 3 interpreter](https://www.python.org/)
