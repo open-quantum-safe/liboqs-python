@@ -38,7 +38,7 @@ The project contains the following files and directories:
 - C compiler,
   e.g., [gcc](https://gcc.gnu.org/), [clang](https://clang.llvm.org),
   [MSVC](https://visualstudio.microsoft.com/vs/) etc.
-- [Python 3 interpreter](https://www.python.org/)
+- [Python 3](https://www.python.org/)
 
 ---
 
