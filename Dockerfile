@@ -18,7 +18,7 @@ USER oqs
 WORKDIR /home/oqs
 
 # Create a Python 3 virtual environment
-RUN python3 -mvenv venv
+RUN python3 -m venv venv
 
 # Get liboqs-python
 RUN git clone --depth 1 --branch main https://github.com/open-quantum-safe/liboqs-python.git
