@@ -84,6 +84,12 @@ an alternative path, e.g., `C:\liboqs`, by passing the
 cmake -S liboqs -B liboqs/build -DCMAKE_INSTALL_PREFIX="C:\liboqs" -DCMAKE_WINDOWS_EXPORT_ALL_SYMBOLS=TRUE -DBUILD_SHARED_LIBS=ON
 ```
 
+Alternatively you can set the `OQS_INSTALL_PATH` environment variable to point to the installation directory, e.g., on a UNIX-like system execute:
+
+```shell
+export OQS_INSTALL_PATH=/path/to/liboqs
+```
+
 ### Let liboqs-python install liboqs automatically
 
 If liboqs is not detected at runtime by liboqs-python, it will be downloaded,
