@@ -108,8 +108,8 @@ def _install_liboqs(target_directory, oqs_version=None):
 
 
 def _load_liboqs():
-    home_dir = os.path.expanduser("~")
-    oqs_install_dir = os.path.abspath(home_dir + os.path.sep + "_oqs")  # $HOME/_oqs
+    home_dir = os.path.expanduser("/opt")
+    oqs_install_dir = os.path.abspath(home_dir + os.path.sep + "oqssa")  # $HOME/_oqs
     oqs_lib_dir = (
         os.path.abspath(oqs_install_dir + os.path.sep + "bin")  # $HOME/_oqs/bin
         if platform.system() == "Windows"
