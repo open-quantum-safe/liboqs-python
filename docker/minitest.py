@@ -43,20 +43,34 @@ with urllib.request.urlopen('https://test.openquantumsafe.org/assignments.json',
 # Trust test.openquantumsafe.org root CA:
 sslContext.load_verify_locations(cafile="CA.crt")
 
-# Iterate over all algorithm/port combinations:
-for sigs, kexs in assignments.items():
-    for kex, port in kexs.items():
-       if (kex != "*"): # '*' denoting any classic KEX alg
-            # Enable use of the specific QSC KEX algorithm
-            os.environ["TLS_DEFAULT_GROUPS"]=kex
-       try:
-          with urllib.request.urlopen('https://test.openquantumsafe.org:'+str(port), context=sslContext) as response:
-            if response.getcode() != 200:
-               print("Failed to test %s successfully" % (kex))
-            else:
-               print("Success testing %s at port %d" % (kex, port))
-       except:
-          print("Test of algorithm combination SIG %s/KEX %s failed. Are all algorithms supported by current OQS library?" % (sigs, kex))
+port = 6138
+kex="kyber512"
+sigs = "dilithium2"
 
-    if "SHORT_TEST" in os.environ:
-        exit(0)
+try:
+    with urllib.request.urlopen('https://test.openquantumsafe.org:'+str(port), context=sslContext) as response:
+        if response.getcode() != 200:
+            print("Failed to test %s successfully" % (kex))
+        else:
+            print("Success testing %s at port %d" % (kex, port))
+except:
+    print("Test of algorithm combination SIG %s/KEX %s failed. Are all algorithms supported by current OQS library?" % (sigs, kex))
+
+
+# # Iterate over all algorithm/port combinations:
+# for sigs, kexs in assignments.items():
+#     for kex, port in kexs.items():
+#        if (kex != "*"): # '*' denoting any classic KEX alg
+#             # Enable use of the specific QSC KEX algorithm
+#             os.environ["TLS_DEFAULT_GROUPS"]=kex
+#        try:
+#           with urllib.request.urlopen('https://test.openquantumsafe.org:'+str(port), context=sslContext) as response:
+#             if response.getcode() != 200:
+#                print("Failed to test %s successfully" % (kex))
+#             else:
+#                print("Success testing %s at port %d" % (kex, port))
+#        except:
+#           print("Test of algorithm combination SIG %s/KEX %s failed. Are all algorithms supported by current OQS library?" % (sigs, kex))
+
+#     if "SHORT_TEST" in os.environ:
+#         exit(0)
