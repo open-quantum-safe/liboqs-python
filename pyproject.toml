@@ -1,13 +1,6 @@
-[build-system]
-requires = [
-    "setuptools>=42",
-    "wheel",
-]
-build-backend = "setuptools.build_meta"
-
 [project]
 name = "liboqs-python"
-requires-python = ">=3.8"
+requires-python = ">=3.9"
 version = "0.10.0"
 description = "Python bindings for liboqs, providing post-quantum public key cryptography algorithms"
 authors = [
@@ -15,13 +8,119 @@ authors = [
 ]
 readme = "README.md"
 license = { file = "LICENSE" }
-dependencies = [
-    "nose2",
+dependencies = []
+
+[tool.uv]
+package = true
+
+[project.optional-dependencies]
+dev = [
+    "isort==5.13.2",
+    "pre-commit==4.0.1",
+    "ruff==0.7.3",
+    "bandit==1.7.10",
+    "nose2==0.15.1",
 ]
+lint = [
+    "mypy==1.13.0",
+    "types-pytz==2024.2.0.20241003",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["oqs"]
 
 [project.urls]
 homepage = "https://github.com/open-quantum-safe/liboqs-python"
 repository = "https://github.com/open-quantum-safe/liboqs-python.git"
 
-[tool.setuptools]
-py-modules = []
+[tool.isort]
+py_version = 39
+src_paths = ["oqs"]
+line_length = 99
+multi_line_output = 3
+force_grid_wrap = 0
+include_trailing_comma = true
+split_on_trailing_comma = false
+single_line_exclusions = ["."]
+sections = ["FUTURE", "STDLIB", "THIRDPARTY", "FIRSTPARTY", "LOCALFOLDER"]
+skip_gitignore = true
+extend_skip = ["__pycache__"]
+extend_skip_glob = []
+
+[tool.ruff]
+src = ["oqs"]
+target-version = "py39"
+line-length = 99
+exclude = [
+    ".git",
+    ".mypy_cache",
+    ".ruff_cache",
+    "__pypackages__",
+    "__pycache__",
+    "*.pyi",
+    "venv",
+    ".venv",
+]
+
+[tool.ruff.lint]
+select = ["ALL"]
+ignore = [
+    "A003",
+    "ANN002", "ANN003", "ANN101", "ANN102", "ANN401",
+    "C901",
+    "D100", "D101", "D102", "D103", "D104", "D105", "D106", "D107", "D203", "D205", "D212",
+    "ERA001",
+    "FA100", "FA102",
+    "FBT001", "FBT002",
+    "FIX002",
+    "I001",
+    "PLR0911", "PLR0912", "PLR0913", "PLR0915", "PLR5501",
+    "PLW0120",
+    "RUF001",
+    "TD002", "TD003"
+]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"
+
+[tool.mypy]
+python_version = "3.9"
+mypy_path = "."
+packages = ["oqs"]
+plugins = []
+allow_redefinition = true
+check_untyped_defs = true
+disallow_any_generics = true
+disallow_incomplete_defs = true
+disallow_untyped_calls = true
+disallow_untyped_defs = true
+extra_checks = true
+follow_imports_for_stubs = true
+ignore_missing_imports = false
+namespace_packages = true
+no_implicit_optional = true
+no_implicit_reexport = true
+pretty = true
+show_absolute_path = true
+show_error_codes = true
+show_error_context = true
+warn_redundant_casts = true
+warn_unused_configs = true
+warn_unused_ignores = true
+
+disable_error_code = [
+    "no-redef",
+]
+
+exclude = [
+    "\\.?venv",
+    "\\.idea",
+    "\\.tests?",
+]

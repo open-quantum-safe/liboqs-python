@@ -2,11 +2,11 @@ name: GitHub actions detailed
 
 on:
   push:
-    branches: ["**"]
+    branches: [ "**" ]
   pull_request:
-    branches: ["**"]
+    branches: [ "**" ]
   repository_dispatch:
-    types: ["**"]
+    types: [ "**" ]
 
 permissions:
   contents: read
@@ -20,21 +20,24 @@ jobs:
   build:
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        os: [ ubuntu-latest, macos-latest, windows-latest ]
     runs-on: ${{ matrix.os }}
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-      - name: Set up Python 3.10
-        uses: actions/setup-python@v3
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
         with:
-          python-version: "3.10"
+          version: "latest"
+          enable-cache: true
+          cache-dependency-glob: "**/pyproject.toml"
+
+      - name: Set up Python 3.9
+        run: uv python install 3.9
 
       - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install nose2
+        run: uv sync --extra dev
 
       - name: Install liboqs POSIX
         if: matrix.os != 'windows-latest'
@@ -47,17 +50,17 @@ jobs:
       - name: Run examples POSIX
         if: matrix.os != 'windows-latest'
         run: |
-          pip install .
-          python examples/kem.py
+          uv sync --extra dev
+          uv run examples/kem.py
           echo
-          python examples/sig.py
+          uv run examples/sig.py
           echo
-          python examples/rand.py
+          uv run examples/rand.py
 
       - name: Run unit tests POSIX
         if: matrix.os != 'windows-latest'
         run: |
-          nose2 --verbose
+          uv run nose2 --verbose
 
       - name: Install liboqs Windows
         if: matrix.os == 'windows-latest'
@@ -73,16 +76,16 @@ jobs:
         shell: cmd
         run: |
           set PATH=%PATH%;${{env.WIN_LIBOQS_INSTALL_PATH}}\bin
-          pip install .
-          python examples/kem.py
+          uv sync --extra dev
+          uv run examples/kem.py
           echo.
-          python examples/sig.py
+          uv run examples/sig.py
           echo.
-          python examples/rand.py
+          uv run examples/rand.py
 
       - name: Run unit tests Windows
         shell: cmd
         if: matrix.os == 'windows-latest'
         run: |
           set PATH=%PATH%;${{env.WIN_LIBOQS_INSTALL_PATH}}\bin
-          nose2 --verbose
+          uv run nose2 --verbose

@@ -1,1 +1,35 @@
-from oqs.oqs import *
+from oqs.oqs import (
+    OQS_SUCCESS,
+    OQS_VERSION,
+    KeyEncapsulation,
+    MechanismNotEnabledError,
+    MechanismNotSupportedError,
+    Signature,
+    get_enabled_kem_mechanisms,
+    get_enabled_sig_mechanisms,
+    get_supported_kem_mechanisms,
+    get_supported_sig_mechanisms,
+    is_kem_enabled,
+    is_sig_enabled,
+    native,
+    oqs_python_version,
+    oqs_version,
+)
+
+__all__ = (
+    "KeyEncapsulation",
+    "MechanismNotEnabledError",
+    "MechanismNotSupportedError",
+    "OQS_SUCCESS",
+    "OQS_VERSION",
+    "Signature",
+    "get_enabled_kem_mechanisms",
+    "get_enabled_sig_mechanisms",
+    "get_supported_kem_mechanisms",
+    "get_supported_sig_mechanisms",
+    "is_kem_enabled",
+    "is_sig_enabled",
+    "native",
+    "oqs_python_version",
+    "oqs_version",
+)
