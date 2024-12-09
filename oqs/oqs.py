@@ -20,7 +20,7 @@ import tempfile  # to install liboqs on demand
 import time
 import warnings
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, ClassVar, Final, TypeVar, cast
+from typing import TYPE_CHECKING, Any, ClassVar, Final, TypeVar, Union, cast
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -32,7 +32,7 @@ TSignature = TypeVar("TSignature", bound="Signature")
 logger = logging.getLogger(__name__)
 
 
-def oqs_python_version() -> str | None:
+def oqs_python_version() -> Union[str, None]:
     """liboqs-python version string."""
     try:
         result = importlib.metadata.version("liboqs-python")
@@ -57,7 +57,7 @@ def _countdown(seconds: int) -> None:
 
 def _load_shared_obj(
     name: str,
-    additional_searching_paths: Sequence[Path] | None = None,
+    additional_searching_paths: Union[Sequence[Path], None] = None,
 ) -> ct.CDLL:
     """Attempt to load shared library."""
     paths: list[Path] = []
@@ -99,7 +99,10 @@ def _load_shared_obj(
     raise RuntimeError(msg)
 
 
-def _install_liboqs(target_directory: Path, oqs_version_to_install: str | None = None) -> None:
+def _install_liboqs(
+    target_directory: Path,
+    oqs_version_to_install: Union[str, None] = None,
+) -> None:
     """Install liboqs version oqs_version (if None, installs latest at HEAD) in the target_directory."""  # noqa: E501
     with tempfile.TemporaryDirectory() as tmpdirname:
         oqs_install_cmd = [
@@ -265,7 +268,7 @@ class KeyEncapsulation(ct.Structure):
         ("decaps_cb", ct.c_void_p),
     ]
 
-    def __init__(self, alg_name: str, secret_key: int | bytes | None = None) -> None:
+    def __init__(self, alg_name: str, secret_key: Union[int, bytes, None] = None) -> None:
         """
         Create new KeyEncapsulation with the given algorithm.
 
@@ -305,13 +308,13 @@ class KeyEncapsulation(ct.Structure):
 
     def __exit__(
         self,
-        ctx_type: type[BaseException] | None,
-        ctx_value: BaseException | None,
-        ctx_traceback: TracebackType | None,
+        ctx_type: Union[type[BaseException], None],
+        ctx_value: Union[BaseException, None],
+        ctx_traceback: Union[TracebackType, None],
     ) -> None:
         self.free()
 
-    def generate_keypair(self) -> bytes | int:
+    def generate_keypair(self) -> Union[bytes, int]:
         """
         Generate a new keypair and returns the public key.
 
@@ -330,7 +333,7 @@ class KeyEncapsulation(ct.Structure):
         """Export the secret key."""
         return bytes(self.secret_key)
 
-    def encap_secret(self, public_key: int | bytes) -> tuple[bytes, bytes | int]:
+    def encap_secret(self, public_key: Union[int, bytes]) -> tuple[bytes, Union[bytes, int]]:
         """
         Generate and encapsulates a secret using the provided public key.
 
@@ -354,15 +357,15 @@ class KeyEncapsulation(ct.Structure):
         )
 
         # TODO: What should it return?
-        #  1. tuple[bytes | int, bytes | int]
-        #  2. tuple[bytes, bytes | int]
-        #  3. tuple[bytes, bytes] | int
+        #  1. tuple[Union[bytes, int], Union[bytes, int]]
+        #  2. tuple[bytes, Union[bytes, int]]
+        #  3. Union[tuple[bytes, bytes], int]
         return (
             bytes(cast(bytes, ciphertext)),
             bytes(cast(bytes, shared_secret)) if rv == OQS_SUCCESS else 0,
         )
 
-    def decap_secret(self, ciphertext: int | bytes) -> bytes | int:
+    def decap_secret(self, ciphertext: Union[int, bytes]) -> Union[bytes, int]:
         """
         Decapsulate the ciphertext and returns the secret.
 
@@ -451,7 +454,7 @@ class Signature(ct.Structure):
         ("verify_cb", ct.c_void_p),
     ]
 
-    def __init__(self, alg_name: str, secret_key: int | bytes | None = None) -> None:
+    def __init__(self, alg_name: str, secret_key: Union[int, bytes, None] = None) -> None:
         """
         Create new Signature with the given algorithm.
 
@@ -488,13 +491,13 @@ class Signature(ct.Structure):
 
     def __exit__(
         self,
-        ctx_type: type[BaseException] | None,
-        ctx_value: BaseException | None,
-        ctx_traceback: TracebackType | None,
+        ctx_type: Union[type[BaseException], None],
+        ctx_value: Union[BaseException, None],
+        ctx_traceback: Union[TracebackType, None],
     ) -> None:
         self.free()
 
-    def generate_keypair(self) -> bytes | int:
+    def generate_keypair(self) -> Union[bytes, int]:
         """
         Generate a new keypair and returns the public key.
 
@@ -515,7 +518,7 @@ class Signature(ct.Structure):
         """Export the secret key."""
         return bytes(self.secret_key)
 
-    def sign(self, message: bytes) -> bytes | int:
+    def sign(self, message: bytes) -> Union[bytes, int]:
         """
         Signs the provided message and returns the signature.
 

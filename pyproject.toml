@@ -17,8 +17,8 @@ package = true
 dev = [
     "isort==5.13.2",
     "pre-commit==4.0.1",
-    "ruff==0.7.3",
-    "bandit==1.7.10",
+    "ruff==0.8.2",
+    "bandit==1.8.0",
     "nose2==0.15.1",
 ]
 lint = [
@@ -81,7 +81,8 @@ ignore = [
     "PLR0911", "PLR0912", "PLR0913", "PLR0915", "PLR5501",
     "PLW0120",
     "RUF001",
-    "TD002", "TD003"
+    "TD002", "TD003",
+    "U007",
 ]
 
 [tool.ruff.format]
