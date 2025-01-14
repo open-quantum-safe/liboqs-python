@@ -6,7 +6,7 @@ import random
 disabled_sig_patterns = []
 
 if platform.system() == "Windows":
-    disabled_sig_patterns = ["Rainbow-V"]
+    disabled_sig_patterns = [""]
 
 
 def test_correctness():
@@ -16,12 +16,30 @@ def test_correctness():
         yield check_correctness, alg_name
 
 
+def test_correctness_with_ctx_str():
+    for alg_name in oqs.get_enabled_sig_mechanisms():
+        if not alg_name.startswith("ML-DSA"):
+            continue
+        if any(item in alg_name for item in disabled_sig_patterns):
+            continue
+        yield check_correctness_with_ctx_str, alg_name
+
+
 def check_correctness(alg_name):
     with oqs.Signature(alg_name) as sig:
         message = bytes(random.getrandbits(8) for _ in range(100))
         public_key = sig.generate_keypair()
         signature = sig.sign(message)
         assert sig.verify(message, signature, public_key)
+
+
+def check_correctness_with_ctx_str(alg_name):
+    with oqs.Signature(alg_name) as sig:
+        message = bytes(random.getrandbits(8) for _ in range(100))
+        context = bytes("some context", "utf-8")
+        public_key = sig.generate_keypair()
+        signature = sig.sign_with_ctx_str(message, context)
+        assert sig.verify_with_ctx_str(message, signature, context, public_key)
 
 
 def test_wrong_message():

@@ -129,7 +129,6 @@ def _load_liboqs():
             assert _liboqs
         except RuntimeError:
             sys.exit("Could not load liboqs shared library")
-
     return _liboqs
 
 
@@ -437,20 +436,20 @@ class Signature(ct.Structure):
         # Provide length to avoid extra null char
         my_message = ct.create_string_buffer(message, len(message))
         message_len = ct.c_int(len(my_message))
-        signature = ct.create_string_buffer(self._sig.contents.length_signature)
-        sig_len = ct.c_int(
-            self._sig.contents.length_signature
-        )  # initialize to maximum signature size
+        my_signature = ct.create_string_buffer(self._sig.contents.length_signature)
+
+        # Initialize to maximum signature size
+        signature_len = ct.c_int(self._sig.contents.length_signature)
         rv = native().OQS_SIG_sign(
             self._sig,
-            ct.byref(signature),
-            ct.byref(sig_len),
+            ct.byref(my_signature),
+            ct.byref(signature_len),
             my_message,
             message_len,
             self.secret_key,
         )
 
-        return bytes(signature[: sig_len.value]) if rv == OQS_SUCCESS else 0
+        return bytes(my_signature[: signature_len.value]) if rv == OQS_SUCCESS else 0
 
     def verify(self, message, signature, public_key):
         """
@@ -466,13 +465,81 @@ class Signature(ct.Structure):
 
         # Provide length to avoid extra null char in sig
         my_signature = ct.create_string_buffer(signature, len(signature))
-        sig_len = ct.c_int(len(my_signature))
+        signature_len = ct.c_int(len(my_signature))
         my_public_key = ct.create_string_buffer(
             public_key, self._sig.contents.length_public_key
         )
         rv = native().OQS_SIG_verify(
-            self._sig, my_message, message_len, my_signature, sig_len, my_public_key
+            self._sig,
+            my_message,
+            message_len,
+            my_signature,
+            signature_len,
+            my_public_key,
         )
+
+        return True if rv == OQS_SUCCESS else False
+
+    def sign_with_ctx_str(self, message, context):
+        """
+        Signs the provided message and returns the signature.
+
+        :param context: the context string.
+        :param message: the message to sign.
+        """
+        # Provide length to avoid extra null char
+        my_message = ct.create_string_buffer(message, len(message))
+        message_len = ct.c_int(len(my_message))
+        my_context = ct.create_string_buffer(context, len(context))
+        context_len = ct.c_int(len(my_context))
+        my_signature = ct.create_string_buffer(self._sig.contents.length_signature)
+
+        # Initialize to maximum signature size
+        signature_len = ct.c_int(self._sig.contents.length_signature)
+        rv = native().OQS_SIG_sign_with_ctx_str(
+            self._sig,
+            ct.byref(my_signature),
+            ct.byref(signature_len),
+            my_message,
+            message_len,
+            my_context,
+            context_len,
+            self.secret_key,
+        )
+
+        return bytes(my_signature[: signature_len.value]) if rv == OQS_SUCCESS else 0
+
+    def verify_with_ctx_str(self, message, signature, context, public_key):
+        """
+        Verifies the provided signature on the message; returns True if valid.
+
+        :param message: the signed message.
+        :param signature: the signature on the message.
+        :param context: the context string.
+        :param public_key: the signer's public key.
+        """
+        # Provide length to avoid extra null char
+        my_message = ct.create_string_buffer(message, len(message))
+        message_len = ct.c_int(len(my_message))
+        my_signature = ct.create_string_buffer(signature, len(signature))
+        signature_len = ct.c_int(len(my_signature))
+        my_context = ct.create_string_buffer(context, len(context))
+        context_len = ct.c_int(len(my_context))
+
+        my_public_key = ct.create_string_buffer(
+            public_key, self._sig.contents.length_public_key
+        )
+        rv = native().OQS_SIG_verify_with_ctx_str(
+            self._sig,
+            my_message,
+            message_len,
+            my_signature,
+            signature_len,
+            my_context,
+            context_len,
+            my_public_key,
+        )
+
         return True if rv == OQS_SUCCESS else False
 
     def free(self):

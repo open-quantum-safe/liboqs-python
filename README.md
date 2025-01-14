@@ -142,7 +142,7 @@ python3 liboqs-python/examples/rand.py
 Execute
 
 ```shell
-nose2 --verbose liboqs-python
+nose2 --verbose
 ```
 
 ---
@@ -199,7 +199,7 @@ docker run -it oqs-python sh -c ". venv/bin/activate && python liboqs-python/exa
 Or, run the unit tests with
 
 ```shell
-docker run -it oqs-python sh -c ". venv/bin/activate && nose2 --verbose liboqs-python"
+docker run -it oqs-python sh -c ". venv/bin/activate && nose2 --verbose"
 ```
 
 In case you want to use the Docker container as a development environment,
