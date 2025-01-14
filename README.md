@@ -19,7 +19,7 @@ you have access to a Python 3 interpreter. liboqs-python has been extensively
 tested on Linux, macOS and Windows platforms. Continuous integration is
 provided via GitHub actions.
 
-The project contains the following files and directories:
+The project contains the following files and directories
 
 - **`oqs/oqs.py`: a Python 3 module wrapper for the liboqs C library.**
 - `oqs/rand.py`: a Python 3 module supporting RNGs from `<oqs/rand.h>`
@@ -82,6 +82,13 @@ an alternative path, e.g., `C:\liboqs`, by passing the
 
 ```shell
 cmake -S liboqs -B liboqs/build -DCMAKE_INSTALL_PREFIX="C:\liboqs" -DCMAKE_WINDOWS_EXPORT_ALL_SYMBOLS=TRUE -DBUILD_SHARED_LIBS=ON
+```
+
+Alternatively, you can set the `OQS_INSTALL_PATH` environment variable to point
+to the installation directory, e.g., on a UNIX-like system, execute
+
+```shell
+export OQS_INSTALL_PATH=/path/to/liboqs
 ```
 
 ### Let liboqs-python install liboqs automatically
@@ -259,7 +266,7 @@ Waterloo.
 
 ### Contributors
 
-Contributors to the liboqs-python wrapper include:
+Contributors to the liboqs-python wrapper include
 
 - Ben Davies (University of Waterloo)
 - Vlad Gheorghiu ([softwareQ Inc.](https://www.softwareq.ca) and the University
