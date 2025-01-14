@@ -1,4 +1,4 @@
-# Version 0.12.0 - January 14, 2025
+# Version 0.12.0 - January xx, 2025
 
 - Fixes https://github.com/open-quantum-safe/liboqs-python/issues/98. The API
   that NIST has introduced in
