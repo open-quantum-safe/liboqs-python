@@ -482,7 +482,7 @@ class Signature(ct.Structure):
 
     def sign_with_ctx_str(self, message, context):
         """
-        Signs the provided message and returns the signature.
+        Signs the provided message with context string and returns the signature.
 
         :param context: the context string.
         :param message: the message to sign.
@@ -511,7 +511,7 @@ class Signature(ct.Structure):
 
     def verify_with_ctx_str(self, message, signature, context, public_key):
         """
-        Verifies the provided signature on the message; returns True if valid.
+        Verifies the provided signature on the message with context string; returns True if valid.
 
         :param message: the signed message.
         :param signature: the signature on the message.
