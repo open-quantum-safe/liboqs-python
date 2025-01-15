@@ -278,13 +278,13 @@ class KeyEncapsulation(ct.Structure):
 
         :param public_key: the peer's public key.
         """
-        my_public_key = ct.create_string_buffer(
+        c_public_key = ct.create_string_buffer(
             public_key, self._kem.contents.length_public_key
         )
         ciphertext = ct.create_string_buffer(self._kem.contents.length_ciphertext)
         shared_secret = ct.create_string_buffer(self._kem.contents.length_shared_secret)
         rv = native().OQS_KEM_encaps(
-            self._kem, ct.byref(ciphertext), ct.byref(shared_secret), my_public_key
+            self._kem, ct.byref(ciphertext), ct.byref(shared_secret), c_public_key
         )
         return bytes(ciphertext), bytes(shared_secret) if rv == OQS_SUCCESS else 0
 
@@ -294,12 +294,12 @@ class KeyEncapsulation(ct.Structure):
 
         :param ciphertext: the ciphertext received from the peer.
         """
-        my_ciphertext = ct.create_string_buffer(
+        c_ciphertext = ct.create_string_buffer(
             ciphertext, self._kem.contents.length_ciphertext
         )
         shared_secret = ct.create_string_buffer(self._kem.contents.length_shared_secret)
         rv = native().OQS_KEM_decaps(
-            self._kem, ct.byref(shared_secret), my_ciphertext, self.secret_key
+            self._kem, ct.byref(shared_secret), c_ciphertext, self.secret_key
         )
         return bytes(shared_secret) if rv == OQS_SUCCESS else 0
 
@@ -436,23 +436,23 @@ class Signature(ct.Structure):
         :param message: the message to sign.
         """
         # Provide length to avoid extra null char
-        my_message = ct.create_string_buffer(message, len(message))
-        message_len = ct.c_int(len(my_message))
-        my_signature = ct.create_string_buffer(self._sig.contents.length_signature)
+        c_message = ct.create_string_buffer(message, len(message))
+        message_len = ct.c_int(len(c_message))
+        c_signature = ct.create_string_buffer(self._sig.contents.length_signature)
 
         # Initialize to maximum signature size
         signature_len = ct.c_int(self._sig.contents.length_signature)
 
         rv = native().OQS_SIG_sign(
             self._sig,
-            ct.byref(my_signature),
+            ct.byref(c_signature),
             ct.byref(signature_len),
-            my_message,
+            c_message,
             message_len,
             self.secret_key,
         )
 
-        return bytes(my_signature[: signature_len.value]) if rv == OQS_SUCCESS else 0
+        return bytes(c_signature[: signature_len.value]) if rv == OQS_SUCCESS else 0
 
     def verify(self, message, signature, public_key):
         """
@@ -463,21 +463,21 @@ class Signature(ct.Structure):
         :param public_key: the signer's public key.
         """
         # Provide length to avoid extra null char
-        my_message = ct.create_string_buffer(message, len(message))
-        message_len = ct.c_int(len(my_message))
-        my_signature = ct.create_string_buffer(signature, len(signature))
-        signature_len = ct.c_int(len(my_signature))
-        my_public_key = ct.create_string_buffer(
+        c_message = ct.create_string_buffer(message, len(message))
+        message_len = ct.c_int(len(c_message))
+        c_signature = ct.create_string_buffer(signature, len(signature))
+        signature_len = ct.c_int(len(c_signature))
+        c_public_key = ct.create_string_buffer(
             public_key, self._sig.contents.length_public_key
         )
 
         rv = native().OQS_SIG_verify(
             self._sig,
-            my_message,
+            c_message,
             message_len,
-            my_signature,
+            c_signature,
             signature_len,
-            my_public_key,
+            c_public_key,
         )
 
         return True if rv == OQS_SUCCESS else False
@@ -490,27 +490,27 @@ class Signature(ct.Structure):
         :param message: the message to sign.
         """
         # Provide length to avoid extra null char
-        my_message = ct.create_string_buffer(message, len(message))
-        message_len = ct.c_int(len(my_message))
-        my_context = ct.create_string_buffer(context, len(context))
-        context_len = ct.c_int(len(my_context))
-        my_signature = ct.create_string_buffer(self._sig.contents.length_signature)
+        c_message = ct.create_string_buffer(message, len(message))
+        message_len = ct.c_int(len(c_message))
+        c_context = ct.create_string_buffer(context, len(context))
+        context_len = ct.c_int(len(c_context))
+        c_signature = ct.create_string_buffer(self._sig.contents.length_signature)
 
         # Initialize to maximum signature size
         signature_len = ct.c_int(self._sig.contents.length_signature)
 
         rv = native().OQS_SIG_sign_with_ctx_str(
             self._sig,
-            ct.byref(my_signature),
+            ct.byref(c_signature),
             ct.byref(signature_len),
-            my_message,
+            c_message,
             message_len,
-            my_context,
+            c_context,
             context_len,
             self.secret_key,
         )
 
-        return bytes(my_signature[: signature_len.value]) if rv == OQS_SUCCESS else 0
+        return bytes(c_signature[: signature_len.value]) if rv == OQS_SUCCESS else 0
 
     def verify_with_ctx_str(self, message, signature, context, public_key):
         """
@@ -522,25 +522,25 @@ class Signature(ct.Structure):
         :param public_key: the signer's public key.
         """
         # Provide length to avoid extra null char
-        my_message = ct.create_string_buffer(message, len(message))
-        message_len = ct.c_int(len(my_message))
-        my_signature = ct.create_string_buffer(signature, len(signature))
-        signature_len = ct.c_int(len(my_signature))
-        my_context = ct.create_string_buffer(context, len(context))
-        context_len = ct.c_int(len(my_context))
-        my_public_key = ct.create_string_buffer(
+        c_message = ct.create_string_buffer(message, len(message))
+        message_len = ct.c_int(len(c_message))
+        c_signature = ct.create_string_buffer(signature, len(signature))
+        signature_len = ct.c_int(len(c_signature))
+        c_context = ct.create_string_buffer(context, len(context))
+        context_len = ct.c_int(len(c_context))
+        c_public_key = ct.create_string_buffer(
             public_key, self._sig.contents.length_public_key
         )
 
         rv = native().OQS_SIG_verify_with_ctx_str(
             self._sig,
-            my_message,
+            c_message,
             message_len,
-            my_signature,
+            c_signature,
             signature_len,
-            my_context,
+            c_context,
             context_len,
-            my_public_key,
+            c_public_key,
         )
 
         return True if rv == OQS_SUCCESS else False
