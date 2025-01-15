@@ -6,7 +6,7 @@ import random
 disabled_sig_patterns = []
 
 if platform.system() == "Windows":
-    disabled_sig_patterns = ["Rainbow-V"]
+    disabled_sig_patterns = [""]
 
 
 def test_correctness():
@@ -16,12 +16,30 @@ def test_correctness():
         yield check_correctness, alg_name
 
 
+def test_correctness_with_ctx_str():
+    for alg_name in oqs.get_enabled_sig_mechanisms():
+        if not alg_name.startswith("ML-DSA"):
+            continue
+        if any(item in alg_name for item in disabled_sig_patterns):
+            continue
+        yield check_correctness_with_ctx_str, alg_name
+
+
 def check_correctness(alg_name):
     with oqs.Signature(alg_name) as sig:
         message = bytes(random.getrandbits(8) for _ in range(100))
         public_key = sig.generate_keypair()
         signature = sig.sign(message)
         assert sig.verify(message, signature, public_key)
+
+
+def check_correctness_with_ctx_str(alg_name):
+    with oqs.Signature(alg_name) as sig:
+        message = bytes(random.getrandbits(8) for _ in range(100))
+        context = "some context".encode()
+        public_key = sig.generate_keypair()
+        signature = sig.sign_with_ctx_str(message, context)
+        assert sig.verify_with_ctx_str(message, signature, context, public_key)
 
 
 def test_wrong_message():
@@ -74,12 +92,12 @@ def check_wrong_public_key(alg_name):
 
 def test_not_supported():
     try:
-        with oqs.Signature("bogus") as sig:
+        with oqs.Signature("bogus"):
             raise AssertionError("oqs.MechanismNotSupportedError was not raised.")
     except oqs.MechanismNotSupportedError:
         pass
     except Exception as ex:
-        raise AssertionError("An unexpected exception was raised. " + ex)
+        raise AssertionError(f"An unexpected exception was raised: {ex}")
 
 
 def test_not_enabled():
@@ -88,12 +106,12 @@ def test_not_enabled():
         if alg_name not in oqs.get_enabled_sig_mechanisms():
             # Found a non-enabled but supported alg
             try:
-                with oqs.Signature(alg_name) as sig:
+                with oqs.Signature(alg_name):
                     raise AssertionError("oqs.MechanismNotEnabledError was not raised.")
             except oqs.MechanismNotEnabledError:
                 pass
             except Exception as ex:
-                raise AssertionError("An unexpected exception was raised. " + ex)
+                raise AssertionError(f"An unexpected exception was raised: {ex}")
 
 
 if __name__ == "__main__":
@@ -101,8 +119,7 @@ if __name__ == "__main__":
         import nose2
 
         nose2.main()
-
     except ImportError:
-        import nose
-
-        nose.runmodule()
+        raise RuntimeError(
+            "nose2 module not found. Please install it with 'pip install node2'."
+        )

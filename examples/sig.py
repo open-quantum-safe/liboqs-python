@@ -12,7 +12,7 @@ pprint(sigs, compact=True)
 message = "This is the message to sign".encode()
 
 # Create signer and verifier with sample signature mechanisms
-sigalg = "Dilithium2"
+sigalg = "ML-DSA-44"
 with oqs.Signature(sigalg) as signer:
     with oqs.Signature(sigalg) as verifier:
         print("\nSignature details:")
