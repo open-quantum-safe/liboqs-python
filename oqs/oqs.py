@@ -449,7 +449,7 @@ class Signature(ct.Structure):
         """
         # Provide length to avoid extra null char
         c_message = ct.create_string_buffer(message, len(message))
-        message_len = ct.c_size_t(len(c_message))
+        c_message_len = ct.c_size_t(len(c_message))
         c_signature = ct.create_string_buffer(self._sig.contents.length_signature)
 
         # Initialize to maximum signature size
@@ -460,7 +460,7 @@ class Signature(ct.Structure):
             ct.byref(c_signature),
             ct.byref(signature_len),
             c_message,
-            message_len,
+            c_message_len,
             self.secret_key,
         )
         if rv == OQS_SUCCESS:
@@ -478,7 +478,7 @@ class Signature(ct.Structure):
         """
         # Provide length to avoid extra null char
         c_message = ct.create_string_buffer(message, len(message))
-        message_len = ct.c_size_t(len(c_message))
+        c_message_len = ct.c_size_t(len(c_message))
         c_signature = ct.create_string_buffer(signature, len(signature))
         signature_len = ct.c_size_t(len(c_signature))
         c_public_key = ct.create_string_buffer(
@@ -488,7 +488,7 @@ class Signature(ct.Structure):
         rv = native().OQS_SIG_verify(
             self._sig,
             c_message,
-            message_len,
+            c_message_len,
             c_signature,
             signature_len,
             c_public_key,
@@ -504,26 +504,26 @@ class Signature(ct.Structure):
         """
         # Provide length to avoid extra null char
         c_message = ct.create_string_buffer(message, len(message))
-        message_len = ct.c_size_t(len(c_message))
+        c_message_len = ct.c_size_t(len(c_message))
         c_context = ct.create_string_buffer(context, len(context))
         context_len = ct.c_size_t(len(c_context))
         c_signature = ct.create_string_buffer(self._sig.contents.length_signature)
 
         # Initialize to maximum signature size
-        signature_len = ct.c_size_t(self._sig.contents.length_signature)
+        c_signature_len = ct.c_size_t(self._sig.contents.length_signature)
 
         rv = native().OQS_SIG_sign_with_ctx_str(
             self._sig,
             ct.byref(c_signature),
-            ct.byref(signature_len),
+            ct.byref(c_signature_len),
             c_message,
-            message_len,
+            c_message_len,
             c_context,
             context_len,
             self.secret_key,
         )
         if rv == OQS_SUCCESS:
-            return bytes(c_signature[: signature_len.value])
+            return bytes(c_signature[: c_signature_len.value])
         else:
             raise RuntimeError("Can not sign message with context string")
 
@@ -538,11 +538,11 @@ class Signature(ct.Structure):
         """
         # Provide length to avoid extra null char
         c_message = ct.create_string_buffer(message, len(message))
-        message_len = ct.c_size_t(len(c_message))
+        c_message_len = ct.c_size_t(len(c_message))
         c_signature = ct.create_string_buffer(signature, len(signature))
-        signature_len = ct.c_size_t(len(c_signature))
+        c_signature_len = ct.c_size_t(len(c_signature))
         c_context = ct.create_string_buffer(context, len(context))
-        context_len = ct.c_size_t(len(c_context))
+        c_context_len = ct.c_size_t(len(c_context))
         c_public_key = ct.create_string_buffer(
             public_key, self._sig.contents.length_public_key
         )
@@ -550,11 +550,11 @@ class Signature(ct.Structure):
         rv = native().OQS_SIG_verify_with_ctx_str(
             self._sig,
             c_message,
-            message_len,
+            c_message_len,
             c_signature,
-            signature_len,
+            c_signature_len,
             c_context,
-            context_len,
+            c_context_len,
             c_public_key,
         )
         return True if rv == OQS_SUCCESS else False
