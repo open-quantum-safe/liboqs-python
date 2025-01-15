@@ -27,14 +27,10 @@ with oqs.Signature(sigalg) as signer:
         # Store key pair, wait... (session resumption):
         # signer = oqs.Signature(sigalg, secret_key)
 
-        context = bytes([0, 1, 2])
-
         # Signer signs the message
-        signature = signer.sign_with_ctx_str(message, context)
+        signature = signer.sign(message)
 
         # Verifier verifies the signature
-        is_valid = verifier.verify_with_ctx_str(
-            message, signature, context, signer_public_key
-        )
+        is_valid = verifier.verify(message, signature, signer_public_key)
 
         print("\nValid signature?", is_valid)
