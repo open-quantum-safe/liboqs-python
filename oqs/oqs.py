@@ -45,7 +45,7 @@ def _countdown(seconds):
 def _load_shared_obj(name, additional_searching_paths=None):
     """Attempts to load shared library."""
     paths = []
-    dll = ct.windll if platform.system() == "Windows" else ct.cdll
+    dll = ct.windll if platform.system() == "Windows" else ct.cdll  # type: ignore
 
     # Search additional path, if any
     if additional_searching_paths:
@@ -152,7 +152,7 @@ native().OQS_init()
 def oqs_version():
     """liboqs version string."""
     native().OQS_version.restype = ct.c_char_p
-    return ct.c_char_p(native().OQS_version()).value.decode("UTF-8")
+    return ct.c_char_p(native().OQS_version()).value.decode()  # type: ignore
 
 
 # Warn the user if the liboqs version differs from liboqs-python version
@@ -252,7 +252,7 @@ class KeyEncapsulation(ct.Structure):
     def __enter__(self):
         return self
 
-    def __exit__(self, ctx_type, ctx_value, ctx_traceback):
+    def __exit__(self, _ctx_type, _ctx_value, _ctx_traceback):
         self.free()
 
     def generate_keypair(self):
@@ -418,7 +418,7 @@ class Signature(ct.Structure):
     def __enter__(self):
         return self
 
-    def __exit__(self, ctx_type, ctx_value, ctx_traceback):
+    def __exit__(self, _ctx_type, _ctx_value, _ctx_traceback):
         self.free()
 
     def generate_keypair(self):

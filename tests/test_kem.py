@@ -42,17 +42,17 @@ def check_wrong_ciphertext(alg_name):
         except RuntimeError:
             pass
         except Exception as ex:
-            raise AssertionError("An unexpected exception was raised. " + ex)
+            raise AssertionError(f"An unexpected exception was raised: {ex}")
 
 
 def test_not_supported():
     try:
-        with oqs.KeyEncapsulation("bogus") as kem:
+        with oqs.KeyEncapsulation("bogus"):
             raise AssertionError("oqs.MechanismNotSupportedError was not raised.")
     except oqs.MechanismNotSupportedError:
         pass
     except Exception as ex:
-        raise AssertionError("An unexpected exception was raised. " + ex)
+        raise AssertionError(f"An unexpected exception was raised {ex}")
 
 
 def test_not_enabled():
@@ -61,12 +61,12 @@ def test_not_enabled():
         if alg_name not in oqs.get_enabled_kem_mechanisms():
             # Found a non-enabled but supported alg
             try:
-                with oqs.KeyEncapsulation(alg_name) as kem:
+                with oqs.KeyEncapsulation(alg_name):
                     raise AssertionError("oqs.MechanismNotEnabledError was not raised.")
             except oqs.MechanismNotEnabledError:
                 pass
             except Exception as ex:
-                raise AssertionError("An unexpected exception was raised. " + ex)
+                raise AssertionError(f"An unexpected exception was raised: {ex}")
 
 
 if __name__ == "__main__":
@@ -74,8 +74,5 @@ if __name__ == "__main__":
         import nose2
 
         nose2.main()
-
     except ImportError:
-        import nose
-
-        nose.runmodule()
+        raise RuntimeError("nose2 module not found, required to run the unit tests")

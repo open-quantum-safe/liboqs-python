@@ -92,12 +92,12 @@ def check_wrong_public_key(alg_name):
 
 def test_not_supported():
     try:
-        with oqs.Signature("bogus") as sig:
+        with oqs.Signature("bogus"):
             raise AssertionError("oqs.MechanismNotSupportedError was not raised.")
     except oqs.MechanismNotSupportedError:
         pass
     except Exception as ex:
-        raise AssertionError("An unexpected exception was raised. " + ex)
+        raise AssertionError(f"An unexpected exception was raised: {ex}")
 
 
 def test_not_enabled():
@@ -106,12 +106,12 @@ def test_not_enabled():
         if alg_name not in oqs.get_enabled_sig_mechanisms():
             # Found a non-enabled but supported alg
             try:
-                with oqs.Signature(alg_name) as sig:
+                with oqs.Signature(alg_name):
                     raise AssertionError("oqs.MechanismNotEnabledError was not raised.")
             except oqs.MechanismNotEnabledError:
                 pass
             except Exception as ex:
-                raise AssertionError("An unexpected exception was raised. " + ex)
+                raise AssertionError(f"An unexpected exception was raised: {ex}")
 
 
 if __name__ == "__main__":
@@ -119,8 +119,5 @@ if __name__ == "__main__":
         import nose2
 
         nose2.main()
-
     except ImportError:
-        import nose
-
-        nose.runmodule()
+        raise RuntimeError("nose2 module not found, required to run the unit tests")
