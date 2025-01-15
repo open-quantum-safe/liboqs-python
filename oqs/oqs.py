@@ -108,15 +108,24 @@ def _install_liboqs(target_directory, oqs_version=None):
 
 
 def _load_liboqs():
-    home_dir = os.path.expanduser("~")
-    oqs_install_dir = os.path.abspath(home_dir + os.path.sep + "_oqs")  # $HOME/_oqs
+    if "OQS_INSTALL_PATH" in os.environ:
+        oqs_install_dir = os.path.abspath(os.environ["OQS_INSTALL_PATH"])
+    else:    
+        home_dir = os.path.expanduser("~")
+        oqs_install_dir = os.path.abspath(home_dir + os.path.sep + "_oqs")  # $HOME/_oqs
+        
     oqs_lib_dir = (
         os.path.abspath(oqs_install_dir + os.path.sep + "bin")  # $HOME/_oqs/bin
         if platform.system() == "Windows"
         else os.path.abspath(oqs_install_dir + os.path.sep + "lib")  # $HOME/_oqs/lib
     )
+    oqs_lib64_dir = (
+        os.path.abspath(oqs_install_dir + os.path.sep + "bin")  # $HOME/_oqs/bin
+        if platform.system() == "Windows"
+        else os.path.abspath(oqs_install_dir + os.path.sep + "lib64")  # $HOME/_oqs/lib64
+    )
     try:
-        _liboqs = _load_shared_obj(name="oqs", additional_searching_paths=[oqs_lib_dir])
+        _liboqs = _load_shared_obj(name="oqs", additional_searching_paths=[oqs_lib_dir, oqs_lib64_dir])
         assert _liboqs
     except RuntimeError:
         # We don't have liboqs, so we try to install it automatically
