@@ -8,6 +8,8 @@
   - `Signature.sign_with_ctx_str(self, message, context)`
   - `Signature.verify_with_ctx_str(self, message, signature, context,
 public_key)`
+- When operations fail (i.e., `OQS_SUCCESS != 0`) in functions returning
+  non-boolean objects, a `RuntimeError` is now raised, instead of returning 0
 
 # Version 0.10.0 - April 1, 2024
 

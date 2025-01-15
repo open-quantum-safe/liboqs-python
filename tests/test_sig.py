@@ -36,7 +36,7 @@ def check_correctness(alg_name):
 def check_correctness_with_ctx_str(alg_name):
     with oqs.Signature(alg_name) as sig:
         message = bytes(random.getrandbits(8) for _ in range(100))
-        context = bytes("some context", "utf-8")
+        context = "some context".encode()
         public_key = sig.generate_keypair()
         signature = sig.sign_with_ctx_str(message, context)
         assert sig.verify_with_ctx_str(message, signature, context, public_key)
