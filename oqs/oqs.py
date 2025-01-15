@@ -266,7 +266,11 @@ class KeyEncapsulation(ct.Structure):
         rv = native().OQS_KEM_keypair(
             self._kem, ct.byref(public_key), ct.byref(self.secret_key)
         )
-        return bytes(public_key) if rv == OQS_SUCCESS else 0
+        return (
+            bytes(public_key)
+            if rv == OQS_SUCCESS
+            else RuntimeError("Can not generate keypair")
+        )
 
     def export_secret_key(self):
         """Exports the secret key."""
@@ -286,7 +290,11 @@ class KeyEncapsulation(ct.Structure):
         rv = native().OQS_KEM_encaps(
             self._kem, ct.byref(ciphertext), ct.byref(shared_secret), c_public_key
         )
-        return bytes(ciphertext), bytes(shared_secret) if rv == OQS_SUCCESS else 0
+        return bytes(ciphertext), (
+            bytes(shared_secret)
+            if rv == OQS_SUCCESS
+            else RuntimeError("Can not encapsulate secret")
+        )
 
     def decap_secret(self, ciphertext):
         """
@@ -301,7 +309,11 @@ class KeyEncapsulation(ct.Structure):
         rv = native().OQS_KEM_decaps(
             self._kem, ct.byref(shared_secret), c_ciphertext, self.secret_key
         )
-        return bytes(shared_secret) if rv == OQS_SUCCESS else 0
+        return (
+            bytes(shared_secret)
+            if rv == OQS_SUCCESS
+            else RuntimeError("Can not decapsulate secret")
+        )
 
     def free(self):
         """Releases the native resources."""
@@ -423,7 +435,11 @@ class Signature(ct.Structure):
         rv = native().OQS_SIG_keypair(
             self._sig, ct.byref(public_key), ct.byref(self.secret_key)
         )
-        return bytes(public_key) if rv == OQS_SUCCESS else 0
+        return (
+            bytes(public_key)
+            if rv == OQS_SUCCESS
+            else RuntimeError("Can not generate keypair")
+        )
 
     def export_secret_key(self):
         """Exports the secret key."""
@@ -451,8 +467,11 @@ class Signature(ct.Structure):
             message_len,
             self.secret_key,
         )
-
-        return bytes(c_signature[: signature_len.value]) if rv == OQS_SUCCESS else 0
+        return (
+            bytes(c_signature[: signature_len.value])
+            if rv == OQS_SUCCESS
+            else RuntimeError("Can not sign message")
+        )
 
     def verify(self, message, signature, public_key):
         """
@@ -479,7 +498,6 @@ class Signature(ct.Structure):
             signature_len,
             c_public_key,
         )
-
         return True if rv == OQS_SUCCESS else False
 
     def sign_with_ctx_str(self, message, context):
@@ -509,8 +527,11 @@ class Signature(ct.Structure):
             context_len,
             self.secret_key,
         )
-
-        return bytes(c_signature[: signature_len.value]) if rv == OQS_SUCCESS else 0
+        return (
+            bytes(c_signature[: signature_len.value])
+            if rv == OQS_SUCCESS
+            else RuntimeError("Can not sign message with context string")
+        )
 
     def verify_with_ctx_str(self, message, signature, context, public_key):
         """
@@ -542,7 +563,6 @@ class Signature(ct.Structure):
             context_len,
             c_public_key,
         )
-
         return True if rv == OQS_SUCCESS else False
 
     def free(self):
