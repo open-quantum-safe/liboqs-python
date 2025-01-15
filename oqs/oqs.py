@@ -364,6 +364,7 @@ class Signature(ct.Structure):
         ("alg_version", ct.c_char_p),
         ("claimed_nist_level", ct.c_ubyte),
         ("euf_cma", ct.c_ubyte),
+        ("sig_with_ctx_support", ct.c_ubyte),
         ("length_public_key", ct.c_size_t),
         ("length_secret_key", ct.c_size_t),
         ("length_signature", ct.c_size_t),
@@ -394,6 +395,7 @@ class Signature(ct.Structure):
             "version": self._sig.contents.alg_version.decode(),
             "claimed_nist_level": int(self._sig.contents.claimed_nist_level),
             "is_euf_cma": bool(self._sig.contents.euf_cma),
+            "sig_with_ctx_support": bool(self._sig.contents.sig_with_ctx_support),
             "length_public_key": int(self._sig.contents.length_public_key),
             "length_secret_key": int(self._sig.contents.length_secret_key),
             "length_signature": int(self._sig.contents.length_signature),
@@ -440,6 +442,7 @@ class Signature(ct.Structure):
 
         # Initialize to maximum signature size
         signature_len = ct.c_int(self._sig.contents.length_signature)
+
         rv = native().OQS_SIG_sign(
             self._sig,
             ct.byref(my_signature),
@@ -462,13 +465,12 @@ class Signature(ct.Structure):
         # Provide length to avoid extra null char
         my_message = ct.create_string_buffer(message, len(message))
         message_len = ct.c_int(len(my_message))
-
-        # Provide length to avoid extra null char in sig
         my_signature = ct.create_string_buffer(signature, len(signature))
         signature_len = ct.c_int(len(my_signature))
         my_public_key = ct.create_string_buffer(
             public_key, self._sig.contents.length_public_key
         )
+
         rv = native().OQS_SIG_verify(
             self._sig,
             my_message,
@@ -496,6 +498,7 @@ class Signature(ct.Structure):
 
         # Initialize to maximum signature size
         signature_len = ct.c_int(self._sig.contents.length_signature)
+
         rv = native().OQS_SIG_sign_with_ctx_str(
             self._sig,
             ct.byref(my_signature),
@@ -525,10 +528,10 @@ class Signature(ct.Structure):
         signature_len = ct.c_int(len(my_signature))
         my_context = ct.create_string_buffer(context, len(context))
         context_len = ct.c_int(len(my_context))
-
         my_public_key = ct.create_string_buffer(
             public_key, self._sig.contents.length_public_key
         )
+
         rv = native().OQS_SIG_verify_with_ctx_str(
             self._sig,
             my_message,
