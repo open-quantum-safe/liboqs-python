@@ -1,4 +1,4 @@
-# Version 0.12.0 - January xx, 2025
+# Version 0.12.0 - January 15, 2025
 
 - Fixes https://github.com/open-quantum-safe/liboqs-python/issues/98. The API
   that NIST has introduced in
@@ -10,6 +10,7 @@
 public_key)`
 - When operations fail (i.e., `OQS_SUCCESS != 0`) in functions returning
   non-boolean objects, a `RuntimeError` is now raised, instead of returning 0
+- Bugfix on Linux, `c_int` -> `c_size_t` for buffer sizes
 
 # Version 0.10.0 - April 1, 2024
 
