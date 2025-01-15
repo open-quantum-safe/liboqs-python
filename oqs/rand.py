@@ -19,7 +19,7 @@ def randombytes(bytes_to_read):
     :return: random bytes.
     """
     result = oqs.ct.create_string_buffer(bytes_to_read)
-    oqs.native().OQS_randombytes(result, oqs.ct.c_int(bytes_to_read))
+    oqs.native().OQS_randombytes(result, oqs.ct.c_size_t(bytes_to_read))
     return bytes(result)
 
 

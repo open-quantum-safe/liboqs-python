@@ -449,11 +449,11 @@ class Signature(ct.Structure):
         """
         # Provide length to avoid extra null char
         c_message = ct.create_string_buffer(message, len(message))
-        message_len = ct.c_int(len(c_message))
+        message_len = ct.c_size_t(len(c_message))
         c_signature = ct.create_string_buffer(self._sig.contents.length_signature)
 
         # Initialize to maximum signature size
-        signature_len = ct.c_int(self._sig.contents.length_signature)
+        signature_len = ct.c_size_t(self._sig.contents.length_signature)
 
         rv = native().OQS_SIG_sign(
             self._sig,
@@ -478,9 +478,9 @@ class Signature(ct.Structure):
         """
         # Provide length to avoid extra null char
         c_message = ct.create_string_buffer(message, len(message))
-        message_len = ct.c_int(len(c_message))
+        message_len = ct.c_size_t(len(c_message))
         c_signature = ct.create_string_buffer(signature, len(signature))
-        signature_len = ct.c_int(len(c_signature))
+        signature_len = ct.c_size_t(len(c_signature))
         c_public_key = ct.create_string_buffer(
             public_key, self._sig.contents.length_public_key
         )
@@ -504,13 +504,13 @@ class Signature(ct.Structure):
         """
         # Provide length to avoid extra null char
         c_message = ct.create_string_buffer(message, len(message))
-        message_len = ct.c_int(len(c_message))
+        message_len = ct.c_size_t(len(c_message))
         c_context = ct.create_string_buffer(context, len(context))
-        context_len = ct.c_int(len(c_context))
+        context_len = ct.c_size_t(len(c_context))
         c_signature = ct.create_string_buffer(self._sig.contents.length_signature)
 
         # Initialize to maximum signature size
-        signature_len = ct.c_int(self._sig.contents.length_signature)
+        signature_len = ct.c_size_t(self._sig.contents.length_signature)
 
         rv = native().OQS_SIG_sign_with_ctx_str(
             self._sig,
@@ -538,11 +538,11 @@ class Signature(ct.Structure):
         """
         # Provide length to avoid extra null char
         c_message = ct.create_string_buffer(message, len(message))
-        message_len = ct.c_int(len(c_message))
+        message_len = ct.c_size_t(len(c_message))
         c_signature = ct.create_string_buffer(signature, len(signature))
-        signature_len = ct.c_int(len(c_signature))
+        signature_len = ct.c_size_t(len(c_signature))
         c_context = ct.create_string_buffer(context, len(context))
-        context_len = ct.c_int(len(c_context))
+        context_len = ct.c_size_t(len(c_context))
         c_public_key = ct.create_string_buffer(
             public_key, self._sig.contents.length_public_key
         )
