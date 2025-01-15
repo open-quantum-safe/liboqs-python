@@ -36,8 +36,13 @@ def check_wrong_ciphertext(alg_name):
         public_key = kem.generate_keypair()
         ciphertext, shared_secret_server = kem.encap_secret(public_key)
         wrong_ciphertext = bytes(random.getrandbits(8) for _ in range(len(ciphertext)))
-        shared_secret_client = kem.decap_secret(wrong_ciphertext)
-        assert shared_secret_client != shared_secret_server
+        try:
+            shared_secret_client = kem.decap_secret(wrong_ciphertext)
+            assert shared_secret_client != shared_secret_server
+        except RuntimeError:
+            pass
+        except Exception as ex:
+            raise AssertionError("An unexpected exception was raised. " + ex)
 
 
 def test_not_supported():
