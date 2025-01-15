@@ -6,7 +6,7 @@ import random
 disabled_KEM_patterns = []
 
 if platform.system() == "Windows":
-    disabled_KEM_patterns = ["Classic-McEliece"]
+    disabled_KEM_patterns = [""]
 
 
 def test_correctness():
@@ -47,7 +47,7 @@ def check_wrong_ciphertext(alg_name):
 
 def test_not_supported():
     try:
-        with oqs.KeyEncapsulation("bogus"):
+        with oqs.KeyEncapsulation("unsupported_sig"):
             raise AssertionError("oqs.MechanismNotSupportedError was not raised.")
     except oqs.MechanismNotSupportedError:
         pass
@@ -56,7 +56,6 @@ def test_not_supported():
 
 
 def test_not_enabled():
-    # TODO: test broken as the compiled lib determines which algorithms are supported and enabled
     for alg_name in oqs.get_supported_kem_mechanisms():
         if alg_name not in oqs.get_enabled_kem_mechanisms():
             # Found a non-enabled but supported alg

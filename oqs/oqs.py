@@ -110,10 +110,10 @@ def _install_liboqs(target_directory, oqs_version=None):
 def _load_liboqs():
     if "OQS_INSTALL_PATH" in os.environ:
         oqs_install_dir = os.path.abspath(os.environ["OQS_INSTALL_PATH"])
-    else:    
+    else:
         home_dir = os.path.expanduser("~")
         oqs_install_dir = os.path.abspath(home_dir + os.path.sep + "_oqs")  # $HOME/_oqs
-        
+
     oqs_lib_dir = (
         os.path.abspath(oqs_install_dir + os.path.sep + "bin")  # $HOME/_oqs/bin
         if platform.system() == "Windows"
@@ -122,10 +122,14 @@ def _load_liboqs():
     oqs_lib64_dir = (
         os.path.abspath(oqs_install_dir + os.path.sep + "bin")  # $HOME/_oqs/bin
         if platform.system() == "Windows"
-        else os.path.abspath(oqs_install_dir + os.path.sep + "lib64")  # $HOME/_oqs/lib64
+        else os.path.abspath(
+            oqs_install_dir + os.path.sep + "lib64"
+        )  # $HOME/_oqs/lib64
     )
     try:
-        _liboqs = _load_shared_obj(name="oqs", additional_searching_paths=[oqs_lib_dir, oqs_lib64_dir])
+        _liboqs = _load_shared_obj(
+            name="oqs", additional_searching_paths=[oqs_lib_dir, oqs_lib64_dir]
+        )
         assert _liboqs
     except RuntimeError:
         # We don't have liboqs, so we try to install it automatically
@@ -462,18 +466,18 @@ class Signature(ct.Structure):
         c_signature = ct.create_string_buffer(self._sig.contents.length_signature)
 
         # Initialize to maximum signature size
-        signature_len = ct.c_size_t(self._sig.contents.length_signature)
+        c_signature_len = ct.c_size_t(self._sig.contents.length_signature)
 
         rv = native().OQS_SIG_sign(
             self._sig,
             ct.byref(c_signature),
-            ct.byref(signature_len),
+            ct.byref(c_signature_len),
             c_message,
             c_message_len,
             self.secret_key,
         )
         if rv == OQS_SUCCESS:
-            return bytes(c_signature[: signature_len.value])
+            return bytes(c_signature[: c_signature_len.value])
         else:
             raise RuntimeError("Can not sign message")
 
@@ -489,7 +493,7 @@ class Signature(ct.Structure):
         c_message = ct.create_string_buffer(message, len(message))
         c_message_len = ct.c_size_t(len(c_message))
         c_signature = ct.create_string_buffer(signature, len(signature))
-        signature_len = ct.c_size_t(len(c_signature))
+        c_signature_len = ct.c_size_t(len(c_signature))
         c_public_key = ct.create_string_buffer(
             public_key, self._sig.contents.length_public_key
         )
@@ -499,7 +503,7 @@ class Signature(ct.Structure):
             c_message,
             c_message_len,
             c_signature,
-            signature_len,
+            c_signature_len,
             c_public_key,
         )
         return True if rv == OQS_SUCCESS else False
@@ -511,16 +515,22 @@ class Signature(ct.Structure):
         :param context: the context string.
         :param message: the message to sign.
         """
+        if context and not self._sig.contents.sig_with_ctx_support:
+            raise RuntimeError("Signing with context string not supported")
+
         # Provide length to avoid extra null char
         c_message = ct.create_string_buffer(message, len(message))
         c_message_len = ct.c_size_t(len(c_message))
-        c_context = ct.create_string_buffer(context, len(context))
-        context_len = ct.c_size_t(len(c_context))
+        if len(context) == 0:
+            c_context = None
+            c_context_len = 0
+        else:
+            c_context = ct.create_string_buffer(context, len(context))
+            c_context_len = ct.c_size_t(len(c_context))
         c_signature = ct.create_string_buffer(self._sig.contents.length_signature)
 
         # Initialize to maximum signature size
         c_signature_len = ct.c_size_t(self._sig.contents.length_signature)
-
         rv = native().OQS_SIG_sign_with_ctx_str(
             self._sig,
             ct.byref(c_signature),
@@ -528,7 +538,7 @@ class Signature(ct.Structure):
             c_message,
             c_message_len,
             c_context,
-            context_len,
+            c_context_len,
             self.secret_key,
         )
         if rv == OQS_SUCCESS:
@@ -545,13 +555,20 @@ class Signature(ct.Structure):
         :param context: the context string.
         :param public_key: the signer's public key.
         """
+        if context and not self._sig.contents.sig_with_ctx_support:
+            raise RuntimeError("Verifying with context string not supported")
+
         # Provide length to avoid extra null char
         c_message = ct.create_string_buffer(message, len(message))
         c_message_len = ct.c_size_t(len(c_message))
         c_signature = ct.create_string_buffer(signature, len(signature))
         c_signature_len = ct.c_size_t(len(c_signature))
-        c_context = ct.create_string_buffer(context, len(context))
-        c_context_len = ct.c_size_t(len(c_context))
+        if len(context) == 0:
+            c_context = None
+            c_context_len = 0
+        else:
+            c_context = ct.create_string_buffer(context, len(context))
+            c_context_len = ct.c_size_t(len(c_context))
         c_public_key = ct.create_string_buffer(
             public_key, self._sig.contents.length_public_key
         )

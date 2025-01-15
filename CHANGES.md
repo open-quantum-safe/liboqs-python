@@ -10,7 +10,7 @@
 public_key)`
 - When operations fail (i.e., `OQS_SUCCESS != 0`) in functions returning
   non-boolean objects, a `RuntimeError` is now raised, instead of returning 0
-- Bugfix on Linux, `c_int` -> `c_size_t` for buffer sizes
+- Bugfix on Linux platforms, `c_int` -> `c_size_t` for buffer sizes
 - Pyright type checking fixes
 - Updated examples to use `ML-KEM` and `ML-DSA` as the defaults
 

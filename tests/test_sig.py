@@ -2,6 +2,8 @@ import oqs
 import platform  # to learn the OS we're on
 import random
 
+from oqs.oqs import Signature
+
 # Sigs for which unit testing is disabled
 disabled_sig_patterns = []
 
@@ -18,7 +20,7 @@ def test_correctness():
 
 def test_correctness_with_ctx_str():
     for alg_name in oqs.get_enabled_sig_mechanisms():
-        if not alg_name.startswith("ML-DSA"):
+        if not Signature(alg_name).details["sig_with_ctx_support"]:
             continue
         if any(item in alg_name for item in disabled_sig_patterns):
             continue
@@ -92,7 +94,7 @@ def check_wrong_public_key(alg_name):
 
 def test_not_supported():
     try:
-        with oqs.Signature("bogus"):
+        with oqs.Signature("unsupported_sig"):
             raise AssertionError("oqs.MechanismNotSupportedError was not raised.")
     except oqs.MechanismNotSupportedError:
         pass
@@ -101,7 +103,6 @@ def test_not_supported():
 
 
 def test_not_enabled():
-    # TODO: test broken as the compiled lib determines which algorithms are supported and enabled
     for alg_name in oqs.get_supported_sig_mechanisms():
         if alg_name not in oqs.get_enabled_sig_mechanisms():
             # Found a non-enabled but supported alg
