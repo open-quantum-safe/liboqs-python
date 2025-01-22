@@ -122,5 +122,5 @@ if __name__ == "__main__":
         nose2.main()
     except ImportError:
         raise RuntimeError(
-            "nose2 module not found. Please install it with 'pip install node2'."
+            "nose2 module not found. Please install it with 'pip install nose2'."
         )
