@@ -246,15 +246,24 @@ class KeyEncapsulation(ct.Structure):
 
         self._kem = native().OQS_KEM_new(ct.create_string_buffer(alg_name.encode()))
 
+        self.method_name = self._kem.contents.method_name
+        self.alg_version = self._kem.contents.alg_version
+        self.claimed_nist_level = self._kem.contents.claimed_nist_level
+        self.ind_cca = self._kem.contents.ind_cca
+        self.length_public_key = self._kem.contents.length_public_key
+        self.length_secret_key = self._kem.contents.length_secret_key
+        self.length_ciphertext = self._kem.contents.length_ciphertext
+        self.length_shared_secret = self._kem.contents.length_shared_secret
+
         self.details = {
-            "name": self._kem.contents.method_name.decode(),
-            "version": self._kem.contents.alg_version.decode(),
-            "claimed_nist_level": int(self._kem.contents.claimed_nist_level),
-            "is_ind_cca": bool(self._kem.contents.ind_cca),
-            "length_public_key": int(self._kem.contents.length_public_key),
-            "length_secret_key": int(self._kem.contents.length_secret_key),
-            "length_ciphertext": int(self._kem.contents.length_ciphertext),
-            "length_shared_secret": int(self._kem.contents.length_shared_secret),
+            "name": self.method_name.decode(),
+            "version": self.alg_version.decode(),
+            "claimed_nist_level": int(self.claimed_nist_level),
+            "is_ind_cca": bool(self.ind_cca),
+            "length_public_key": int(self.length_public_key),
+            "length_secret_key": int(self.length_secret_key),
+            "length_ciphertext": int(self.length_ciphertext),
+            "length_shared_secret": int(self.length_shared_secret),
         }
 
         if secret_key:
@@ -412,15 +421,25 @@ class Signature(ct.Structure):
                 raise MechanismNotSupportedError(alg_name)
 
         self._sig = native().OQS_SIG_new(ct.create_string_buffer(alg_name.encode()))
+
+        self.method_name = self._sig.contents.method_name
+        self.alg_version = self._sig.contents.alg_version
+        self.claimed_nist_level = self._sig.contents.claimed_nist_level
+        self.euf_cma = self._sig.contents.euf_cma
+        self.sig_with_ctx_support = self._sig.contents.sig_with_ctx_support
+        self.length_public_key = self._sig.contents.length_public_key
+        self.length_secret_key = self._sig.contents.length_secret_key
+        self.length_signature = self._sig.contents.length_signature
+
         self.details = {
-            "name": self._sig.contents.method_name.decode(),
-            "version": self._sig.contents.alg_version.decode(),
-            "claimed_nist_level": int(self._sig.contents.claimed_nist_level),
-            "is_euf_cma": bool(self._sig.contents.euf_cma),
-            "sig_with_ctx_support": bool(self._sig.contents.sig_with_ctx_support),
-            "length_public_key": int(self._sig.contents.length_public_key),
-            "length_secret_key": int(self._sig.contents.length_secret_key),
-            "length_signature": int(self._sig.contents.length_signature),
+            "name": self.method_name.decode(),
+            "version": self.alg_version.decode(),
+            "claimed_nist_level": int(self.claimed_nist_level),
+            "is_euf_cma": bool(self.euf_cma),
+            "sig_with_ctx_support": bool(self.sig_with_ctx_support),
+            "length_public_key": int(self.length_public_key),
+            "length_secret_key": int(self.length_secret_key),
+            "length_signature": int(self.length_signature),
         }
 
         if secret_key:
