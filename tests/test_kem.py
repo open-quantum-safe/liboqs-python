@@ -68,6 +68,25 @@ def test_not_enabled():
                 raise AssertionError(f"An unexpected exception was raised: {ex}")
 
 
+def test_python_attributes():
+    for alg_name in oqs.get_enabled_kem_mechanisms():
+        with oqs.KeyEncapsulation(alg_name) as kem:
+            if kem.method_name.decode() != alg_name:
+                raise AssertionError("Incorrect oqs.KeyEncapsulation.method_name")
+            if kem.alg_version is None:
+                raise AssertionError("Undefined oqs.KeyEncapsulation.alg_version")
+            if not 1 <= kem.claimed_nist_level <= 5:
+                raise AssertionError("Invalid oqs.KeyEncapsulation.claimed_nist_level")
+            if kem.length_public_key == 0:
+                raise AssertionError("Incorrect oqs.KeyEncapsulation.length_public_key")
+            if kem.length_secret_key == 0:
+                raise AssertionError("Incorrect oqs.KeyEncapsulation.length_secret_key")
+            if kem.length_ciphertext == 0:
+                raise AssertionError("Incorrect oqs.KeyEncapsulation.length_signature")
+            if kem.length_shared_secret == 0:
+                raise AssertionError("Incorrect oqs.KeyEncapsulation.length_shared_secret")
+
+
 if __name__ == "__main__":
     try:
         import nose2

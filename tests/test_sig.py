@@ -115,6 +115,23 @@ def test_not_enabled():
                 raise AssertionError(f"An unexpected exception was raised: {ex}")
 
 
+def test_python_attributes():
+    for alg_name in oqs.get_enabled_sig_mechanisms():
+        with oqs.Signature(alg_name) as sig:
+            if sig.method_name.decode() != alg_name:
+                raise AssertionError("Incorrect oqs.Signature.method_name")
+            if sig.alg_version is None:
+                raise AssertionError("Undefined oqs.Signature.alg_version")
+            if not 1 <= sig.claimed_nist_level <= 5:
+                raise AssertionError("Invalid oqs.Signature.claimed_nist_level")
+            if sig.length_public_key == 0:
+                raise AssertionError("Incorrect oqs.Signature.length_public_key")
+            if sig.length_secret_key == 0:
+                raise AssertionError("Incorrect oqs.Signature.length_secret_key")
+            if sig.length_signature == 0:
+                raise AssertionError("Incorrect oqs.Signature.length_signature")
+
+
 if __name__ == "__main__":
     try:
         import nose2
