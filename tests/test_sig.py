@@ -3,11 +3,13 @@ import random
 
 import oqs
 
+from oqs.oqs import Signature
+
 # Sigs for which unit testing is disabled
 disabled_sig_patterns = []
 
 if platform.system() == "Windows":
-    disabled_sig_patterns = ["Rainbow-V"]
+    disabled_sig_patterns = [""]
 
 
 def test_correctness() -> tuple[None, str]:
@@ -17,12 +19,30 @@ def test_correctness() -> tuple[None, str]:
         yield check_correctness, alg_name
 
 
+def test_correctness_with_ctx_str():
+    for alg_name in oqs.get_enabled_sig_mechanisms():
+        if not Signature(alg_name).details["sig_with_ctx_support"]:
+            continue
+        if any(item in alg_name for item in disabled_sig_patterns):
+            continue
+        yield check_correctness_with_ctx_str, alg_name
+
+
 def check_correctness(alg_name: str) -> None:
     with oqs.Signature(alg_name) as sig:
         message = bytes(random.getrandbits(8) for _ in range(100))
         public_key = sig.generate_keypair()
         signature = sig.sign(message)
         assert sig.verify(message, signature, public_key)  # noqa: S101
+
+
+def check_correctness_with_ctx_str(alg_name):
+    with oqs.Signature(alg_name) as sig:
+        message = bytes(random.getrandbits(8) for _ in range(100))
+        context = "some context".encode()
+        public_key = sig.generate_keypair()
+        signature = sig.sign_with_ctx_str(message, context)
+        assert sig.verify_with_ctx_str(message, signature, context, public_key)
 
 
 def test_wrong_message() -> tuple[None, str]:
@@ -75,30 +95,42 @@ def check_wrong_public_key(alg_name: str) -> None:
 
 def test_not_supported() -> None:
     try:
-        with oqs.Signature("bogus") as _sig:
-            msg = "oqs.MechanismNotSupportedError was not raised."
-            raise AssertionError(msg)  # noqa: TRY301
+        with oqs.Signature("unsupported_sig"):
+            raise AssertionError("oqs.MechanismNotSupportedError was not raised.")
     except oqs.MechanismNotSupportedError:
         pass
-    except Exception as ex:  # noqa: BLE001
-        msg = f"An unexpected exception was raised. {ex}"
-        raise AssertionError(msg)  # noqa: B904
+    except Exception as ex:
+        raise AssertionError(f"An unexpected exception was raised: {ex}")
 
 
 def test_not_enabled() -> None:
-    # TODO: test broken as the compiled lib determines which algorithms are supported and enabled
     for alg_name in oqs.get_supported_sig_mechanisms():
         if alg_name not in oqs.get_enabled_sig_mechanisms():
             # Found a non-enabled but supported alg
             try:
-                with oqs.Signature(alg_name) as _sig:
-                    msg = "oqs.MechanismNotEnabledError was not raised."
-                    raise AssertionError(msg)  # noqa: TRY301
+                with oqs.Signature(alg_name):
+                    raise AssertionError("oqs.MechanismNotEnabledError was not raised.")
             except oqs.MechanismNotEnabledError:
                 pass
-            except Exception as ex:  # noqa: BLE001
-                msg = f"An unexpected exception was raised. {ex}"
-                raise AssertionError(msg)  # noqa: B904
+            except Exception as ex:
+                raise AssertionError(f"An unexpected exception was raised: {ex}")
+
+
+def test_python_attributes():
+    for alg_name in oqs.get_enabled_sig_mechanisms():
+        with oqs.Signature(alg_name) as sig:
+            if sig.method_name.decode() != alg_name:
+                raise AssertionError("Incorrect oqs.Signature.method_name")
+            if sig.alg_version is None:
+                raise AssertionError("Undefined oqs.Signature.alg_version")
+            if not 1 <= sig.claimed_nist_level <= 5:
+                raise AssertionError("Invalid oqs.Signature.claimed_nist_level")
+            if sig.length_public_key == 0:
+                raise AssertionError("Incorrect oqs.Signature.length_public_key")
+            if sig.length_secret_key == 0:
+                raise AssertionError("Incorrect oqs.Signature.length_secret_key")
+            if sig.length_signature == 0:
+                raise AssertionError("Incorrect oqs.Signature.length_signature")
 
 
 if __name__ == "__main__":
@@ -106,8 +138,7 @@ if __name__ == "__main__":
         import nose2
 
         nose2.main()
-
     except ImportError:
-        import nose
-
-        nose.runmodule()
+        raise RuntimeError(
+            "nose2 module not found. Please install it with 'pip install nose2'."
+        )

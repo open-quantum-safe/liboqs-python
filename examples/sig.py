@@ -18,7 +18,7 @@ logger.info(
 message = b"This is the message to sign"
 
 # Create signer and verifier with sample signature mechanisms
-sigalg = "Dilithium2"
+sigalg = "ML-DSA-44"
 with oqs.Signature(sigalg) as signer, oqs.Signature(sigalg) as verifier:
     logger.info("Signature details: %s", pformat(signer.details))
 

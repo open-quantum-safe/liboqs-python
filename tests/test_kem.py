@@ -7,7 +7,7 @@ import oqs
 disabled_KEM_patterns = []  # noqa: N816
 
 if platform.system() == "Windows":
-    disabled_KEM_patterns = ["Classic-McEliece"]  # noqa: N816
+    disabled_KEM_patterns = [""]
 
 
 def test_correctness() -> tuple[None, str]:
@@ -37,36 +37,55 @@ def check_wrong_ciphertext(alg_name: str) -> None:
         public_key = kem.generate_keypair()
         ciphertext, shared_secret_server = kem.encap_secret(public_key)
         wrong_ciphertext = bytes(random.getrandbits(8) for _ in range(len(ciphertext)))
-        shared_secret_client = kem.decap_secret(wrong_ciphertext)
-        assert shared_secret_client != shared_secret_server  # noqa: S101
+        try:
+            shared_secret_client = kem.decap_secret(wrong_ciphertext)
+            assert shared_secret_client != shared_secret_server
+        except RuntimeError:
+            pass
+        except Exception as ex:
+            raise AssertionError(f"An unexpected exception was raised: {ex}")
 
 
 def test_not_supported() -> None:
     try:
-        with oqs.KeyEncapsulation("bogus") as _kem:
-            msg = "oqs.MechanismNotSupportedError was not raised."
-            raise AssertionError(msg)  # noqa: TRY301
+        with oqs.KeyEncapsulation("unsupported_sig"):
+            raise AssertionError("oqs.MechanismNotSupportedError was not raised.")
     except oqs.MechanismNotSupportedError:
         pass
-    except Exception as ex:  # noqa: BLE001
-        msg = f"An unexpected exception was raised. {ex}"
-        raise AssertionError(msg)  # noqa: B904
+    except Exception as ex:
+        raise AssertionError(f"An unexpected exception was raised {ex}")
 
 
 def test_not_enabled() -> None:
-    # TODO: test broken as the compiled lib determines which algorithms are supported and enabled
     for alg_name in oqs.get_supported_kem_mechanisms():
         if alg_name not in oqs.get_enabled_kem_mechanisms():
             # Found a non-enabled but supported alg
             try:
-                with oqs.KeyEncapsulation(alg_name) as _kem:
-                    msg = "oqs.MechanismNotEnabledError was not raised."
-                    raise AssertionError(msg)  # noqa: TRY301
+                with oqs.KeyEncapsulation(alg_name):
+                    raise AssertionError("oqs.MechanismNotEnabledError was not raised.")
             except oqs.MechanismNotEnabledError:
                 pass
-            except Exception as ex:  # noqa: BLE001
-                msg = f"An unexpected exception was raised. {ex}"
-                raise AssertionError(msg)  # noqa: B904
+            except Exception as ex:
+                raise AssertionError(f"An unexpected exception was raised: {ex}")
+
+
+def test_python_attributes():
+    for alg_name in oqs.get_enabled_kem_mechanisms():
+        with oqs.KeyEncapsulation(alg_name) as kem:
+            if kem.method_name.decode() != alg_name:
+                raise AssertionError("Incorrect oqs.KeyEncapsulation.method_name")
+            if kem.alg_version is None:
+                raise AssertionError("Undefined oqs.KeyEncapsulation.alg_version")
+            if not 1 <= kem.claimed_nist_level <= 5:
+                raise AssertionError("Invalid oqs.KeyEncapsulation.claimed_nist_level")
+            if kem.length_public_key == 0:
+                raise AssertionError("Incorrect oqs.KeyEncapsulation.length_public_key")
+            if kem.length_secret_key == 0:
+                raise AssertionError("Incorrect oqs.KeyEncapsulation.length_secret_key")
+            if kem.length_ciphertext == 0:
+                raise AssertionError("Incorrect oqs.KeyEncapsulation.length_signature")
+            if kem.length_shared_secret == 0:
+                raise AssertionError("Incorrect oqs.KeyEncapsulation.length_shared_secret")
 
 
 if __name__ == "__main__":
@@ -74,8 +93,7 @@ if __name__ == "__main__":
         import nose2
 
         nose2.main()
-
     except ImportError:
-        import nose
-
-        nose.runmodule()
+        raise RuntimeError(
+            "nose2 module not found. Please install it with 'pip install nose2'."
+        )
