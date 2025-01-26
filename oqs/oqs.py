@@ -31,6 +31,8 @@ TKeyEncapsulation = TypeVar("TKeyEncapsulation", bound="KeyEncapsulation")
 TSignature = TypeVar("TSignature", bound="Signature")
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+logger.addHandler(logging.StreamHandler(stdout))
 
 
 def oqs_python_version() -> Union[str, None]:
@@ -467,6 +469,7 @@ class Signature(ct.Structure):
         ("alg_version", ct.c_char_p),
         ("claimed_nist_level", ct.c_ubyte),
         ("euf_cma", ct.c_ubyte),
+        ("sig_with_ctx_support", ct.c_ubyte),
         ("length_public_key", ct.c_size_t),
         ("length_secret_key", ct.c_size_t),
         ("length_signature", ct.c_size_t),
