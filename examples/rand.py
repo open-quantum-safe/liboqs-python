@@ -6,9 +6,9 @@ import platform  # to learn the OS we're on
 import oqs.rand as oqsrand  # must be explicitly imported
 from oqs import oqs_python_version, oqs_version
 
-logging.basicConfig(format="%(asctime)s %(message)s", level=logging.INFO)
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
+logger.addHandler(logging.StreamHandler())
 
 logger.info("liboqs version: %s", oqs_version())
 logger.info("liboqs-python version: %s", oqs_python_version())
