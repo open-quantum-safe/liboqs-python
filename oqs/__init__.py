@@ -17,11 +17,11 @@ from oqs.oqs import (
 )
 
 __all__ = (
+    "OQS_SUCCESS",
+    "OQS_VERSION",
     "KeyEncapsulation",
     "MechanismNotEnabledError",
     "MechanismNotSupportedError",
-    "OQS_SUCCESS",
-    "OQS_VERSION",
     "Signature",
     "get_enabled_kem_mechanisms",
     "get_enabled_sig_mechanisms",

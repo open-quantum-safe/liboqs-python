@@ -15,11 +15,12 @@ import importlib.metadata  # to determine module version at runtime
 import logging
 import platform  # to learn the OS we're on
 import subprocess
-import sys
 import tempfile  # to install liboqs on demand
 import time
 import warnings
+from os import environ
 from pathlib import Path
+from sys import stdout
 from typing import TYPE_CHECKING, Any, ClassVar, Final, TypeVar, Union, cast
 
 if TYPE_CHECKING:
@@ -50,7 +51,7 @@ OQS_VERSION = oqs_python_version()
 def _countdown(seconds: int) -> None:
     while seconds > 0:
         logger.info("Installing in %s seconds...", seconds)
-        sys.stdout.flush()
+        stdout.flush()
         seconds -= 1
         time.sleep(1)
 
@@ -78,7 +79,6 @@ def _load_shared_obj(
                 # os.environ["LD_LIBRARY_PATH"] += os.path.abspath(path)
 
     # Search typical locations
-
     if found_lib := ctu.find_library(name):
         paths.insert(0, Path(found_lib))
 
@@ -91,7 +91,6 @@ def _load_shared_obj(
                 lib: ct.CDLL = dll.LoadLibrary(str(path))
             except OSError:
                 pass
-
             else:
                 return lib
 
@@ -158,14 +157,14 @@ def _install_liboqs(
 
         if _retcode != 0:
             logger.exception("Error installing liboqs.")
-            sys.exit(1)
+            raise SystemExit(1)
 
         logger.info("Done installing liboqs")
 
 
 def _load_liboqs() -> ct.CDLL:
-    if "OQS_INSTALL_PATH" in os.environ:
-        oqs_install_dir = os.path.abspath(os.environ["OQS_INSTALL_PATH"])
+    if "OQS_INSTALL_PATH" in environ:
+        oqs_install_dir = Path(environ["OQS_INSTALL_PATH"])
     else:
         home_dir = Path.home()
         oqs_install_dir = home_dir / "_oqs"
@@ -175,15 +174,14 @@ def _load_liboqs() -> ct.CDLL:
         else oqs_install_dir / "lib"  # $HOME/_oqs/lib
     )
     oqs_lib64_dir = (
-        os.path.abspath(oqs_install_dir + os.path.sep + "bin")  # $HOME/_oqs/bin
+        oqs_install_dir / "bin"  # $HOME/_oqs/bin
         if platform.system() == "Windows"
-        else os.path.abspath(
-            oqs_install_dir + os.path.sep + "lib64"
-        )  # $HOME/_oqs/lib64
+        else oqs_install_dir / "lib64"  # $HOME/_oqs/lib64
     )
     try:
         liboqs = _load_shared_obj(
-            name="oqs", additional_searching_paths=[oqs_lib_dir, oqs_lib64_dir]
+            name="oqs",
+            additional_searching_paths=[oqs_lib_dir, oqs_lib64_dir],
         )
         assert liboqs  # noqa: S101
     except RuntimeError:
@@ -197,7 +195,8 @@ def _load_liboqs() -> ct.CDLL:
             )
             assert liboqs  # noqa: S101
         except RuntimeError:
-            sys.exit("Could not load liboqs shared library")
+            msg = "Could not load liboqs shared library"
+            raise SystemExit(msg) from None
 
     return liboqs
 
@@ -329,13 +328,13 @@ class KeyEncapsulation(ct.Structure):
 
     def __exit__(
         self,
-        ctx_type: Union[type[BaseException], None],
-        ctx_value: Union[BaseException, None],
-        ctx_traceback: Union[TracebackType, None],
+        exc_type: Union[type[BaseException], None],
+        exc_value: Union[BaseException, None],
+        traceback: Union[TracebackType, None],
     ) -> None:
         self.free()
 
-    def generate_keypair(self) -> Union[bytes, int]:
+    def generate_keypair(self) -> bytes:
         """
         Generate a new keypair and returns the public key.
 
@@ -350,14 +349,14 @@ class KeyEncapsulation(ct.Structure):
         )
         if rv == OQS_SUCCESS:
             return bytes(public_key)
-        else:
-            raise RuntimeError("Can not generate keypair")
+        msg = "Can not generate keypair"
+        raise RuntimeError(msg)
 
     def export_secret_key(self) -> bytes:
         """Export the secret key."""
         return bytes(self.secret_key)
 
-    def encap_secret(self, public_key: Union[int, bytes]) -> tuple[bytes, Union[bytes, int]]:
+    def encap_secret(self, public_key: Union[int, bytes]) -> tuple[bytes, bytes]:
         """
         Generate and encapsulates a secret using the provided public key.
 
@@ -374,32 +373,39 @@ class KeyEncapsulation(ct.Structure):
             self._kem.contents.length_shared_secret,
         )
         rv = native().OQS_KEM_encaps(
-            self._kem, ct.byref(ciphertext), ct.byref(shared_secret), c_public_key
+            self._kem,
+            ct.byref(ciphertext),
+            ct.byref(shared_secret),
+            c_public_key,
         )
         if rv == OQS_SUCCESS:
             return bytes(ciphertext), bytes(shared_secret)
-        else:
-            raise RuntimeError("Can not encapsulate secret")
+        msg = "Can not encapsulate secret"
+        raise RuntimeError(msg)
 
-    def decap_secret(self, ciphertext: Union[int, bytes]) -> Union[bytes, int]:
+    def decap_secret(self, ciphertext: Union[int, bytes]) -> bytes:
         """
         Decapsulate the ciphertext and returns the secret.
 
         :param ciphertext: the ciphertext received from the peer.
         """
         c_ciphertext = ct.create_string_buffer(
-            ciphertext, self._kem.contents.length_ciphertext
+            ciphertext,
+            self._kem.contents.length_ciphertext,
         )
         shared_secret: ct.Array[ct.c_char] = ct.create_string_buffer(
             self._kem.contents.length_shared_secret,
         )
         rv = native().OQS_KEM_decaps(
-            self._kem, ct.byref(shared_secret), c_ciphertext, self.secret_key
+            self._kem,
+            ct.byref(shared_secret),
+            c_ciphertext,
+            self.secret_key,
         )
         if rv == OQS_SUCCESS:
             return bytes(shared_secret)
-        else:
-            raise RuntimeError("Can not decapsulate secret")
+        msg = "Can not decapsulate secret"
+        raise RuntimeError(msg)
 
     def free(self) -> None:
         """Releases the native resources."""
@@ -428,16 +434,16 @@ def is_kem_enabled(alg_name: str) -> bool:
 
 
 _KEM_alg_ids = [native().OQS_KEM_alg_identifier(i) for i in range(native().OQS_KEM_alg_count())]
-_supported_KEMs: list[str] = [i.decode() for i in _KEM_alg_ids]  # noqa: N816
-_enabled_KEMs: list[str] = [i for i in _supported_KEMs if is_kem_enabled(i)]  # noqa: N816
+_supported_KEMs: tuple[str, ...] = tuple([i.decode() for i in _KEM_alg_ids])  # noqa: N816
+_enabled_KEMs: tuple[str, ...] = tuple([i for i in _supported_KEMs if is_kem_enabled(i)])  # noqa: N816
 
 
-def get_enabled_kem_mechanisms() -> list[str]:
+def get_enabled_kem_mechanisms() -> tuple[str, ...]:
     """Return the list of enabled KEM mechanisms."""
     return _enabled_KEMs
 
 
-def get_supported_kem_mechanisms() -> list[str]:
+def get_supported_kem_mechanisms() -> tuple[str, ...]:
     """Return the list of supported KEM mechanisms."""
     return _supported_KEMs
 
@@ -456,7 +462,7 @@ class Signature(ct.Structure):
     free              |  OQS_SIG_free
     """
 
-    _fields_ = [
+    _fields_: ClassVar[list[tuple[str, Any]]] = [
         ("method_name", ct.c_char_p),
         ("alg_version", ct.c_char_p),
         ("claimed_nist_level", ct.c_ubyte),
@@ -517,13 +523,13 @@ class Signature(ct.Structure):
 
     def __exit__(
         self,
-        ctx_type: Union[type[BaseException], None],
-        ctx_value: Union[BaseException, None],
-        ctx_traceback: Union[TracebackType, None],
+        exc_type: Union[type[BaseException], None],
+        exc_value: Union[BaseException, None],
+        traceback: Union[TracebackType, None],
     ) -> None:
         self.free()
 
-    def generate_keypair(self) -> Union[bytes, int]:
+    def generate_keypair(self) -> bytes:
         """
         Generate a new keypair and returns the public key.
 
@@ -540,14 +546,14 @@ class Signature(ct.Structure):
         )
         if rv == OQS_SUCCESS:
             return bytes(public_key)
-        else:
-            raise RuntimeError("Can not generate keypair")
+        msg = "Can not generate keypair"
+        raise RuntimeError(msg)
 
     def export_secret_key(self) -> bytes:
         """Export the secret key."""
         return bytes(self.secret_key)
 
-    def sign(self, message: bytes) -> Union[bytes, int]:
+    def sign(self, message: bytes) -> bytes:
         """
         Signs the provided message and returns the signature.
 
@@ -570,9 +576,9 @@ class Signature(ct.Structure):
             self.secret_key,
         )
         if rv == OQS_SUCCESS:
-            return bytes(c_signature[: c_signature_len.value])
-        else:
-            raise RuntimeError("Can not sign message")
+            return bytes(cast(bytes, c_signature[: c_signature_len.value]))
+        msg = "Can not sign message"
+        raise RuntimeError(msg)
 
     def verify(self, message: bytes, signature: bytes, public_key: bytes) -> bool:
         """
@@ -588,7 +594,8 @@ class Signature(ct.Structure):
         c_signature = ct.create_string_buffer(signature, len(signature))
         c_signature_len = ct.c_size_t(len(c_signature))
         c_public_key = ct.create_string_buffer(
-            public_key, self._sig.contents.length_public_key
+            public_key,
+            self._sig.contents.length_public_key,
         )
 
         rv = native().OQS_SIG_verify(
@@ -599,24 +606,25 @@ class Signature(ct.Structure):
             c_signature_len,
             c_public_key,
         )
-        return True if rv == OQS_SUCCESS else False
+        return rv == OQS_SUCCESS
 
-    def sign_with_ctx_str(self, message, context):
+    def sign_with_ctx_str(self, message: bytes, context: bytes) -> bytes:
         """
-        Signs the provided message with context string and returns the signature.
+        Sign the provided message with context string and returns the signature.
 
         :param context: the context string.
         :param message: the message to sign.
         """
         if context and not self._sig.contents.sig_with_ctx_support:
-            raise RuntimeError("Signing with context string not supported")
+            msg = "Signing with context string not supported"
+            raise RuntimeError(msg)
 
         # Provide length to avoid extra null char
         c_message = ct.create_string_buffer(message, len(message))
         c_message_len = ct.c_size_t(len(c_message))
         if len(context) == 0:
             c_context = None
-            c_context_len = 0
+            c_context_len = ct.c_size_t(0)
         else:
             c_context = ct.create_string_buffer(context, len(context))
             c_context_len = ct.c_size_t(len(c_context))
@@ -635,13 +643,19 @@ class Signature(ct.Structure):
             self.secret_key,
         )
         if rv == OQS_SUCCESS:
-            return bytes(c_signature[: c_signature_len.value])
-        else:
-            raise RuntimeError("Can not sign message with context string")
+            return bytes(cast(bytes, c_signature[: c_signature_len.value]))
+        msg = "Can not sign message with context string"
+        raise RuntimeError(msg)
 
-    def verify_with_ctx_str(self, message, signature, context, public_key):
+    def verify_with_ctx_str(
+        self,
+        message: bytes,
+        signature: bytes,
+        context: bytes,
+        public_key: bytes,
+    ) -> bool:
         """
-        Verifies the provided signature on the message with context string; returns True if valid.
+        Verify the provided signature on the message with context string; returns True if valid.
 
         :param message: the signed message.
         :param signature: the signature on the message.
@@ -649,7 +663,8 @@ class Signature(ct.Structure):
         :param public_key: the signer's public key.
         """
         if context and not self._sig.contents.sig_with_ctx_support:
-            raise RuntimeError("Verifying with context string not supported")
+            msg = "Verifying with context string not supported"
+            raise RuntimeError(msg)
 
         # Provide length to avoid extra null char
         c_message = ct.create_string_buffer(message, len(message))
@@ -658,12 +673,13 @@ class Signature(ct.Structure):
         c_signature_len = ct.c_size_t(len(c_signature))
         if len(context) == 0:
             c_context = None
-            c_context_len = 0
+            c_context_len = ct.c_size_t(0)
         else:
             c_context = ct.create_string_buffer(context, len(context))
             c_context_len = ct.c_size_t(len(c_context))
         c_public_key = ct.create_string_buffer(
-            public_key, self._sig.contents.length_public_key
+            public_key,
+            self._sig.contents.length_public_key,
         )
 
         rv = native().OQS_SIG_verify_with_ctx_str(
@@ -705,15 +721,15 @@ def is_sig_enabled(alg_name: str) -> bool:
 
 
 _sig_alg_ids = [native().OQS_SIG_alg_identifier(i) for i in range(native().OQS_SIG_alg_count())]
-_supported_sigs = [i.decode() for i in _sig_alg_ids]
-_enabled_sigs = [i for i in _supported_sigs if is_sig_enabled(i)]
+_supported_sigs: tuple[str, ...] = tuple([i.decode() for i in _sig_alg_ids])
+_enabled_sigs: tuple[str, ...] = tuple([i for i in _supported_sigs if is_sig_enabled(i)])
 
 
-def get_enabled_sig_mechanisms() -> list[str]:
+def get_enabled_sig_mechanisms() -> tuple[str, ...]:
     """Return the list of enabled signature mechanisms."""
     return _enabled_sigs
 
 
-def get_supported_sig_mechanisms() -> list[str]:
+def get_supported_sig_mechanisms() -> tuple[str, ...]:
     """Return the list of supported signature mechanisms."""
     return _supported_sigs

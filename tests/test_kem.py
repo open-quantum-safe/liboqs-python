@@ -7,7 +7,7 @@ import oqs
 disabled_KEM_patterns = []  # noqa: N816
 
 if platform.system() == "Windows":
-    disabled_KEM_patterns = [""]
+    disabled_KEM_patterns = [""]  # noqa: N816
 
 
 def test_correctness() -> tuple[None, str]:
@@ -39,21 +39,26 @@ def check_wrong_ciphertext(alg_name: str) -> None:
         wrong_ciphertext = bytes(random.getrandbits(8) for _ in range(len(ciphertext)))
         try:
             shared_secret_client = kem.decap_secret(wrong_ciphertext)
-            assert shared_secret_client != shared_secret_server
+            assert shared_secret_client != shared_secret_server  # noqa: S101
         except RuntimeError:
             pass
         except Exception as ex:
-            raise AssertionError(f"An unexpected exception was raised: {ex}")
+            msg = f"An unexpected exception was raised: {ex}"
+            raise AssertionError(msg) from ex
 
 
 def test_not_supported() -> None:
     try:
         with oqs.KeyEncapsulation("unsupported_sig"):
-            raise AssertionError("oqs.MechanismNotSupportedError was not raised.")
+            pass
     except oqs.MechanismNotSupportedError:
         pass
     except Exception as ex:
-        raise AssertionError(f"An unexpected exception was raised {ex}")
+        msg = f"An unexpected exception was raised {ex}"
+        raise AssertionError(msg) from ex
+    else:
+        msg = "oqs.MechanismNotSupportedError was not raised."
+        raise AssertionError(msg)
 
 
 def test_not_enabled() -> None:
@@ -62,30 +67,41 @@ def test_not_enabled() -> None:
             # Found a non-enabled but supported alg
             try:
                 with oqs.KeyEncapsulation(alg_name):
-                    raise AssertionError("oqs.MechanismNotEnabledError was not raised.")
+                    pass
             except oqs.MechanismNotEnabledError:
                 pass
             except Exception as ex:
-                raise AssertionError(f"An unexpected exception was raised: {ex}")
+                msg = f"An unexpected exception was raised: {ex}"
+                raise AssertionError(msg) from ex
+            else:
+                msg = "oqs.MechanismNotEnabledError was not raised."
+                raise AssertionError(msg)
 
 
-def test_python_attributes():
+def test_python_attributes() -> None:
     for alg_name in oqs.get_enabled_kem_mechanisms():
         with oqs.KeyEncapsulation(alg_name) as kem:
             if kem.method_name.decode() != alg_name:
-                raise AssertionError("Incorrect oqs.KeyEncapsulation.method_name")
+                msg = "Incorrect oqs.KeyEncapsulation.method_name"
+                raise AssertionError(msg)
             if kem.alg_version is None:
-                raise AssertionError("Undefined oqs.KeyEncapsulation.alg_version")
+                msg = "Undefined oqs.KeyEncapsulation.alg_version"
+                raise AssertionError(msg)
             if not 1 <= kem.claimed_nist_level <= 5:
-                raise AssertionError("Invalid oqs.KeyEncapsulation.claimed_nist_level")
+                msg = "Invalid oqs.KeyEncapsulation.claimed_nist_level"
+                raise AssertionError(msg)
             if kem.length_public_key == 0:
-                raise AssertionError("Incorrect oqs.KeyEncapsulation.length_public_key")
+                msg = "Incorrect oqs.KeyEncapsulation.length_public_key"
+                raise AssertionError(msg)
             if kem.length_secret_key == 0:
-                raise AssertionError("Incorrect oqs.KeyEncapsulation.length_secret_key")
+                msg = "Incorrect oqs.KeyEncapsulation.length_secret_key"
+                raise AssertionError(msg)
             if kem.length_ciphertext == 0:
-                raise AssertionError("Incorrect oqs.KeyEncapsulation.length_signature")
+                msg = "Incorrect oqs.KeyEncapsulation.length_signature"
+                raise AssertionError(msg)
             if kem.length_shared_secret == 0:
-                raise AssertionError("Incorrect oqs.KeyEncapsulation.length_shared_secret")
+                msg = "Incorrect oqs.KeyEncapsulation.length_shared_secret"
+                raise AssertionError(msg)
 
 
 if __name__ == "__main__":
@@ -94,6 +110,5 @@ if __name__ == "__main__":
 
         nose2.main()
     except ImportError:
-        raise RuntimeError(
-            "nose2 module not found. Please install it with 'pip install nose2'."
-        )
+        msg_ = "nose2 module not found. Please install it with 'pip install nose2'."
+        raise RuntimeError(msg_) from None

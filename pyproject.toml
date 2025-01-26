@@ -7,7 +7,7 @@ authors = [
     { name = "Open Quantum Safe project", email = "contact@openquantumsafe.org" },
 ]
 readme = "README.md"
-license = { file = "LICENSE" }
+license = { file = "LICENSE.txt" }
 dependencies = []
 
 [tool.uv]
@@ -16,14 +16,13 @@ package = true
 [project.optional-dependencies]
 dev = [
     "isort==5.13.2",
-    "pre-commit==4.0.1",
-    "ruff==0.8.2",
-    "bandit==1.8.0",
+    "pre-commit==4.1.0",
+    "ruff==0.9.3",
     "nose2==0.15.1",
 ]
 lint = [
-    "mypy==1.13.0",
-    "types-pytz==2024.2.0.20241003",
+    "mypy==1.14.1",
+    "types-pytz==2024.2.0.20241221",
 ]
 
 [build-system]
@@ -70,7 +69,7 @@ exclude = [
 select = ["ALL"]
 ignore = [
     "A003",
-    "ANN002", "ANN003", "ANN101", "ANN102", "ANN401",
+    "ANN002", "ANN003", "ANN401",
     "C901",
     "D100", "D101", "D102", "D103", "D104", "D105", "D106", "D107", "D203", "D205", "D212",
     "ERA001",
@@ -78,11 +77,11 @@ ignore = [
     "FBT001", "FBT002",
     "FIX002",
     "I001",
-    "PLR0911", "PLR0912", "PLR0913", "PLR0915", "PLR5501",
+    "PLR0911", "PLR0912", "PLR0913", "PLR0915", "PLR2004", "PLR5501",
     "PLW0120",
     "RUF001",
     "TD002", "TD003",
-    "U007",
+    "UP007",
 ]
 
 [tool.ruff.format]
@@ -103,6 +102,7 @@ disallow_incomplete_defs = true
 disallow_untyped_calls = true
 disallow_untyped_defs = true
 extra_checks = true
+follow_imports = "normal"
 follow_imports_for_stubs = true
 ignore_missing_imports = false
 namespace_packages = true

@@ -21,7 +21,7 @@ repos:
       - id: "check-json"
 
   - repo: https://github.com/charliermarsh/ruff-pre-commit
-    rev: v0.8.2
+    rev: v0.9.3
     hooks:
       - id: ruff
         args: [ "--fix" ]

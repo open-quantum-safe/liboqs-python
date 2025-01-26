@@ -1,4 +1,5 @@
 # Key encapsulation Python example
+
 import logging
 from pprint import pformat
 
@@ -16,7 +17,7 @@ logger.info("Enabled KEM mechanisms: %s", pformat(oqs.get_enabled_kem_mechanisms
 kemalg = "ML-KEM-512"
 with oqs.KeyEncapsulation(kemalg) as client:
     with oqs.KeyEncapsulation(kemalg) as server:
-        logger.info("Client details: %s", pformat(client.details))
+        logger.info("Key encapsulation details: %s", pformat(client.details))
 
         # Client generates its keypair
         public_key_client = client.generate_keypair()

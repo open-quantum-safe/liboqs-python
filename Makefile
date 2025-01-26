@@ -2,11 +2,6 @@ src-dir = oqs
 tests-dir = tests
 examples-dir = examples
 
-.PHONY pull:
-pull:
-	git pull origin master
-	git submodule update --init --recursive
-
 .PHONY lint:
 lint:
 	echo "Running ruff..."
@@ -26,7 +21,7 @@ format:
 .PHONE mypy:
 mypy:
 	echo "Running MyPy..."
-	uv run mypy --config-file pyproject.toml
+	uv run mypy --config-file pyproject.toml $(src-dir)
 
 .PHONY outdated:
 outdated:

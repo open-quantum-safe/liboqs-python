@@ -1,4 +1,5 @@
 # Signature Python example
+
 import logging
 from pprint import pformat
 
