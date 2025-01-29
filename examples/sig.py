@@ -2,17 +2,18 @@
 
 import logging
 from pprint import pformat
+from sys import stdout
 
 import oqs
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
-logger.addHandler(logging.StreamHandler())
+logger.addHandler(logging.StreamHandler(stdout))
 
 logger.info("liboqs version: %s", oqs.oqs_version())
 logger.info("liboqs-python version: %s", oqs.oqs_python_version())
 logger.info(
-    "Enabled signature mechanisms: %s",
+    "Enabled signature mechanisms:\n%s",
     pformat(oqs.get_enabled_sig_mechanisms(), compact=True),
 )
 
@@ -21,7 +22,7 @@ message = b"This is the message to sign"
 # Create signer and verifier with sample signature mechanisms
 sigalg = "ML-DSA-44"
 with oqs.Signature(sigalg) as signer, oqs.Signature(sigalg) as verifier:
-    logger.info("Signature details: %s", pformat(signer.details))
+    logger.info("Signature details:\n%s", pformat(signer.details))
 
     # Signer generates its keypair
     signer_public_key = signer.generate_keypair()

@@ -2,22 +2,26 @@
 
 import logging
 from pprint import pformat
+from sys import stdout
 
 import oqs
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
-logger.addHandler(logging.StreamHandler())
+logger.addHandler(logging.StreamHandler(stdout))
 
 logger.info("liboqs version: %s", oqs.oqs_version())
 logger.info("liboqs-python version: %s", oqs.oqs_python_version())
-logger.info("Enabled KEM mechanisms: %s", pformat(oqs.get_enabled_kem_mechanisms(), compact=True))
+logger.info(
+    "Enabled KEM mechanisms:\n%s",
+    pformat(oqs.get_enabled_kem_mechanisms(), compact=True),
+)
 
 # Create client and server with sample KEM mechanisms
 kemalg = "ML-KEM-512"
 with oqs.KeyEncapsulation(kemalg) as client:
     with oqs.KeyEncapsulation(kemalg) as server:
-        logger.info("Key encapsulation details: %s", pformat(client.details))
+        logger.info("Key encapsulation details:\n%s", pformat(client.details))
 
         # Client generates its keypair
         public_key_client = client.generate_keypair()

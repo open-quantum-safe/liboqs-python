@@ -2,13 +2,14 @@
 
 import logging
 import platform  # to learn the OS we're on
+from sys import stdout
 
 import oqs.rand as oqsrand  # must be explicitly imported
 from oqs import oqs_python_version, oqs_version
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
-logger.addHandler(logging.StreamHandler())
+logger.addHandler(logging.StreamHandler(stdout))
 
 logger.info("liboqs version: %s", oqs_version())
 logger.info("liboqs-python version: %s", oqs_python_version())
