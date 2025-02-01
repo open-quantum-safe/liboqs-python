@@ -267,7 +267,7 @@ class KeyEncapsulation(ct.Structure):
     free              |  OQS_KEM_free
     """
 
-    _fields_: ClassVar[list[tuple[str, Any]]] = [
+    _fields_: ClassVar[Sequence[tuple[str, Any]]] = [
         ("method_name", ct.c_char_p),
         ("alg_version", ct.c_char_p),
         ("claimed_nist_level", ct.c_ubyte),
@@ -464,7 +464,7 @@ class Signature(ct.Structure):
     free              |  OQS_SIG_free
     """
 
-    _fields_: ClassVar[list[tuple[str, Any]]] = [
+    _fields_: ClassVar[Sequence[tuple[str, Any]]] = [
         ("method_name", ct.c_char_p),
         ("alg_version", ct.c_char_p),
         ("claimed_nist_level", ct.c_ubyte),
