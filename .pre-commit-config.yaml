@@ -1,0 +1,38 @@
+fail_fast: false
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: "trailing-whitespace"
+      - id: "check-case-conflict"
+      - id: "check-merge-conflict"
+      - id: "debug-statements"
+      - id: "end-of-file-fixer"
+      - id: "mixed-line-ending"
+        args: [ "--fix", "crlf" ]
+        types:
+          - python
+          - yaml
+          - toml
+          - text
+      - id: "detect-private-key"
+      - id: "check-yaml"
+      - id: "check-toml"
+      - id: "check-json"
+
+  - repo: https://github.com/charliermarsh/ruff-pre-commit
+    rev: v0.9.4
+    hooks:
+      - id: ruff
+        args: [ "--fix" ]
+        files: "oqs"
+
+      - id: ruff-format
+        files: "oqs"
+
+  - repo: https://github.com/pycqa/isort
+    rev: 5.13.2
+    hooks:
+      - id: isort
+        name: isort (python)
+        files: "oqs"

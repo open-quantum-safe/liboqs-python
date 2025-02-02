@@ -1,20 +1,27 @@
 # Key encapsulation Python example
 
-import oqs
-from pprint import pprint
+import logging
+from pprint import pformat
+from sys import stdout
 
-print("liboqs version:", oqs.oqs_version())
-print("liboqs-python version:", oqs.oqs_python_version())
-print("Enabled KEM mechanisms:")
-kems = oqs.get_enabled_kem_mechanisms()
-pprint(kems, compact=True)
+import oqs
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+logger.addHandler(logging.StreamHandler(stdout))
+
+logger.info("liboqs version: %s", oqs.oqs_version())
+logger.info("liboqs-python version: %s", oqs.oqs_python_version())
+logger.info(
+    "Enabled KEM mechanisms:\n%s",
+    pformat(oqs.get_enabled_kem_mechanisms(), compact=True),
+)
 
 # Create client and server with sample KEM mechanisms
 kemalg = "ML-KEM-512"
 with oqs.KeyEncapsulation(kemalg) as client:
     with oqs.KeyEncapsulation(kemalg) as server:
-        print("\nKey encapsulation details:")
-        pprint(client.details)
+        logger.info("Key encapsulation details:\n%s", pformat(client.details))
 
         # Client generates its keypair
         public_key_client = client.generate_keypair()
@@ -31,6 +38,7 @@ with oqs.KeyEncapsulation(kemalg) as client:
         # The client decapsulates the server's ciphertext to obtain the shared secret
         shared_secret_client = client.decap_secret(ciphertext)
 
-        print(
-            "\nShared secretes coincide:", shared_secret_client == shared_secret_server
-        )
+    logger.info(
+        "Shared secretes coincide: %s",
+        shared_secret_client == shared_secret_server,
+    )
