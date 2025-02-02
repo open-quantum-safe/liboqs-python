@@ -1,3 +1,12 @@
+# Code checker/formatter
+#
+# Pre-requisites
+#
+# isort
+# mypy
+# ruff
+# uv
+
 src-dir = oqs
 tests-dir = tests
 examples-dir = examples
