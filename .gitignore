@@ -118,4 +118,6 @@ pyvenv.cfg
 
 # vim
 *.swp
+
+# uv
 /uv.lock

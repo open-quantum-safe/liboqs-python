@@ -1,3 +1,7 @@
+# Pre-release
+
+- Added type checking and automatic linting/formatting, https://github.com/open-quantum-safe/liboqs-python/pull/97
+
 # Version 0.12.0 - January 15, 2025
 
 - Fixes https://github.com/open-quantum-safe/liboqs-python/issues/98. The API
