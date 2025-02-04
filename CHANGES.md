@@ -1,3 +1,12 @@
+# Pre-release
+
+- Added type checking and automatic linting/formatting, https://github.com/open-quantum-safe/liboqs-python/pull/97
+- Added a utility function for de-structuring version strings in `oqs.py`
+  - `version(version_str: str) -> tuple[str, str, str]:` - Returns a tuple
+    containing the (major, minor, patch) versions
+- A warning is issued only if the liboqs-python version's major and minor
+  numbers differ from those of liboqs, ignoring the patch version
+
 # Version 0.12.0 - January 15, 2025
 
 - Fixes https://github.com/open-quantum-safe/liboqs-python/issues/98. The API
