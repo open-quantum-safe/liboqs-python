@@ -202,9 +202,7 @@ def _load_liboqs() -> ct.CDLL:
         assert liboqs  # noqa: S101
     except RuntimeError:
         # We don't have liboqs, so we try to install it automatically
-        _install_liboqs(
-            target_directory=oqs_install_dir, oqs_version_to_install=OQS_VERSION
-        )
+        _install_liboqs(target_directory=oqs_install_dir, oqs_version_to_install=OQS_VERSION)
         # Try loading it again
         try:
             liboqs = _load_shared_obj(
@@ -243,13 +241,9 @@ oqs_ver_major, oqs_ver_minor, oqs_ver_patch = version(oqs_ver)
 
 oqs_python_ver = oqs_python_version()
 if oqs_python_ver:
-    oqs_python_ver_major, oqs_python_ver_minor, oqs_python_ver_patch = version(
-        oqs_python_ver
-    )
+    oqs_python_ver_major, oqs_python_ver_minor, oqs_python_ver_patch = version(oqs_python_ver)
     # Warn the user if the liboqs version differs from liboqs-python version
-    if not (
-        oqs_ver_major == oqs_python_ver_major and oqs_ver_minor == oqs_python_ver_minor
-    ):
+    if not (oqs_ver_major == oqs_python_ver_major and oqs_ver_minor == oqs_python_ver_minor):
         warnings.warn(
             f"liboqs version (major, minor) {oqs_version()} differs from liboqs-python version "
             f"{oqs_python_version()}",
@@ -303,9 +297,7 @@ class KeyEncapsulation(ct.Structure):
         ("decaps_cb", ct.c_void_p),
     ]
 
-    def __init__(
-        self, alg_name: str, secret_key: Union[int, bytes, None] = None
-    ) -> None:
+    def __init__(self, alg_name: str, secret_key: Union[int, bytes, None] = None) -> None:
         """
         Create new KeyEncapsulation with the given algorithm.
 
@@ -459,15 +451,9 @@ def is_kem_enabled(alg_name: str) -> bool:
     return native().OQS_KEM_alg_is_enabled(ct.create_string_buffer(alg_name.encode()))
 
 
-_KEM_alg_ids = [
-    native().OQS_KEM_alg_identifier(i) for i in range(native().OQS_KEM_alg_count())
-]
-_supported_KEMs: tuple[str, ...] = tuple(
-    [i.decode() for i in _KEM_alg_ids]
-)  # noqa: N816
-_enabled_KEMs: tuple[str, ...] = tuple(
-    [i for i in _supported_KEMs if is_kem_enabled(i)]
-)  # noqa: N816
+_KEM_alg_ids = [native().OQS_KEM_alg_identifier(i) for i in range(native().OQS_KEM_alg_count())]
+_supported_KEMs: tuple[str, ...] = tuple([i.decode() for i in _KEM_alg_ids])  # noqa: N816
+_enabled_KEMs: tuple[str, ...] = tuple([i for i in _supported_KEMs if is_kem_enabled(i)])  # noqa: N816
 
 
 def get_enabled_kem_mechanisms() -> tuple[str, ...]:
@@ -508,9 +494,7 @@ class Signature(ct.Structure):
         ("verify_cb", ct.c_void_p),
     ]
 
-    def __init__(
-        self, alg_name: str, secret_key: Union[int, bytes, None] = None
-    ) -> None:
+    def __init__(self, alg_name: str, secret_key: Union[int, bytes, None] = None) -> None:
         """
         Create new Signature with the given algorithm.
 
@@ -755,13 +739,9 @@ def is_sig_enabled(alg_name: str) -> bool:
     return native().OQS_SIG_alg_is_enabled(ct.create_string_buffer(alg_name.encode()))
 
 
-_sig_alg_ids = [
-    native().OQS_SIG_alg_identifier(i) for i in range(native().OQS_SIG_alg_count())
-]
+_sig_alg_ids = [native().OQS_SIG_alg_identifier(i) for i in range(native().OQS_SIG_alg_count())]
 _supported_sigs: tuple[str, ...] = tuple([i.decode() for i in _sig_alg_ids])
-_enabled_sigs: tuple[str, ...] = tuple(
-    [i for i in _supported_sigs if is_sig_enabled(i)]
-)
+_enabled_sigs: tuple[str, ...] = tuple([i for i in _supported_sigs if is_sig_enabled(i)])
 
 
 def get_enabled_sig_mechanisms() -> tuple[str, ...]:
