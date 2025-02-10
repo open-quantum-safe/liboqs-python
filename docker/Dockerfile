@@ -6,18 +6,22 @@ ARG LIBOQS_BUILD_DEFINES="-DOQS_DIST_BUILD=ON -DBUILD_SHARED_LIBS=ON -DOQS_USE_O
 # make build arguments: Adding -j here speeds up build but may tax hardware
 ARG MAKE_DEFINES="-j 2"
 
-FROM alpine:3.16 as intermediate
+# Define default versions for Python and Alpine
+ARG PYTHON_VERSION=3.10.16
+ARG ALPINE_VERSION=3.20
+
+FROM alpine:${ALPINE_VERSION} AS intermediate
 # Take in all global args
 ARG LIBOQS_BUILD_DEFINES
 ARG MAKE_DEFINES
 
 LABEL version="2"
 
-ENV DEBIAN_FRONTEND noninteractive
+ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apk update && apk upgrade
 
-# Get all software packages required for builing all components:
+# Get all software packages required for building all components:
 RUN apk add build-base linux-headers cmake ninja git
 
 # get all sources
@@ -38,10 +42,7 @@ RUN apk add automake autoconf && cd /opt/openssl && LDFLAGS="-Wl,-rpath -Wl,/usr
 RUN wget https://letsencrypt.org/certs/isrgrootx1.pem
 
 ## second stage: Only create minimal image without build tooling and intermediate build results generated above:
-FROM alpine:3.16
-
-# Get all software packages required for running all components:
-RUN apk update && apk upgrade && apk add python3
+FROM python:${PYTHON_VERSION}-alpine${ALPINE_VERSION}
 
 # Only retain the binary contents in the final image
 COPY --from=intermediate /usr/local /usr/local
@@ -50,7 +51,7 @@ COPY --from=intermediate /opt/liboqs-python /opt/liboqs-python
 ENV PYTHONPATH=/opt/liboqs-python
 
 # Install liboqs-python
-RUN cd /opt/liboqs-python && python3 setup.py install
+RUN cd /opt/liboqs-python && pip install .
 
 # Enable a normal user 
 RUN addgroup -g 1000 -S oqs && adduser --uid 1000 -S oqs -G oqs 
@@ -61,5 +62,6 @@ COPY minitest.py /home/oqs/minitest.py
 COPY --from=intermediate /opt/isrgrootx1.pem /home/oqs/isrgrootx1.pem
 
 # ensure oqs libs are found. Unset if interested in using stock openssl:
-ENV LD_LIBRARY_PATH=/usr/local/lib64
+ENV LD_LIBRARY_PATH=/usr/local/
+ENV OQS_INSTALL_PATH=/usr/local/
 CMD ["python3", "minitest.py"]
