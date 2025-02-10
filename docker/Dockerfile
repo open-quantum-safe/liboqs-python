@@ -44,9 +44,6 @@ RUN wget https://letsencrypt.org/certs/isrgrootx1.pem
 ## second stage: Only create minimal image without build tooling and intermediate build results generated above:
 FROM python:${PYTHON_VERSION}-alpine${ALPINE_VERSION}
 
-# Get all software packages required for running all components:
-RUN apk update && apk upgrade && apk add python3
-
 # Only retain the binary contents in the final image
 COPY --from=intermediate /usr/local /usr/local
 COPY --from=intermediate /opt/liboqs-python /opt/liboqs-python
