@@ -1,6 +1,6 @@
 import ctypes
 from types import TracebackType
-from typing import Final, TypeVar
+from typing import Final, TypeVar, final, TypedDict
 
 _TKeyEncapsulation = TypeVar("_TKeyEncapsulation", bound="KeyEncapsulation")
 _TSignature = TypeVar("_TSignature", bound="Signature")
@@ -22,6 +22,17 @@ class MechanismNotEnabledError(MechanismNotSupportedError):
     # alg_name and message are inherited from MechanismNotSupportedError
     def __init__(self, alg_name: str) -> None: ...
 
+class KeyEncapsulationDetails(TypedDict):
+    name: str
+    version: str
+    claimed_nist_level: int
+    is_ind_cca: bool
+    length_public_key: int
+    length_secret_key: int
+    length_ciphertext: int
+    length_shared_secret: int
+
+@final
 class KeyEncapsulation:
     # Attributes from the underlying ctypes.Structure, exposed with Python types
     method_name: bytes
@@ -35,7 +46,7 @@ class KeyEncapsulation:
 
     # Custom attributes set during initialization
     alg_name: str
-    details: dict[str, str | int | bool]
+    details: KeyEncapsulationDetails
 
     def __init__(self, alg_name: str, secret_key: int | bytes | None = None) -> None: ...
     def __enter__(self: _TKeyEncapsulation) -> _TKeyEncapsulation: ...
@@ -52,6 +63,17 @@ class KeyEncapsulation:
     def free(self) -> None: ...
     def __repr__(self) -> str: ...
 
+class SignatureDetails(TypedDict):
+    name: str
+    version: str
+    claimed_nist_level: int
+    is_euf_cma: bool
+    sig_with_ctx_support: bool
+    length_public_key: int
+    length_secret_key: int
+    length_signature: int
+
+@final
 class Signature:
     # Attributes from the underlying ctypes.Structure, exposed with Python types
     method_name: bytes
@@ -65,7 +87,7 @@ class Signature:
 
     # Custom attributes set during initialization
     alg_name: str
-    details: dict[str, str | int | bool]
+    details: SignatureDetails
 
     def __init__(self, alg_name: str, secret_key: int | bytes | None = None) -> None: ...
     def __enter__(self: _TSignature) -> _TSignature: ...
