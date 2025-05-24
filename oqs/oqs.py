@@ -466,6 +466,11 @@ def get_supported_kem_mechanisms() -> tuple[str, ...]:
     return _supported_KEMs
 
 
+# Register the OQS_SIG_supports_ctx_str function from the C library
+native().OQS_SIG_supports_ctx_str.restype = ct.c_bool
+native().OQS_SIG_supports_ctx_str.argtypes = [ct.c_char_p]
+
+
 class Signature(ct.Structure):
     """
     An OQS Signature wraps native/C liboqs OQS_SIG structs.
@@ -485,7 +490,6 @@ class Signature(ct.Structure):
         ("alg_version", ct.c_char_p),
         ("claimed_nist_level", ct.c_ubyte),
         ("euf_cma", ct.c_ubyte),
-        ("sig_with_ctx_support", ct.c_ubyte),
         ("length_public_key", ct.c_size_t),
         ("length_secret_key", ct.c_size_t),
         ("length_signature", ct.c_size_t),
@@ -515,7 +519,7 @@ class Signature(ct.Structure):
         self.alg_version = self._sig.contents.alg_version
         self.claimed_nist_level = self._sig.contents.claimed_nist_level
         self.euf_cma = self._sig.contents.euf_cma
-        self.sig_with_ctx_support = self._sig.contents.sig_with_ctx_support
+        self.sig_with_ctx_support = native().OQS_SIG_supports_ctx_str(self.method_name)
         self.length_public_key = self._sig.contents.length_public_key
         self.length_secret_key = self._sig.contents.length_secret_key
         self.length_signature = self._sig.contents.length_signature
@@ -634,7 +638,7 @@ class Signature(ct.Structure):
         :param context: the context string.
         :param message: the message to sign.
         """
-        if context and not self._sig.contents.sig_with_ctx_support:
+        if context and not self.sig_with_ctx_support:
             msg = "Signing with context string not supported"
             raise RuntimeError(msg)
 
@@ -681,7 +685,7 @@ class Signature(ct.Structure):
         :param context: the context string.
         :param public_key: the signer's public key.
         """
-        if context and not self._sig.contents.sig_with_ctx_support:
+        if context and not self.sig_with_ctx_support:
             msg = "Verifying with context string not supported"
             raise RuntimeError(msg)
 

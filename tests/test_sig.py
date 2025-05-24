@@ -2,7 +2,7 @@ import platform  # to learn the OS we're on
 import random
 
 import oqs
-from oqs.oqs import Signature
+from oqs.oqs import Signature, native
 
 # Sigs for which unit testing is disabled
 disabled_sig_patterns = []
@@ -42,6 +42,31 @@ def check_correctness_with_ctx_str(alg_name: str) -> None:
         public_key = sig.generate_keypair()
         signature = sig.sign_with_ctx_str(message, context)
         assert sig.verify_with_ctx_str(message, signature, context, public_key)  # noqa: S101
+
+
+def test_sig_with_ctx_support_detection() -> None:
+    """
+    Test that sig_with_ctx_support matches the C API and that sign_with_ctx_str
+    raises on unsupported algorithms.
+    """
+    for alg_name in oqs.get_enabled_sig_mechanisms():
+        with Signature(alg_name) as sig:
+            # Check Python attribute matches C API
+            c_api_result = native().OQS_SIG_supports_ctx_str(sig.method_name)
+            assert bool(sig.sig_with_ctx_support) == bool(c_api_result), (  # noqa: S101
+                f"sig_with_ctx_support mismatch for {alg_name}"
+            )
+            # If not supported, sign_with_ctx_str should raise
+            if not sig.sig_with_ctx_support:
+                try:
+                    sig.sign_with_ctx_str(b"msg", b"context")
+                except RuntimeError as e:
+                    if "not supported" not in str(e):
+                        msg = f"Unexpected exception message: {e}"
+                        raise AssertionError(msg) from e
+                else:
+                    msg = f"sign_with_ctx_str did not raise for {alg_name} without context support"
+                    raise AssertionError(msg)
 
 
 def test_wrong_message() -> tuple[None, str]:
