@@ -155,13 +155,11 @@ def _install_liboqs(
                 "-DBUILD_SHARED_LIBS=ON",
                 "-DOQS_BUILD_ONLY_LIB=ON",
                 # Stateful signature algorithms:
-                "-DOQS_ENABLE_SIG_STFL_LMS=ON",       # LMS family
-                "-DOQS_ENABLE_SIG_STFL_XMSS=ON",      # XMSS family
+                "-DOQS_ENABLE_SIG_STFL_LMS=ON",  # LMS family
+                "-DOQS_ENABLE_SIG_STFL_XMSS=ON",  # XMSS family
                 "-DOQS_ENABLE_SIG_STFL_XMSSMT=ON",
                 # XMSS-MT family:
                 # Flag removed in the 0.13.1-dev release, but kept for compatibility.
-
-
                 # To support key-generation.
                 "-DOQS_HAZARDOUS_EXPERIMENTAL_ENABLE_SIG_STFL_KEY_SIG_GEN=ON",
                 f"-DCMAKE_INSTALL_PREFIX={target_directory}",
@@ -635,7 +633,7 @@ class Signature(ct.Structure):
             self.secret_key,
         )
         if rv == OQS_SUCCESS:
-            return bytes(cast(bytes, c_signature[: c_signature_len.value]))
+            return bytes(cast("bytes", c_signature[: c_signature_len.value]))
         msg = "Can not sign message"
         raise RuntimeError(msg)
 
@@ -702,7 +700,7 @@ class Signature(ct.Structure):
             self.secret_key,
         )
         if rv == OQS_SUCCESS:
-            return bytes(cast(bytes, c_signature[: c_signature_len.value]))
+            return bytes(cast("bytes", c_signature[: c_signature_len.value]))
         msg = "Can not sign message with context string"
         raise RuntimeError(msg)
 
