@@ -264,19 +264,38 @@ if oqs_python_ver:
 class MechanismNotSupportedError(Exception):
     """Exception raised when an algorithm is not supported by OQS."""
 
-    def __init__(self, alg_name: str) -> None:
-        """:param alg_name: requested algorithm name."""
+    def __init__(self, alg_name: str, supported: Optional[Iterable[str]] = None) -> None:
+        """Initialize the exception.
+
+        :param alg_name: Requested algorithm name.
+        :param supported: A list of supported algorithms to include in the message. Defaults to `None`.
+        """
+        supported_str = ""
+        if supported is not None:
+            supported_str = ", ".join(supported)
+            supported_str = f". Supported algorithms: {supported_str}"
+
         self.alg_name = alg_name
-        self.message = f"{alg_name} is not supported by OQS"
+        self.message = f"{alg_name} is not supported by OQS" + supported_str
 
 
 class MechanismNotEnabledError(MechanismNotSupportedError):
     """Exception raised when an algorithm is supported but not enabled by OQS."""
 
-    def __init__(self, alg_name: str) -> None:
-        """:param alg_name: requested algorithm name."""
+    def __init__(self, alg_name: str, enabled: Optional[Iterable[str]] = None) -> None:
+        """Initialize the exception.
+
+        :param alg_name: Requested algorithm name.
+        :param enabled: A list of enabled algorithms to include in the message. Defaults to `None`.
+        """
+
+        enabled_str = ""
+        if enabled is not None:
+            enabled_str = ", ".join(enabled)
+            enabled_str = f". Enabled algorithms: {enabled_str}"
+
         self.alg_name = alg_name
-        self.message = f"{alg_name} is supported but not enabled by OQS"
+        self.message = f"{alg_name} is supported but not enabled by OQS" + enabled_str
 
 
 class KeyEncapsulation(ct.Structure):
