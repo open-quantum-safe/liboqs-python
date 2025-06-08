@@ -925,7 +925,7 @@ class StatefulSignature(ct.Structure):
 
     def _new_secret_key(self) -> None:
         """Create a new secret key for the stateful signature."""
-        self._secret_key = native().SIG_STFL_SECRET_KEY_new(self.method_name.encode())
+        self._secret_key = native().OQS_SIG_STFL_SECRET_KEY_new(self.method_name)
         if not self._secret_key:
             msg = "Could not allocate OQS_SIG_STFL_SECRET_KEY"
             raise MemoryError(msg)
@@ -985,7 +985,12 @@ class StatefulSignature(ct.Structure):
         c_signature_len = ct.c_size_t(self.length_signature)
         msg_buf = ct.create_string_buffer(message, len(message))
         rc = native().OQS_SIG_STFL_sign(
-            self._sig, c_signature, ct.byref(c_signature_len), msg_buf, len(message), self._secret_key
+            self._sig,
+            c_signature,
+            ct.byref(c_signature_len),
+            msg_buf,
+            len(message),
+            self._secret_key,
         )
         if rc != OQS_SUCCESS:
             msg = "Signing failed"
