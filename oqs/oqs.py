@@ -21,7 +21,17 @@ import warnings
 from os import environ
 from pathlib import Path
 from sys import stdout
-from typing import TYPE_CHECKING, Any, ClassVar, Final, TypeVar, Union, cast
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    ClassVar,
+    Final,
+    TypeVar,
+    Union,
+    cast,
+    Iterable,
+    Optional,
+)
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -29,6 +39,7 @@ if TYPE_CHECKING:
 
 TKeyEncapsulation = TypeVar("TKeyEncapsulation", bound="KeyEncapsulation")
 TSignature = TypeVar("TSignature", bound="Signature")
+TStatefulSignature = TypeVar("TStatefulSignature", bound="StatefulSignature")
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -781,3 +792,288 @@ def get_enabled_sig_mechanisms() -> tuple[str, ...]:
 def get_supported_sig_mechanisms() -> tuple[str, ...]:
     """Return the list of supported signature mechanisms."""
     return _supported_sigs
+
+
+# Check enabled algorithms
+native().OQS_SIG_STFL_alg_identifier.restype = ct.c_char_p
+
+
+def is_stateful_sig_enabled(alg_name: str) -> bool:
+    """Check if a stateful signature algorithm is enabled."""
+    return native().OQS_SIG_STFL_alg_is_enabled(ct.create_string_buffer(alg_name.encode()))
+
+
+_supported_stateful_sigs: tuple[str, ...] = tuple(
+    native().OQS_SIG_STFL_alg_identifier(i).decode()
+    for i in range(native().OQS_SIG_STFL_alg_count())
+)
+_enabled_stateful_sigs: tuple[str, ...] = tuple(
+    alg for alg in _supported_stateful_sigs if is_stateful_sig_enabled(alg)
+)
+
+
+def get_enabled_stateful_sig_mechanisms() -> tuple[str, ...]:
+    """Return a list of enabled stateful signature mechanisms."""
+    return _enabled_stateful_sigs
+
+
+def get_supported_stateful_sig_mechanisms() -> tuple[str, ...]:
+    """Return a list of supported stateful signature mechanisms."""
+    return _supported_stateful_sigs
+
+
+def _filter_stfl_names(alg_name: str, alg_names: Iterable[str]) -> Optional[list[str]]:
+    """Filter and return only stateful signature algorithm names."""
+    if alg_name.startswith("LMS"):
+        return [name for name in alg_names if name.startswith("LMS")]
+    if alg_name.startswith("XMSS"):
+        return [name for name in alg_names if name.startswith("XMSS")]
+    if alg_name.startswith("XMSSMT"):
+        return [name for name in alg_names if name.startswith("XMSSMT")]
+    return None
+
+
+def _check_alg(alg_name: str) -> None:
+    """Check if the algorithm is supported and enabled."""
+    if alg_name not in _supported_stateful_sigs:
+        _filtered_names = _filter_stfl_names(alg_name, _supported_stateful_sigs)
+        if _filtered_names is None:
+            raise MechanismNotSupportedError(alg_name)
+        raise MechanismNotSupportedError(alg_name, supported=_filtered_names)
+    if alg_name not in _enabled_stateful_sigs:
+        sup = _filter_stfl_names(alg_name, _enabled_stateful_sigs)
+        raise MechanismNotEnabledError(alg_name, enabled=sup)
+
+
+class StatefulSignature(ct.Structure):
+    """An OQS StatefulSignature wraps native/C liboqs OQS_SIG structs.
+
+    The wrapper maps methods to the C equivalent as follows:
+
+    Python             |  C liboqs
+    -------------------------------
+    generate_keypair   |  keypair
+    sign               |  sign
+    verify             |  verify
+    free               |  OQS_SIG_STFL_free
+    sigs_remaining     |  OQS_SIG_STFL_sigs_remaining
+    sigs_total         |  OQS_SIG_STFL_sigs_total
+
+    """
+
+    _fields_: ClassVar[Sequence[tuple[str, Any]]] = [
+        ("oid", ct.c_uint32),
+        ("method_name", ct.c_char_p),
+        ("alg_version", ct.c_char_p),
+        ("euf_cma", ct.c_bool),
+        ("suf_cma", ct.c_bool),
+        ("length_public_key", ct.c_size_t),
+        ("length_secret_key", ct.c_size_t),
+        ("length_signature", ct.c_size_t),
+        ("keypair_cb", ct.c_void_p),
+        ("sign_cb", ct.c_void_p),
+        ("verify_cb", ct.c_void_p),
+        ("sigs_remaining_cb", ct.c_void_p),
+        ("sigs_total_cb", ct.c_void_p),
+    ]
+
+    def __init__(self, alg_name: str, secret_key: Optional[bytes] = None) -> None:
+        """Create a new stateful signature instance with the given algorithm.
+
+        :param alg_name: A stateful signature mechanism algorithm name.
+        :param secret_key: Optional secret key to load.
+        """
+        super().__init__()
+
+        _check_alg(alg_name)
+        self._sig = native().OQS_SIG_STFL_new(ct.create_string_buffer(alg_name.encode()))
+        if not self._sig:
+            msg = f"Could not allocate OQS_SIG_STFL for {alg_name}"
+            raise RuntimeError(msg)
+
+        for field, _ctype in self._fields_:
+            if field == "oid" or field.endswith("cb"):
+                continue
+            setattr(self, field, getattr(self._sig.contents, field))
+
+        self._secret_key: ct.c_void_p | None = None
+        self._owns_secret = False
+        self._used_keys: list[bytes] = []
+        self._store_cb: Optional[ct.CFUNCTYPE] = None
+
+        if secret_key is not None:
+            self._load_secret_key(secret_key)
+
+        self.details = {
+            "name": self.method_name.decode(),
+            "version": self.alg_version.decode(),
+            "is_euf_cma": bool(self.euf_cma),
+            "is_suf_cma": bool(self.suf_cma),
+            "length_public_key": int(self.length_public_key),
+            "length_secret_key": int(self.length_secret_key),
+            "length_signature": int(self.length_signature),
+        }
+
+    def _attach_store_cb(self) -> None:
+        """Attach a callback to store used keys in the stateful signature."""
+
+        @ct.CFUNCTYPE(ct.c_int, ct.POINTER(ct.c_uint8), ct.c_size_t, ct.c_void_p)
+        def _cb(buf: bytes, length: int, _: ct.c_void_p) -> int:
+            self._used_keys.append(ct.string_at(buf, length))
+            return OQS_SUCCESS
+
+        self._store_cb = _cb  # keep ref
+        native().OQS_SIG_STFL_SECRET_KEY_SET_store_cb(self._secret_key, self._store_cb, None)
+
+    def _new_secret_key(self) -> None:
+        """Create a new secret key for the stateful signature."""
+        self._secret_key = native().SIG_STFL_SECRET_KEY_new(self.method_name.encode())
+        if not self._secret_key:
+            msg = "Could not allocate OQS_SIG_STFL_SECRET_KEY"
+            raise MemoryError(msg)
+        self._attach_store_cb()
+
+    def _load_secret_key(self, data: bytes) -> None:
+        """Load a secret key from bytes."""
+        self._new_secret_key()
+        buf = ct.create_string_buffer(data, len(data))
+        rc = native().OQS_SIG_STFL_SECRET_KEY_deserialize(self._secret_key, buf, len(data), None)
+        if rc != OQS_SUCCESS:
+            msg = "Secret‑key deserialization failed"
+            raise RuntimeError(msg)
+
+    def generate_keypair(self) -> bytes:
+        """Generate a new keypair for the stateful signature.
+
+        :raise ValueError: If the keypair has already been generated.
+        :raise RuntimeError: If the keypair generation fails or if a keypair already exists.
+        :return: The generated public key as bytes.
+        """
+        if self._secret_key is not None:
+            msg = "Keypair already generated, call free() to release the secret key"
+            raise ValueError(msg)
+
+        self._secret_key = native().OQS_SIG_STFL_SECRET_KEY_new(self.method_name)
+        if not self._secret_key:
+            msg = "Could not allocate OQS_SIG_STFL_SECRET_KEY"
+            raise RuntimeError(msg)
+        self._attach_store_cb()
+
+        sig_struct = self._sig.contents
+        pk_buf = ct.create_string_buffer(sig_struct.length_public_key)
+
+        rc = native().OQS_SIG_STFL_keypair(self._sig, pk_buf, self._secret_key)
+        if rc != OQS_SUCCESS:
+            msg = "Keypair generation failed"
+            raise RuntimeError(msg)
+        return pk_buf.raw
+
+    def sign(self, message: bytes) -> bytes:
+        """Sign the provided message and return the signature.
+
+        :param message: The message to sign.
+        :raises NotImplementedError: If the method is LMS-based, as it is verify-only supported.
+        :raises RuntimeError: If the secret key is not initialized.
+        :raises ValueError: If the signing fails.
+        :return: The signature on the message as bytes.
+        """
+        if self.method_name.startswith(b"LMS"):
+            msg = "LMS algorithms are verify‑only supported."
+            raise NotImplementedError(msg)
+        if self._secret_key is None:
+            msg = "Secret key not initialised – call generate_keypair() first"
+            raise RuntimeError(msg)
+        c_signature = ct.create_string_buffer(self.length_signature)
+        c_signature_len = ct.c_size_t(self.length_signature)
+        msg_buf = ct.create_string_buffer(message, len(message))
+        rc = native().OQS_SIG_STFL_sign(
+            self._sig, c_signature, ct.byref(c_signature_len), msg_buf, len(message), self._secret_key
+        )
+        if rc != OQS_SUCCESS:
+            msg = "Signing failed"
+            raise ValueError(msg)
+        return bytes(cast("bytes", c_signature[: c_signature_len.value]))
+
+    def verify(self, message: bytes, signature: bytes, public_key: bytes) -> bool:
+        """Verify the provided signature on the message; returns True if valid.
+
+        :param message: The signed message.
+        :param signature: The signature on the message.
+        :param public_key: The signer's public key.
+        :return: `True` if the signature is valid, `False` otherwise.
+        """
+        msg = ct.create_string_buffer(message, len(message))
+        sig = ct.create_string_buffer(signature, len(signature))
+        pk = ct.create_string_buffer(public_key, len(public_key))
+        rc = native().OQS_SIG_STFL_verify(self._sig, msg, len(message), sig, len(signature), pk)
+        return rc == OQS_SUCCESS
+
+    def export_secret_key(self) -> bytes:
+        """Serialize the secret key to bytes.
+
+        :return: The serialized secret key as bytes.
+        :raises ValueError: If the secret key is not initialized.
+        """
+        if self._secret_key is None:
+            msg = "Secret key not initialised – call generate_keypair() first"
+            raise ValueError(msg)
+        buf_ptr = ct.POINTER(ct.c_uint8)()
+        buf_len = ct.c_size_t()
+        rc = native().OQS_SIG_STFL_SECRET_KEY_serialize(
+            ct.byref(buf_ptr), ct.byref(buf_len), self._secret_key
+        )
+        if rc != OQS_SUCCESS:
+            msg = "Secret‑key serialization failed"
+            raise ValueError(msg)
+        data = ct.string_at(buf_ptr, buf_len.value)
+        ct.CDLL(ct.util.find_library("c")).free(buf_ptr)
+        return data
+
+    def sigs_total(self) -> int:
+        """Get the total number of signatures that can be made with the secret key."""
+        total = ct.c_uint64()
+        rc = native().OQS_SIG_STFL_sigs_total(self._sig, ct.byref(total), self._secret_key)
+        if rc != OQS_SUCCESS:
+            msg = "Failed to get total signature count"
+            raise RuntimeError(msg)
+        return total.value
+
+    def sigs_remaining(self) -> int:
+        """Get the number of remaining signatures that can be made with the secret key."""
+        if self._secret_key is None:
+            msg = "Secret key not initialised – call generate_keypair() first"
+            raise ValueError(msg)
+        remain = ct.c_uint64()
+        rc = native().OQS_SIG_STFL_sigs_remaining(self._sig, ct.byref(remain), self._secret_key)
+        if rc != OQS_SUCCESS:
+            msg = "Failed to get remaining signature count"
+            raise ValueError(msg)
+        return remain.value
+
+    def export_used_keys(self) -> list[bytes]:
+        """Export the list of used keys."""
+        return self._used_keys.copy()
+
+    def __enter__(self) -> TStatefulSignature:
+        """Enter the context and return the StatefulSignature instance."""
+        return self
+
+    def __exit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc_val: BaseException | None,
+        exc_tb: TracebackType | None,
+    ) -> None:
+        """Free the resources when exiting the context."""
+        self.free()
+
+    def free(self) -> None:
+        """Free the native resources."""
+        if self._store_cb and self._secret_key:
+            native().OQS_SIG_STFL_SECRET_KEY_SET_store_cb(self._secret_key, None, None)
+            self._store_cb = None
+        if self._secret_key and self._owns_secret:
+            native().OQS_SIG_STFL_SECRET_KEY_free(self._secret_key)
+
+
+native().OQS_SIG_STFL_new.restype = ct.POINTER(StatefulSignature)
