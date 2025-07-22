@@ -15,6 +15,7 @@ env:
   BUILD_TYPE: Debug
   LD_LIBRARY_PATH: /usr/local/lib
   WIN_LIBOQS_INSTALL_PATH: C:\liboqs
+  VERSION: 0.14.0
 
 jobs:
   build:
@@ -42,8 +43,11 @@ jobs:
       - name: Install liboqs POSIX
         if: matrix.os != 'windows-latest'
         run: |
-          git clone --branch main --single-branch --depth 1 https://github.com/open-quantum-safe/liboqs
-          cmake -S liboqs -B liboqs/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DBUILD_SHARED_LIBS=ON -DOQS_BUILD_ONLY_LIB=ON
+          git clone --branch ${{env.VERSION}} --single-branch --depth 1 https://github.com/open-quantum-safe/liboqs
+          cmake -S liboqs -B liboqs/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DBUILD_SHARED_LIBS=ON \
+          -DOQS_BUILD_ONLY_LIB=ON -DOQS_BUILD_ONLY_LIB=ON -DOQS_ENABLE_SIG_STFL_LMS=ON \
+          -DOQS_ENABLE_SIG_STFL_XMSS=ON -DOQS_HAZARDOUS_EXPERIMENTAL_ENABLE_SIG_STFL_KEY_SIG_GEN=ON \
+          -DOQS_ALLOW_STFL_KEY_AND_SIG_GEN=ON
           cmake --build liboqs/build --parallel 4
           sudo cmake --build liboqs/build --target install
 
@@ -56,6 +60,8 @@ jobs:
           uv run examples/sig.py
           echo
           uv run examples/rand.py
+          echo
+          uv run examples/stfl_sig.py
 
       - name: Run unit tests POSIX
         if: matrix.os != 'windows-latest'
@@ -66,8 +72,8 @@ jobs:
         if: matrix.os == 'windows-latest'
         shell: cmd
         run: |
-          git clone --branch main --single-branch --depth 1 https://github.com/open-quantum-safe/liboqs
-          cmake -S liboqs -B liboqs\build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_INSTALL_PREFIX=${{env.WIN_LIBOQS_INSTALL_PATH}} -DBUILD_SHARED_LIBS=ON -DOQS_BUILD_ONLY_LIB=ON
+          git clone --branch ${{env.VERSION}} --single-branch --depth 1 https://github.com/open-quantum-safe/liboqs
+          cmake -S liboqs -B liboqs\build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_INSTALL_PREFIX=${{env.WIN_LIBOQS_INSTALL_PATH}} -DBUILD_SHARED_LIBS=ON -DOQS_BUILD_ONLY_LIB=ON -DOQS_BUILD_ONLY_LIB=ON -DOQS_ENABLE_SIG_STFL_LMS=ON -DOQS_ENABLE_SIG_STFL_XMSS=ON -DOQS_HAZARDOUS_EXPERIMENTAL_ENABLE_SIG_STFL_KEY_SIG_GEN=ON ‑DOQS_ALLOW_STFL_KEY_AND_SIG_GEN=ON
           cmake --build liboqs\build --parallel 4
           cmake --build liboqs\build --target install
 
@@ -82,6 +88,8 @@ jobs:
           uv run examples/sig.py
           echo.
           uv run examples/rand.py
+          echo.
+          uv run examples/stfl_sig.py
 
       - name: Run unit tests Windows
         shell: cmd
