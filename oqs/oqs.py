@@ -119,6 +119,10 @@ def _install_liboqs(
     oqs_version_to_install: Union[str, None] = None,
 ) -> None:
     """Install liboqs version oqs_version (if None, installs latest at HEAD) in the target_directory."""  # noqa: E501
+    if "rc" in oqs_version_to_install:
+        # removed the "-" from the version string
+        tmp = oqs_version_to_install.split("rc")
+        oqs_version_to_install = tmp[0] + "-rc" + tmp[1]
     with tempfile.TemporaryDirectory() as tmpdirname:
         oqs_install_cmd = [
             "cd",
@@ -143,6 +147,11 @@ def _install_liboqs(
                 "liboqs/build",
                 "-DBUILD_SHARED_LIBS=ON",
                 "-DOQS_BUILD_ONLY_LIB=ON",
+                # Stateful signature algorithms:
+                "-DOQS_ENABLE_SIG_STFL_LMS=ON",  # LMS family
+                "-DOQS_ENABLE_SIG_STFL_XMSS=ON",  # XMSS family
+                # To support key-generation.
+                "-DOQS_HAZARDOUS_EXPERIMENTAL_ENABLE_SIG_STFL_KEY_SIG_GEN=ON",
                 f"-DCMAKE_INSTALL_PREFIX={target_directory}",
             ],
         )
