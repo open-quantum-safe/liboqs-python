@@ -17,6 +17,10 @@ import platform  # to learn the OS we're on
 import subprocess
 import tempfile  # to install liboqs on demand
 import time
+try:
+    import tomllib  # Python 3.11+
+except ImportError:  # Fallback for older versions
+    import tomli as tomllib
 import warnings
 from os import environ
 from pathlib import Path
@@ -56,7 +60,20 @@ def oqs_python_version() -> Union[str, None]:
         result = importlib.metadata.version("liboqs-python")
     except importlib.metadata.PackageNotFoundError:
         warnings.warn("Please install liboqs-python using pip install", stacklevel=2)
-        return None
+        pyproject = Path(__file__).resolve().parent.parent / "pyproject.toml"
+        try:
+            # Fallback to version specified in pyproject.toml when running from the
+            # source tree. This allows workflows to use the correct liboqs version
+            # before the package is installed.
+            with pyproject.open("rb") as f:
+                data = tomllib.load(f)
+            return data["project"]["version"]
+        except (FileNotFoundError, KeyError, tomllib.TOMLDecodeError):
+            warnings.warn(
+                "Please install liboqs-python using pip install",
+                stacklevel=2,
+            )
+            return None
     return result
 
 

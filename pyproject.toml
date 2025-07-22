@@ -8,7 +8,9 @@ authors = [
 ]
 readme = "README.md"
 license = { file = "LICENSE.txt" }
-dependencies = []
+dependencies = [
+    "tomli>=2; python_version < '3.11'",
+]
 
 [tool.uv]
 package = true
