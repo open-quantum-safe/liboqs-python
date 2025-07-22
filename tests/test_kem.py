@@ -1,3 +1,4 @@
+import os
 import platform  # to learn the OS we're on
 import random
 
@@ -9,6 +10,25 @@ disabled_KEM_patterns = []  # noqa: N816
 if platform.system() == "Windows":
     disabled_KEM_patterns = [""]  # noqa: N816
 
+def test_seed_generation() -> tuple[None, str]:
+    for alg_name in oqs.get_enabled_kem_mechanisms():
+        if any(item in alg_name for item in disabled_KEM_patterns):
+            continue
+
+        if oqs.KeyEncapsulation(alg_name).length_keypair_seed == 0:
+            # Skip KEMs that do not support seed generation
+            continue
+
+        yield check_seed_generation, alg_name
+
+def check_seed_generation(alg_name: str) -> None:
+    with oqs.KeyEncapsulation(alg_name) as kem:
+        length = kem.length_keypair_seed
+        seed = os.urandom(length)  # Ensure the seed can be generated
+        public_key = kem.generate_keypair_seed(seed)
+        ciphertext, shared_secret_server = kem.encap_secret(public_key)
+        shared_secret_client = kem.decap_secret(ciphertext)
+        assert shared_secret_client == shared_secret_server  # noqa: S101
 
 def test_correctness() -> tuple[None, str]:
     for alg_name in oqs.get_enabled_kem_mechanisms():
@@ -101,6 +121,10 @@ def test_python_attributes() -> None:
                 raise AssertionError(msg)
             if kem.length_shared_secret == 0:
                 msg = "Incorrect oqs.KeyEncapsulation.length_shared_secret"
+                raise AssertionError(msg)
+            # Just to check that the property exists.
+            if kem.length_keypair_seed is None:
+                msg = "Undefined oqs.KeyEncapsulation.length_keypair_seed"
                 raise AssertionError(msg)
 
 

@@ -305,26 +305,29 @@ class KeyEncapsulation(ct.Structure):
 
     The wrapper maps methods to the C equivalent as follows:
 
-    Python            |  C liboqs
+    Python                 |  C liboqs
     -------------------------------
-    generate_keypair  |  keypair
-    encap_secret      |  encaps
-    decap_secret      |  decaps
-    free              |  OQS_KEM_free
+    generate_keypair      |  keypair
+    generate_keypair_seed |  keypair
+    encap_secret          |  encaps
+    decap_secret          |  decaps
+    free                  |  OQS_KEM_free
     """
 
     _fields_: ClassVar[Sequence[tuple[str, Any]]] = [
-        ("method_name", ct.c_char_p),
-        ("alg_version", ct.c_char_p),
-        ("claimed_nist_level", ct.c_ubyte),
-        ("ind_cca", ct.c_ubyte),
-        ("length_public_key", ct.c_size_t),
-        ("length_secret_key", ct.c_size_t),
-        ("length_ciphertext", ct.c_size_t),
+        ("method_name",         ct.c_char_p),
+        ("alg_version",         ct.c_char_p),
+        ("claimed_nist_level",  ct.c_ubyte),
+        ("ind_cca",             ct.c_bool),
+        ("length_public_key",   ct.c_size_t),
+        ("length_secret_key",   ct.c_size_t),
+        ("length_ciphertext",   ct.c_size_t),
         ("length_shared_secret", ct.c_size_t),
-        ("keypair_cb", ct.c_void_p),
-        ("encaps_cb", ct.c_void_p),
-        ("decaps_cb", ct.c_void_p),
+        ("length_keypair_seed", ct.c_size_t),
+        ("keypair_derand_cb", ct.c_void_p),
+        ("keypair_cb",        ct.c_void_p),
+        ("encaps_cb",         ct.c_void_p),
+        ("decaps_cb",         ct.c_void_p),
     ]
 
     def __init__(self, alg_name: str, secret_key: Union[int, bytes, None] = None) -> None:
@@ -353,6 +356,7 @@ class KeyEncapsulation(ct.Structure):
         self.length_secret_key = self._kem.contents.length_secret_key
         self.length_ciphertext = self._kem.contents.length_ciphertext
         self.length_shared_secret = self._kem.contents.length_shared_secret
+        self.length_keypair_seed = self._kem.contents.length_keypair_seed
 
         self.details = {
             "name": self.method_name.decode(),
@@ -363,6 +367,7 @@ class KeyEncapsulation(ct.Structure):
             "length_secret_key": int(self.length_secret_key),
             "length_ciphertext": int(self.length_ciphertext),
             "length_shared_secret": int(self.length_shared_secret),
+            "length_keypair_seed": int(self.length_keypair_seed),
         }
 
         if secret_key:
@@ -381,6 +386,41 @@ class KeyEncapsulation(ct.Structure):
         traceback: Union[TracebackType, None],
     ) -> None:
         self.free()
+
+    def generate_keypair_seed(self, seed: bytes) -> bytes:
+        """
+        Generate a new keypair using the provided seed and returns the public key.
+
+        :param seed: A seed to use for key generation.
+        If the seed is None, a random seed will be generated.
+        """
+
+        if self.length_keypair_seed == 0:
+            raise RuntimeError(
+                f"Key generation with seed is not supported. Got {self.alg_name}."
+            )
+
+        if len(seed) != self._kem.contents.length_keypair_seed:
+            msg = (
+                f"Seed length must be {self._kem.contents.length_keypair_seed} bytes, "
+                f"got {len(seed)} bytes"
+            )
+            raise ValueError(msg)
+
+        c_seed = ct.create_string_buffer(seed, self._kem.contents.length_keypair_seed)
+        public_key = ct.create_string_buffer(self._kem.contents.length_public_key)
+        self.secret_key = ct.create_string_buffer(self._kem.contents.length_secret_key)
+
+        rv = native().OQS_KEM_keypair_derand(
+            self._kem,
+            ct.byref(public_key),
+            ct.byref(self.secret_key),
+            c_seed,
+        )
+        if rv == OQS_SUCCESS:
+            return bytes(public_key)
+        msg = "Can not generate keypair with provided seed"
+        raise RuntimeError(msg)
 
     def generate_keypair(self) -> bytes:
         """
