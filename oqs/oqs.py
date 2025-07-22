@@ -554,14 +554,17 @@ class Signature(ct.Structure):
         ("method_name", ct.c_char_p),
         ("alg_version", ct.c_char_p),
         ("claimed_nist_level", ct.c_ubyte),
-        ("euf_cma", ct.c_ubyte),
-        ("sig_with_ctx_support", ct.c_ubyte),
-        ("length_public_key", ct.c_size_t),
-        ("length_secret_key", ct.c_size_t),
-        ("length_signature", ct.c_size_t),
-        ("keypair_cb", ct.c_void_p),
-        ("sign_cb", ct.c_void_p),
-        ("verify_cb", ct.c_void_p),
+        ("euf_cma", ct.c_bool),
+        ("suf_cma", ct.c_bool),
+        ("sig_with_ctx_support", ct.c_bool),
+        ("length_public_key",  ct.c_size_t),
+        ("length_secret_key",  ct.c_size_t),
+        ("length_signature",   ct.c_size_t),
+        ("keypair_cb",             ct.c_void_p),
+        ("sign_cb",                ct.c_void_p),
+        ("sign_with_ctx_cb",       ct.c_void_p),
+        ("verify_cb",              ct.c_void_p),
+        ("verify_with_ctx_cb",     ct.c_void_p),
     ]
 
     def __init__(self, alg_name: str, secret_key: Union[int, bytes, None] = None) -> None:
@@ -585,7 +588,7 @@ class Signature(ct.Structure):
         self.alg_version = self._sig.contents.alg_version
         self.claimed_nist_level = self._sig.contents.claimed_nist_level
         self.euf_cma = self._sig.contents.euf_cma
-        self.sig_with_ctx_support = self._sig.contents.sig_with_ctx_support
+        self.sig_with_ctx_support = bool(self._sig.contents.sig_with_ctx_support)
         self.length_public_key = self._sig.contents.length_public_key
         self.length_secret_key = self._sig.contents.length_secret_key
         self.length_signature = self._sig.contents.length_signature
@@ -595,6 +598,8 @@ class Signature(ct.Structure):
             "version": self.alg_version.decode(),
             "claimed_nist_level": int(self.claimed_nist_level),
             "is_euf_cma": bool(self.euf_cma),
+            "is_suf_cma": bool(self.suf_cma),
+            "supports_context_signing": bool(self.sig_with_ctx_support),
             "sig_with_ctx_support": bool(self.sig_with_ctx_support),
             "length_public_key": int(self.length_public_key),
             "length_secret_key": int(self.length_secret_key),
@@ -665,7 +670,7 @@ class Signature(ct.Structure):
             self.secret_key,
         )
         if rv == OQS_SUCCESS:
-            return bytes(cast(bytes, c_signature[: c_signature_len.value]))
+            return bytes(cast("bytes", c_signature[: c_signature_len.value]))
         msg = "Can not sign message"
         raise RuntimeError(msg)
 
@@ -705,7 +710,7 @@ class Signature(ct.Structure):
         :param message: the message to sign.
         """
         if context and not self._sig.contents.sig_with_ctx_support:
-            msg = "Signing with context string not supported"
+            msg = f"Signing with context is not supported for: {self._sig.contents.method_name.decode()}"
             raise RuntimeError(msg)
 
         # Provide length to avoid extra null char
@@ -732,7 +737,7 @@ class Signature(ct.Structure):
             self.secret_key,
         )
         if rv == OQS_SUCCESS:
-            return bytes(cast(bytes, c_signature[: c_signature_len.value]))
+            return bytes(cast("bytes", c_signature[: c_signature_len.value]))
         msg = "Can not sign message with context string"
         raise RuntimeError(msg)
 
@@ -799,14 +804,21 @@ class Signature(ct.Structure):
 native().OQS_SIG_new.restype = ct.POINTER(Signature)
 native().OQS_SIG_alg_identifier.restype = ct.c_char_p
 
+native().OQS_SIG_supports_ctx_str.restype = ct.c_bool
 
 def is_sig_enabled(alg_name: str) -> bool:
-    """
-    Return True if the signature algorithm is enabled.
+    """Return `True` if the signature algorithm is enabled.
 
-    :param alg_name: a signature mechanism algorithm name.
+    :param alg_name: A signature mechanism algorithm name.
     """
     return native().OQS_SIG_alg_is_enabled(ct.create_string_buffer(alg_name.encode()))
+
+def sig_supports_context(alg_name: str) -> bool:
+    """Return `True` if the signature algorithm supports signing with a context string.
+
+    :param alg_name: A signature mechanism algorithm name.
+    """
+    return bool(native().OQS_SIG_supports_ctx_str(ct.create_string_buffer(alg_name.encode())))
 
 
 _sig_alg_ids = [native().OQS_SIG_alg_identifier(i) for i in range(native().OQS_SIG_alg_count())]
