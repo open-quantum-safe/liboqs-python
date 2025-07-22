@@ -42,3 +42,30 @@ with oqs.KeyEncapsulation(kemalg) as client:
         "Shared secretes coincide: %s",
         shared_secret_client == shared_secret_server,
     )
+
+# Example for using a seed to generate a keypair.
+kemalg = "ML-KEM-512"
+seed = (b"This is a 64-byte seed for key generation" + b"\x00" * 23)
+with oqs.KeyEncapsulation(kemalg) as client:
+    with oqs.KeyEncapsulation(kemalg) as server:
+        logger.info("Key encapsulation details:\n%s", pformat(client.details))
+
+        # Client generates its keypair
+        public_key_client = client.generate_keypair_seed(seed)
+        # Optionally, the secret key can be obtained by calling export_secret_key()
+        # and the client can later be re-instantiated with the key pair:
+        # secret_key_client = client.export_secret_key()
+
+        # Store key pair, wait... (session resumption):
+        # client = oqs.KeyEncapsulation(kemalg, secret_key_client)
+
+        # The server encapsulates its secret using the client's public key
+        ciphertext, shared_secret_server = server.encap_secret(public_key_client)
+
+        # The client decapsulates the server's ciphertext to obtain the shared secret
+        shared_secret_client = client.decap_secret(ciphertext)
+
+    logger.info(
+        "Shared secretes coincide: %s",
+        shared_secret_client == shared_secret_server,
+        )
