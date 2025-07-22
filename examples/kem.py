@@ -45,7 +45,7 @@ with oqs.KeyEncapsulation(kemalg) as client:
 
 # Example for using a seed to generate a keypair.
 kemalg = "ML-KEM-512"
-seed = (b"This is a 64-byte seed for key generation" + b"\x00" * 23)
+seed = b"This is a 64-byte seed for key generation" + b"\x00" * 23
 with oqs.KeyEncapsulation(kemalg) as client:
     with oqs.KeyEncapsulation(kemalg) as server:
         logger.info("Key encapsulation details:\n%s", pformat(client.details))
@@ -68,4 +68,4 @@ with oqs.KeyEncapsulation(kemalg) as client:
     logger.info(
         "Shared secretes coincide: %s",
         shared_secret_client == shared_secret_server,
-        )
+    )

@@ -1,3 +1,4 @@
+import logging
 import platform  # to learn the OS we're on
 import random
 
@@ -110,7 +111,7 @@ def test_not_enabled() -> None:
 def test_python_attributes() -> None:
     for alg_name in oqs.get_enabled_stateful_sig_mechanisms():
         if alg_name in _skip_names:
-            print(f"Skipping {alg_name} as it is in the skip list.")
+            logging.info("Skipping %s as it is in the skip list.", alg_name)
             continue
 
         with oqs.StatefulSignature(alg_name) as sig:

@@ -36,8 +36,8 @@ __all__ = (
     "get_supported_stateful_sig_mechanisms",
     "is_kem_enabled",
     "is_sig_enabled",
-    "sig_supports_context",
     "native",
     "oqs_python_version",
     "oqs_version",
+    "sig_supports_context",
 )

@@ -10,6 +10,7 @@ disabled_KEM_patterns = []  # noqa: N816
 if platform.system() == "Windows":
     disabled_KEM_patterns = [""]  # noqa: N816
 
+
 def test_seed_generation() -> tuple[None, str]:
     for alg_name in oqs.get_enabled_kem_mechanisms():
         if any(item in alg_name for item in disabled_KEM_patterns):
@@ -21,6 +22,7 @@ def test_seed_generation() -> tuple[None, str]:
 
         yield check_seed_generation, alg_name
 
+
 def check_seed_generation(alg_name: str) -> None:
     with oqs.KeyEncapsulation(alg_name) as kem:
         length = kem.length_keypair_seed
@@ -29,6 +31,7 @@ def check_seed_generation(alg_name: str) -> None:
         ciphertext, shared_secret_server = kem.encap_secret(public_key)
         shared_secret_client = kem.decap_secret(ciphertext)
         assert shared_secret_client == shared_secret_server  # noqa: S101
+
 
 def test_correctness() -> tuple[None, str]:
     for alg_name in oqs.get_enabled_kem_mechanisms():

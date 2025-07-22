@@ -17,6 +17,7 @@ import platform  # to learn the OS we're on
 import subprocess
 import tempfile  # to install liboqs on demand
 import time
+
 try:
     import tomllib  # Python 3.11+
 except ImportError:  # Fallback for older versions
@@ -33,12 +34,10 @@ from typing import (
     TypeVar,
     Union,
     cast,
-    Iterable,
     Optional,
 )
-
 if TYPE_CHECKING:
-    from collections.abc import Sequence
+    from collections.abc import Sequence, Iterable
     from types import TracebackType
 
 TKeyEncapsulation = TypeVar("TKeyEncapsulation", bound="KeyEncapsulation")
@@ -296,7 +295,8 @@ class MechanismNotSupportedError(Exception):
         Initialize the exception.
 
         :param alg_name: Requested algorithm name.
-        :param supported: A list of supported algorithms to include in the message. Defaults to `None`.
+        :param supported: A list of supported algorithms to include in the message.
+            Defaults to `None`.
         """
         supported_str = ""
         if supported is not None:
@@ -317,7 +317,6 @@ class MechanismNotEnabledError(MechanismNotSupportedError):
         :param alg_name: Requested algorithm name.
         :param enabled: A list of enabled algorithms to include in the message. Defaults to `None`.
         """
-
         enabled_str = ""
         if enabled is not None:
             enabled_str = ", ".join(enabled)
@@ -343,19 +342,19 @@ class KeyEncapsulation(ct.Structure):
     """
 
     _fields_: ClassVar[Sequence[tuple[str, Any]]] = [
-        ("method_name",         ct.c_char_p),
-        ("alg_version",         ct.c_char_p),
-        ("claimed_nist_level",  ct.c_ubyte),
-        ("ind_cca",             ct.c_bool),
-        ("length_public_key",   ct.c_size_t),
-        ("length_secret_key",   ct.c_size_t),
-        ("length_ciphertext",   ct.c_size_t),
+        ("method_name", ct.c_char_p),
+        ("alg_version", ct.c_char_p),
+        ("claimed_nist_level", ct.c_ubyte),
+        ("ind_cca", ct.c_bool),
+        ("length_public_key", ct.c_size_t),
+        ("length_secret_key", ct.c_size_t),
+        ("length_ciphertext", ct.c_size_t),
         ("length_shared_secret", ct.c_size_t),
         ("length_keypair_seed", ct.c_size_t),
         ("keypair_derand_cb", ct.c_void_p),
-        ("keypair_cb",        ct.c_void_p),
-        ("encaps_cb",         ct.c_void_p),
-        ("decaps_cb",         ct.c_void_p),
+        ("keypair_cb", ct.c_void_p),
+        ("encaps_cb", ct.c_void_p),
+        ("decaps_cb", ct.c_void_p),
     ]
 
     def __init__(self, alg_name: str, secret_key: Union[int, bytes, None] = None) -> None:
@@ -422,11 +421,9 @@ class KeyEncapsulation(ct.Structure):
         :param seed: A seed to use for key generation.
         If the seed is None, a random seed will be generated.
         """
-
         if self.length_keypair_seed == 0:
-            raise RuntimeError(
-                f"Key generation with seed is not supported. Got {self.alg_name}."
-            )
+            msg = f"Key generation with seed is not supported. Got {self.alg_name}."
+            raise RuntimeError(msg)
 
         if len(seed) != self._kem.contents.length_keypair_seed:
             msg = (
@@ -585,14 +582,14 @@ class Signature(ct.Structure):
         ("euf_cma", ct.c_bool),
         ("suf_cma", ct.c_bool),
         ("sig_with_ctx_support", ct.c_bool),
-        ("length_public_key",  ct.c_size_t),
-        ("length_secret_key",  ct.c_size_t),
-        ("length_signature",   ct.c_size_t),
-        ("keypair_cb",             ct.c_void_p),
-        ("sign_cb",                ct.c_void_p),
-        ("sign_with_ctx_cb",       ct.c_void_p),
-        ("verify_cb",              ct.c_void_p),
-        ("verify_with_ctx_cb",     ct.c_void_p),
+        ("length_public_key", ct.c_size_t),
+        ("length_secret_key", ct.c_size_t),
+        ("length_signature", ct.c_size_t),
+        ("keypair_cb", ct.c_void_p),
+        ("sign_cb", ct.c_void_p),
+        ("sign_with_ctx_cb", ct.c_void_p),
+        ("verify_cb", ct.c_void_p),
+        ("verify_with_ctx_cb", ct.c_void_p),
     ]
 
     def __init__(self, alg_name: str, secret_key: Union[int, bytes, None] = None) -> None:
@@ -738,7 +735,8 @@ class Signature(ct.Structure):
         :param message: the message to sign.
         """
         if context and not self._sig.contents.sig_with_ctx_support:
-            msg = f"Signing with context is not supported for: {self._sig.contents.method_name.decode()}"
+            msg = (f"Signing with context is not supported for: "
+                   f"{self._sig.contents.method_name.decode()}")
             raise RuntimeError(msg)
 
         # Provide length to avoid extra null char
@@ -834,15 +832,19 @@ native().OQS_SIG_alg_identifier.restype = ct.c_char_p
 
 native().OQS_SIG_supports_ctx_str.restype = ct.c_bool
 
+
 def is_sig_enabled(alg_name: str) -> bool:
-    """Return `True` if the signature algorithm is enabled.
+    """
+    Return `True` if the signature algorithm is enabled.
 
     :param alg_name: A signature mechanism algorithm name.
     """
     return native().OQS_SIG_alg_is_enabled(ct.create_string_buffer(alg_name.encode()))
 
+
 def sig_supports_context(alg_name: str) -> bool:
-    """Return `True` if the signature algorithm supports signing with a context string.
+    """
+    Return `True` if the signature algorithm supports signing with a context string.
 
     :param alg_name: A signature mechanism algorithm name.
     """
@@ -916,7 +918,8 @@ def _check_alg(alg_name: str) -> None:
 
 
 class StatefulSignature(ct.Structure):
-    """An OQS StatefulSignature wraps native/C liboqs OQS_SIG structs.
+    """
+    An OQS StatefulSignature wraps native/C liboqs OQS_SIG structs.
 
     The wrapper maps methods to the C equivalent as follows:
 
@@ -948,7 +951,8 @@ class StatefulSignature(ct.Structure):
     ]
 
     def __init__(self, alg_name: str, secret_key: Optional[bytes] = None) -> None:
-        """Create a new stateful signature instance with the given algorithm.
+        """
+        Create a new stateful signature instance with the given algorithm.
 
         :param alg_name: A stateful signature mechanism algorithm name.
         :param secret_key: Optional secret key to load.
@@ -1013,7 +1017,8 @@ class StatefulSignature(ct.Structure):
             raise RuntimeError(msg)
 
     def generate_keypair(self) -> bytes:
-        """Generate a new keypair for the stateful signature.
+        """
+        Generate a new keypair for the stateful signature.
 
         :raise ValueError: If the keypair has already been generated.
         :raise RuntimeError: If the keypair generation fails or if a keypair already exists.
@@ -1039,7 +1044,8 @@ class StatefulSignature(ct.Structure):
         return pk_buf.raw
 
     def sign(self, message: bytes) -> bytes:
-        """Sign the provided message and return the signature.
+        """
+        Sign the provided message and return the signature.
 
         :param message: The message to sign.
         :raises NotImplementedError: If the method is LMS-based, as it is verify-only supported.
@@ -1070,7 +1076,8 @@ class StatefulSignature(ct.Structure):
         return bytes(cast("bytes", c_signature[: c_signature_len.value]))
 
     def verify(self, message: bytes, signature: bytes, public_key: bytes) -> bool:
-        """Verify the provided signature on the message; returns True if valid.
+        """
+        Verify the provided signature on the message; returns True if valid.
 
         :param message: The signed message.
         :param signature: The signature on the message.
@@ -1084,7 +1091,8 @@ class StatefulSignature(ct.Structure):
         return rc == OQS_SUCCESS
 
     def export_secret_key(self) -> bytes:
-        """Serialize the secret key to bytes.
+        """
+        Serialize the secret key to bytes.
 
         :return: The serialized secret key as bytes.
         :raises ValueError: If the secret key is not initialized.
@@ -1134,10 +1142,10 @@ class StatefulSignature(ct.Structure):
         return self
 
     def __exit__(
-            self,
-            exc_type: type[BaseException] | None,
-            exc_val: BaseException | None,
-            exc_tb: TracebackType | None,
+        self,
+        exc_type: type[BaseException] | None,
+        exc_val: BaseException | None,
+        exc_tb: TracebackType | None,
     ) -> None:
         """Free the resources when exiting the context."""
         self.free()
@@ -1172,5 +1180,13 @@ native().OQS_SIG_STFL_verify.argtypes = [
     ct.c_size_t,
     ct.c_void_p,
 ]
-native().OQS_SIG_STFL_sigs_remaining.argtypes = [ct.POINTER(StatefulSignature), ct.POINTER(ct.c_uint64), ct.c_void_p]
-native().OQS_SIG_STFL_sigs_total.argtypes = [ct.POINTER(StatefulSignature), ct.POINTER(ct.c_uint64), ct.c_void_p]
+native().OQS_SIG_STFL_sigs_remaining.argtypes = [
+    ct.POINTER(StatefulSignature),
+    ct.POINTER(ct.c_uint64),
+    ct.c_void_p,
+]
+native().OQS_SIG_STFL_sigs_total.argtypes = [
+    ct.POINTER(StatefulSignature),
+    ct.POINTER(ct.c_uint64),
+    ct.c_void_p,
+]
