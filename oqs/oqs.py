@@ -109,9 +109,11 @@ def _load_shared_obj(
             if platform.system() == "Darwin":
                 paths.append(path.absolute() / Path(f"lib{name}").with_suffix(".dylib"))
             elif platform.system() == "Windows":
-                paths.append(path.absolute() / Path(name).with_suffix(".dll"))
-                # Does not work
-                # os.environ["PATH"] += os.path.abspath(path)
+                # Try both oqs.dll and liboqs.dll in the install path
+                for dll_name in (name, f"lib{name}"):
+                    paths.append(
+                        path.absolute() / Path(dll_name).with_suffix(".dll")
+                    )
             else:  # Linux/FreeBSD/UNIX
                 paths.append(path.absolute() / Path(f"lib{name}").with_suffix(".so"))
                 # https://stackoverflow.com/questions/856116/changing-ld-library-path-at-runtime-for-ctypes
@@ -281,7 +283,7 @@ native().OQS_init()
 
 
 def oqs_version() -> str:
-    """`liboqs` version string."""
+    """liboqs version string."""
     native().OQS_version.restype = ct.c_char_p
     return ct.c_char_p(native().OQS_version()).value.decode("UTF-8")  # type: ignore[union-attr]
 
