@@ -567,6 +567,11 @@ def get_supported_kem_mechanisms() -> tuple[str, ...]:
     return _supported_KEMs
 
 
+# Register the OQS_SIG_supports_ctx_str function from the C library
+native().OQS_SIG_supports_ctx_str.restype = ct.c_bool
+native().OQS_SIG_supports_ctx_str.argtypes = [ct.c_char_p]
+
+
 class Signature(ct.Structure):
     """
     An OQS Signature wraps native/C liboqs OQS_SIG structs.
@@ -788,7 +793,7 @@ class Signature(ct.Structure):
         :param context: the context string.
         :param public_key: the signer's public key.
         """
-        if context and not self._sig.contents.sig_with_ctx_support:
+        if context and not self.sig_with_ctx_support:
             msg = "Verifying with context string not supported"
             raise RuntimeError(msg)
 
