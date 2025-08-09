@@ -1,14 +1,16 @@
 [project]
 name = "liboqs-python"
 requires-python = ">=3.9"
-version = "0.12.0"
+version = "0.14.0"
 description = "Python bindings for liboqs, providing post-quantum public key cryptography algorithms"
 authors = [
     { name = "Open Quantum Safe project", email = "contact@openquantumsafe.org" },
 ]
 readme = "README.md"
 license = { file = "LICENSE.txt" }
-dependencies = []
+dependencies = [
+    "tomli>=2; python_version < '3.11'",
+]
 
 [tool.uv]
 package = true

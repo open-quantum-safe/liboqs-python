@@ -1,7 +1,9 @@
 # Multi-stage build: First the full builder image:
 
 # liboqs build type variant; maximum portability of image; no openssl dependency:
-ARG LIBOQS_BUILD_DEFINES="-DOQS_DIST_BUILD=ON -DBUILD_SHARED_LIBS=ON -DOQS_USE_OPENSSL=OFF"
+ARG LIBOQS_BUILD_DEFINES="-DOQS_DIST_BUILD=ON -DBUILD_SHARED_LIBS=ON -DOQS_USE_OPENSSL=OFF \
+    -DOQS_ENABLE_SIG_STFL_LMS=ON -DOQS_ENABLE_SIG_STFL_XMSS=ON \
+    -DOQS_HAZARDOUS_EXPERIMENTAL_ENABLE_SIG_STFL_KEY_SIG_GEN=ON"
 
 # make build arguments: Adding -j here speeds up build but may tax hardware
 ARG MAKE_DEFINES="-j 2"
