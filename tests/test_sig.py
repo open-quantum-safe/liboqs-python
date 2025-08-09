@@ -53,9 +53,9 @@ def test_sig_with_ctx_support_detection() -> None:
         with Signature(alg_name) as sig:
             # Check Python attribute matches C API
             c_api_result = native().OQS_SIG_supports_ctx_str(sig.method_name)
-            assert bool(sig.sig_with_ctx_support) == bool(c_api_result), (  # noqa: S101
+            assert bool(sig.sig_with_ctx_support) == bool(c_api_result), (
                 f"sig_with_ctx_support mismatch for {alg_name}"
-            )
+            )  # noqa: S101
             # If not supported, sign_with_ctx_str should raise
             if not sig.sig_with_ctx_support:
                 try:

@@ -4,7 +4,11 @@ import random
 
 import oqs
 
-_skip_names = ["LMS_SHA256_H20_W8_H10_W8", "LMS_SHA256_H20_W8_H15_W8", "LMS_SHA256_H20_W8_H20_W8"]
+_skip_names = [
+    "LMS_SHA256_H20_W8_H10_W8",
+    "LMS_SHA256_H20_W8_H15_W8",
+    "LMS_SHA256_H20_W8_H20_W8",
+]
 
 
 # Sigs for which unit testing is disabled
