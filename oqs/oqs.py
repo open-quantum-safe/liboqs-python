@@ -87,11 +87,17 @@ def _load_shared_obj(
                 # os.environ["LD_LIBRARY_PATH"] += os.path.abspath(path)
 
     # Search typical locations
-    if found_lib := ctu.find_library(name):
-        paths.insert(0, Path(found_lib))
+    try:
+        if found_lib := ctu.find_library(name):
+            paths.insert(0, Path(found_lib))
+    except:
+        pass
 
-    if found_lib := ctu.find_library("lib" + name):
-        paths.insert(0, Path(found_lib))
+    try:
+        if found_lib := ctu.find_library("lib" + name):
+            paths.insert(0, Path(found_lib))
+    except:
+        pass
 
     for path in paths:
         if path:
