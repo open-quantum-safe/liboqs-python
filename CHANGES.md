@@ -1,4 +1,4 @@
-# Version 0.14.0 - August 9, 2025
+# Version 0.14.0 - August xx, 2025
 
 - Added type checking and automatic linting/formatting, https://github.com/open-quantum-safe/liboqs-python/pull/97
 - Added a utility function for de-structuring version strings in `oqs.py`

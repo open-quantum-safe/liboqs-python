@@ -1,0 +1,677 @@
+/Users/vlad/GitHub/liboqs-python/oqs/__init__.py:1: UserWarning: liboqs version (major, minor) 0.14.1-dev differs from liboqs-python version 0.12.0
+  from oqs.oqs import (
+tests.test_sig.test_not_enabled ... ok
+tests.test_sig.test_not_supported ... ok
+tests.test_sig.test_python_attributes ... ok
+tests.test_sig.test_sig_with_ctx_support_detection ... ok
+tests.test_sig.test_correctness:1
+'Dilithium2' ... ok
+tests.test_sig.test_correctness:2
+'Dilithium3' ... ok
+tests.test_sig.test_correctness:3
+'Dilithium5' ... ok
+tests.test_sig.test_correctness:4
+'ML-DSA-44' ... ok
+tests.test_sig.test_correctness:5
+'ML-DSA-65' ... ok
+tests.test_sig.test_correctness:6
+'ML-DSA-87' ... ok
+tests.test_sig.test_correctness:7
+'Falcon-512' ... ok
+tests.test_sig.test_correctness:8
+'Falcon-1024' ... ok
+tests.test_sig.test_correctness:9
+'Falcon-padded-512' ... ok
+tests.test_sig.test_correctness:10
+'Falcon-padded-1024' ... ok
+tests.test_sig.test_correctness:11
+'SPHINCS+-SHA2-128f-simple' ... ok
+tests.test_sig.test_correctness:12
+'SPHINCS+-SHA2-128s-simple' ... ok
+tests.test_sig.test_correctness:13
+'SPHINCS+-SHA2-192f-simple' ... ok
+tests.test_sig.test_correctness:14
+'SPHINCS+-SHA2-192s-simple' ... ok
+tests.test_sig.test_correctness:15
+'SPHINCS+-SHA2-256f-simple' ... ok
+tests.test_sig.test_correctness:16
+'SPHINCS+-SHA2-256s-simple' ... ok
+tests.test_sig.test_correctness:17
+'SPHINCS+-SHAKE-128f-simple' ... ok
+tests.test_sig.test_correctness:18
+'SPHINCS+-SHAKE-128s-simple' ... ok
+tests.test_sig.test_correctness:19
+'SPHINCS+-SHAKE-192f-simple' ... ok
+tests.test_sig.test_correctness:20
+'SPHINCS+-SHAKE-192s-simple' ... ok
+tests.test_sig.test_correctness:21
+'SPHINCS+-SHAKE-256f-simple' ... ok
+tests.test_sig.test_correctness:22
+'SPHINCS+-SHAKE-256s-simple' ... ok
+tests.test_sig.test_correctness:23
+'MAYO-1' ... ok
+tests.test_sig.test_correctness:24
+'MAYO-2' ... ok
+tests.test_sig.test_correctness:25
+'MAYO-3' ... ok
+tests.test_sig.test_correctness:26
+'MAYO-5' ... ok
+tests.test_sig.test_correctness:27
+'cross-rsdp-128-balanced' ... ok
+tests.test_sig.test_correctness:28
+'cross-rsdp-128-fast' ... ok
+tests.test_sig.test_correctness:29
+'cross-rsdp-128-small' ... ok
+tests.test_sig.test_correctness:30
+'cross-rsdp-192-balanced' ... ok
+tests.test_sig.test_correctness:31
+'cross-rsdp-192-fast' ... ok
+tests.test_sig.test_correctness:32
+'cross-rsdp-192-small' ... ok
+tests.test_sig.test_correctness:33
+'cross-rsdp-256-balanced' ... ok
+tests.test_sig.test_correctness:34
+'cross-rsdp-256-fast' ... ok
+tests.test_sig.test_correctness:35
+'cross-rsdp-256-small' ... ok
+tests.test_sig.test_correctness:36
+'cross-rsdpg-128-balanced' ... ok
+tests.test_sig.test_correctness:37
+'cross-rsdpg-128-fast' ... ok
+tests.test_sig.test_correctness:38
+'cross-rsdpg-128-small' ... ok
+tests.test_sig.test_correctness:39
+'cross-rsdpg-192-balanced' ... ok
+tests.test_sig.test_correctness:40
+'cross-rsdpg-192-fast' ... ok
+tests.test_sig.test_correctness:41
+'cross-rsdpg-192-small' ... ok
+tests.test_sig.test_correctness:42
+'cross-rsdpg-256-balanced' ... ok
+tests.test_sig.test_correctness:43
+'cross-rsdpg-256-fast' ... ok
+tests.test_sig.test_correctness:44
+'cross-rsdpg-256-small' ... ok
+tests.test_sig.test_correctness:45
+'OV-Is' ... ok
+tests.test_sig.test_correctness:46
+'OV-Ip' ... ok
+tests.test_sig.test_correctness:47
+'OV-III' ... ok
+tests.test_sig.test_correctness:48
+'OV-V' ... ok
+tests.test_sig.test_correctness:49
+'OV-Is-pkc' ... ok
+tests.test_sig.test_correctness:50
+'OV-Ip-pkc' ... ok
+tests.test_sig.test_correctness:51
+'OV-III-pkc' ... ok
+tests.test_sig.test_correctness:52
+'OV-V-pkc' ... ok
+tests.test_sig.test_correctness:53
+'OV-Is-pkc-skc' ... ok
+tests.test_sig.test_correctness:54
+'OV-Ip-pkc-skc' ... ok
+tests.test_sig.test_correctness:55
+'OV-III-pkc-skc' ... ok
+tests.test_sig.test_correctness:56
+'OV-V-pkc-skc' ... ok
+tests.test_sig.test_correctness:57
+'SNOVA_24_5_4' ... ok
+tests.test_sig.test_correctness:58
+'SNOVA_24_5_4_SHAKE' ... ok
+tests.test_sig.test_correctness:59
+'SNOVA_24_5_4_esk' ... ok
+tests.test_sig.test_correctness:60
+'SNOVA_24_5_4_SHAKE_esk' ... ok
+tests.test_sig.test_correctness:61
+'SNOVA_37_17_2' ... ok
+tests.test_sig.test_correctness:62
+'SNOVA_25_8_3' ... ok
+tests.test_sig.test_correctness:63
+'SNOVA_56_25_2' ... ok
+tests.test_sig.test_correctness:64
+'SNOVA_49_11_3' ... ok
+tests.test_sig.test_correctness:65
+'SNOVA_37_8_4' ... ok
+tests.test_sig.test_correctness:66
+'SNOVA_24_5_5' ... ok
+tests.test_sig.test_correctness:67
+'SNOVA_60_10_4' ... ok
+tests.test_sig.test_correctness:68
+'SNOVA_29_6_5' ... ok
+tests.test_sig.test_correctness_with_ctx_str:1
+'ML-DSA-44' ... ok
+tests.test_sig.test_correctness_with_ctx_str:2
+'ML-DSA-65' ... ok
+tests.test_sig.test_correctness_with_ctx_str:3
+'ML-DSA-87' ... ok
+tests.test_sig.test_wrong_message:1
+'Dilithium2' ... ok
+tests.test_sig.test_wrong_message:2
+'Dilithium3' ... ok
+tests.test_sig.test_wrong_message:3
+'Dilithium5' ... ok
+tests.test_sig.test_wrong_message:4
+'ML-DSA-44' ... ok
+tests.test_sig.test_wrong_message:5
+'ML-DSA-65' ... ok
+tests.test_sig.test_wrong_message:6
+'ML-DSA-87' ... ok
+tests.test_sig.test_wrong_message:7
+'Falcon-512' ... ok
+tests.test_sig.test_wrong_message:8
+'Falcon-1024' ... ok
+tests.test_sig.test_wrong_message:9
+'Falcon-padded-512' ... ok
+tests.test_sig.test_wrong_message:10
+'Falcon-padded-1024' ... ok
+tests.test_sig.test_wrong_message:11
+'SPHINCS+-SHA2-128f-simple' ... ok
+tests.test_sig.test_wrong_message:12
+'SPHINCS+-SHA2-128s-simple' ... ok
+tests.test_sig.test_wrong_message:13
+'SPHINCS+-SHA2-192f-simple' ... ok
+tests.test_sig.test_wrong_message:14
+'SPHINCS+-SHA2-192s-simple' ... ok
+tests.test_sig.test_wrong_message:15
+'SPHINCS+-SHA2-256f-simple' ... ok
+tests.test_sig.test_wrong_message:16
+'SPHINCS+-SHA2-256s-simple' ... ok
+tests.test_sig.test_wrong_message:17
+'SPHINCS+-SHAKE-128f-simple' ... ok
+tests.test_sig.test_wrong_message:18
+'SPHINCS+-SHAKE-128s-simple' ... ok
+tests.test_sig.test_wrong_message:19
+'SPHINCS+-SHAKE-192f-simple' ... ok
+tests.test_sig.test_wrong_message:20
+'SPHINCS+-SHAKE-192s-simple' ... ok
+tests.test_sig.test_wrong_message:21
+'SPHINCS+-SHAKE-256f-simple' ... ok
+tests.test_sig.test_wrong_message:22
+'SPHINCS+-SHAKE-256s-simple' ... ok
+tests.test_sig.test_wrong_message:23
+'MAYO-1' ... ok
+tests.test_sig.test_wrong_message:24
+'MAYO-2' ... ok
+tests.test_sig.test_wrong_message:25
+'MAYO-3' ... ok
+tests.test_sig.test_wrong_message:26
+'MAYO-5' ... ok
+tests.test_sig.test_wrong_message:27
+'cross-rsdp-128-balanced' ... ok
+tests.test_sig.test_wrong_message:28
+'cross-rsdp-128-fast' ... ok
+tests.test_sig.test_wrong_message:29
+'cross-rsdp-128-small' ... ok
+tests.test_sig.test_wrong_message:30
+'cross-rsdp-192-balanced' ... ok
+tests.test_sig.test_wrong_message:31
+'cross-rsdp-192-fast' ... ok
+tests.test_sig.test_wrong_message:32
+'cross-rsdp-192-small' ... ok
+tests.test_sig.test_wrong_message:33
+'cross-rsdp-256-balanced' ... ok
+tests.test_sig.test_wrong_message:34
+'cross-rsdp-256-fast' ... ok
+tests.test_sig.test_wrong_message:35
+'cross-rsdp-256-small' ... ok
+tests.test_sig.test_wrong_message:36
+'cross-rsdpg-128-balanced' ... ok
+tests.test_sig.test_wrong_message:37
+'cross-rsdpg-128-fast' ... ok
+tests.test_sig.test_wrong_message:38
+'cross-rsdpg-128-small' ... ok
+tests.test_sig.test_wrong_message:39
+'cross-rsdpg-192-balanced' ... ok
+tests.test_sig.test_wrong_message:40
+'cross-rsdpg-192-fast' ... ok
+tests.test_sig.test_wrong_message:41
+'cross-rsdpg-192-small' ... ok
+tests.test_sig.test_wrong_message:42
+'cross-rsdpg-256-balanced' ... ok
+tests.test_sig.test_wrong_message:43
+'cross-rsdpg-256-fast' ... ok
+tests.test_sig.test_wrong_message:44
+'cross-rsdpg-256-small' ... ok
+tests.test_sig.test_wrong_message:45
+'OV-Is' ... ok
+tests.test_sig.test_wrong_message:46
+'OV-Ip' ... ok
+tests.test_sig.test_wrong_message:47
+'OV-III' ... ok
+tests.test_sig.test_wrong_message:48
+'OV-V' ... ok
+tests.test_sig.test_wrong_message:49
+'OV-Is-pkc' ... ok
+tests.test_sig.test_wrong_message:50
+'OV-Ip-pkc' ... ok
+tests.test_sig.test_wrong_message:51
+'OV-III-pkc' ... ok
+tests.test_sig.test_wrong_message:52
+'OV-V-pkc' ... ok
+tests.test_sig.test_wrong_message:53
+'OV-Is-pkc-skc' ... ok
+tests.test_sig.test_wrong_message:54
+'OV-Ip-pkc-skc' ... ok
+tests.test_sig.test_wrong_message:55
+'OV-III-pkc-skc' ... ok
+tests.test_sig.test_wrong_message:56
+'OV-V-pkc-skc' ... ok
+tests.test_sig.test_wrong_message:57
+'SNOVA_24_5_4' ... ok
+tests.test_sig.test_wrong_message:58
+'SNOVA_24_5_4_SHAKE' ... ok
+tests.test_sig.test_wrong_message:59
+'SNOVA_24_5_4_esk' ... ok
+tests.test_sig.test_wrong_message:60
+'SNOVA_24_5_4_SHAKE_esk' ... ok
+tests.test_sig.test_wrong_message:61
+'SNOVA_37_17_2' ... ok
+tests.test_sig.test_wrong_message:62
+'SNOVA_25_8_3' ... ok
+tests.test_sig.test_wrong_message:63
+'SNOVA_56_25_2' ... ok
+tests.test_sig.test_wrong_message:64
+'SNOVA_49_11_3' ... ok
+tests.test_sig.test_wrong_message:65
+'SNOVA_37_8_4' ... ok
+tests.test_sig.test_wrong_message:66
+'SNOVA_24_5_5' ... ok
+tests.test_sig.test_wrong_message:67
+'SNOVA_60_10_4' ... ok
+tests.test_sig.test_wrong_message:68
+'SNOVA_29_6_5' ... ok
+tests.test_sig.test_wrong_public_key:1
+'Dilithium2' ... ok
+tests.test_sig.test_wrong_public_key:2
+'Dilithium3' ... ok
+tests.test_sig.test_wrong_public_key:3
+'Dilithium5' ... ok
+tests.test_sig.test_wrong_public_key:4
+'ML-DSA-44' ... ok
+tests.test_sig.test_wrong_public_key:5
+'ML-DSA-65' ... ok
+tests.test_sig.test_wrong_public_key:6
+'ML-DSA-87' ... ok
+tests.test_sig.test_wrong_public_key:7
+'Falcon-512' ... ok
+tests.test_sig.test_wrong_public_key:8
+'Falcon-1024' ... ok
+tests.test_sig.test_wrong_public_key:9
+'Falcon-padded-512' ... ok
+tests.test_sig.test_wrong_public_key:10
+'Falcon-padded-1024' ... ok
+tests.test_sig.test_wrong_public_key:11
+'SPHINCS+-SHA2-128f-simple' ... ok
+tests.test_sig.test_wrong_public_key:12
+'SPHINCS+-SHA2-128s-simple' ... ok
+tests.test_sig.test_wrong_public_key:13
+'SPHINCS+-SHA2-192f-simple' ... ok
+tests.test_sig.test_wrong_public_key:14
+'SPHINCS+-SHA2-192s-simple' ... ok
+tests.test_sig.test_wrong_public_key:15
+'SPHINCS+-SHA2-256f-simple' ... ok
+tests.test_sig.test_wrong_public_key:16
+'SPHINCS+-SHA2-256s-simple' ... ok
+tests.test_sig.test_wrong_public_key:17
+'SPHINCS+-SHAKE-128f-simple' ... ok
+tests.test_sig.test_wrong_public_key:18
+'SPHINCS+-SHAKE-128s-simple' ... ok
+tests.test_sig.test_wrong_public_key:19
+'SPHINCS+-SHAKE-192f-simple' ... ok
+tests.test_sig.test_wrong_public_key:20
+'SPHINCS+-SHAKE-192s-simple' ... ok
+tests.test_sig.test_wrong_public_key:21
+'SPHINCS+-SHAKE-256f-simple' ... ok
+tests.test_sig.test_wrong_public_key:22
+'SPHINCS+-SHAKE-256s-simple' ... ok
+tests.test_sig.test_wrong_public_key:23
+'MAYO-1' ... ok
+tests.test_sig.test_wrong_public_key:24
+'MAYO-2' ... ok
+tests.test_sig.test_wrong_public_key:25
+'MAYO-3' ... ok
+tests.test_sig.test_wrong_public_key:26
+'MAYO-5' ... ok
+tests.test_sig.test_wrong_public_key:27
+'cross-rsdp-128-balanced' ... ok
+tests.test_sig.test_wrong_public_key:28
+'cross-rsdp-128-fast' ... ok
+tests.test_sig.test_wrong_public_key:29
+'cross-rsdp-128-small' ... ok
+tests.test_sig.test_wrong_public_key:30
+'cross-rsdp-192-balanced' ... ok
+tests.test_sig.test_wrong_public_key:31
+'cross-rsdp-192-fast' ... ok
+tests.test_sig.test_wrong_public_key:32
+'cross-rsdp-192-small' ... ok
+tests.test_sig.test_wrong_public_key:33
+'cross-rsdp-256-balanced' ... ok
+tests.test_sig.test_wrong_public_key:34
+'cross-rsdp-256-fast' ... ok
+tests.test_sig.test_wrong_public_key:35
+'cross-rsdp-256-small' ... ok
+tests.test_sig.test_wrong_public_key:36
+'cross-rsdpg-128-balanced' ... ok
+tests.test_sig.test_wrong_public_key:37
+'cross-rsdpg-128-fast' ... ok
+tests.test_sig.test_wrong_public_key:38
+'cross-rsdpg-128-small' ... ok
+tests.test_sig.test_wrong_public_key:39
+'cross-rsdpg-192-balanced' ... ok
+tests.test_sig.test_wrong_public_key:40
+'cross-rsdpg-192-fast' ... ok
+tests.test_sig.test_wrong_public_key:41
+'cross-rsdpg-192-small' ... ok
+tests.test_sig.test_wrong_public_key:42
+'cross-rsdpg-256-balanced' ... ok
+tests.test_sig.test_wrong_public_key:43
+'cross-rsdpg-256-fast' ... ok
+tests.test_sig.test_wrong_public_key:44
+'cross-rsdpg-256-small' ... ok
+tests.test_sig.test_wrong_public_key:45
+'OV-Is' ... ok
+tests.test_sig.test_wrong_public_key:46
+'OV-Ip' ... ok
+tests.test_sig.test_wrong_public_key:47
+'OV-III' ... ok
+tests.test_sig.test_wrong_public_key:48
+'OV-V' ... ok
+tests.test_sig.test_wrong_public_key:49
+'OV-Is-pkc' ... ok
+tests.test_sig.test_wrong_public_key:50
+'OV-Ip-pkc' ... ok
+tests.test_sig.test_wrong_public_key:51
+'OV-III-pkc' ... ok
+tests.test_sig.test_wrong_public_key:52
+'OV-V-pkc' ... ok
+tests.test_sig.test_wrong_public_key:53
+'OV-Is-pkc-skc' ... ok
+tests.test_sig.test_wrong_public_key:54
+'OV-Ip-pkc-skc' ... ok
+tests.test_sig.test_wrong_public_key:55
+'OV-III-pkc-skc' ... ok
+tests.test_sig.test_wrong_public_key:56
+'OV-V-pkc-skc' ... ok
+tests.test_sig.test_wrong_public_key:57
+'SNOVA_24_5_4' ... ok
+tests.test_sig.test_wrong_public_key:58
+'SNOVA_24_5_4_SHAKE' ... ok
+tests.test_sig.test_wrong_public_key:59
+'SNOVA_24_5_4_esk' ... ok
+tests.test_sig.test_wrong_public_key:60
+'SNOVA_24_5_4_SHAKE_esk' ... ok
+tests.test_sig.test_wrong_public_key:61
+'SNOVA_37_17_2' ... ok
+tests.test_sig.test_wrong_public_key:62
+'SNOVA_25_8_3' ... ok
+tests.test_sig.test_wrong_public_key:63
+'SNOVA_56_25_2' ... ok
+tests.test_sig.test_wrong_public_key:64
+'SNOVA_49_11_3' ... ok
+tests.test_sig.test_wrong_public_key:65
+'SNOVA_37_8_4' ... ok
+tests.test_sig.test_wrong_public_key:66
+'SNOVA_24_5_5' ... ok
+tests.test_sig.test_wrong_public_key:67
+'SNOVA_60_10_4' ... ok
+tests.test_sig.test_wrong_public_key:68
+'SNOVA_29_6_5' ... ok
+tests.test_sig.test_wrong_signature:1
+'Dilithium2' ... ok
+tests.test_sig.test_wrong_signature:2
+'Dilithium3' ... ok
+tests.test_sig.test_wrong_signature:3
+'Dilithium5' ... ok
+tests.test_sig.test_wrong_signature:4
+'ML-DSA-44' ... ok
+tests.test_sig.test_wrong_signature:5
+'ML-DSA-65' ... ok
+tests.test_sig.test_wrong_signature:6
+'ML-DSA-87' ... ok
+tests.test_sig.test_wrong_signature:7
+'Falcon-512' ... ok
+tests.test_sig.test_wrong_signature:8
+'Falcon-1024' ... ok
+tests.test_sig.test_wrong_signature:9
+'Falcon-padded-512' ... ok
+tests.test_sig.test_wrong_signature:10
+'Falcon-padded-1024' ... ok
+tests.test_sig.test_wrong_signature:11
+'SPHINCS+-SHA2-128f-simple' ... ok
+tests.test_sig.test_wrong_signature:12
+'SPHINCS+-SHA2-128s-simple' ... ok
+tests.test_sig.test_wrong_signature:13
+'SPHINCS+-SHA2-192f-simple' ... ok
+tests.test_sig.test_wrong_signature:14
+'SPHINCS+-SHA2-192s-simple' ... ok
+tests.test_sig.test_wrong_signature:15
+'SPHINCS+-SHA2-256f-simple' ... ok
+tests.test_sig.test_wrong_signature:16
+'SPHINCS+-SHA2-256s-simple' ... ok
+tests.test_sig.test_wrong_signature:17
+'SPHINCS+-SHAKE-128f-simple' ... ok
+tests.test_sig.test_wrong_signature:18
+'SPHINCS+-SHAKE-128s-simple' ... ok
+tests.test_sig.test_wrong_signature:19
+'SPHINCS+-SHAKE-192f-simple' ... ok
+tests.test_sig.test_wrong_signature:20
+'SPHINCS+-SHAKE-192s-simple' ... ok
+tests.test_sig.test_wrong_signature:21
+'SPHINCS+-SHAKE-256f-simple' ... ok
+tests.test_sig.test_wrong_signature:22
+'SPHINCS+-SHAKE-256s-simple' ... ok
+tests.test_sig.test_wrong_signature:23
+'MAYO-1' ... ok
+tests.test_sig.test_wrong_signature:24
+'MAYO-2' ... ok
+tests.test_sig.test_wrong_signature:25
+'MAYO-3' ... ok
+tests.test_sig.test_wrong_signature:26
+'MAYO-5' ... ok
+tests.test_sig.test_wrong_signature:27
+'cross-rsdp-128-balanced' ... ok
+tests.test_sig.test_wrong_signature:28
+'cross-rsdp-128-fast' ... ok
+tests.test_sig.test_wrong_signature:29
+'cross-rsdp-128-small' ... ok
+tests.test_sig.test_wrong_signature:30
+'cross-rsdp-192-balanced' ... ok
+tests.test_sig.test_wrong_signature:31
+'cross-rsdp-192-fast' ... ok
+tests.test_sig.test_wrong_signature:32
+'cross-rsdp-192-small' ... ok
+tests.test_sig.test_wrong_signature:33
+'cross-rsdp-256-balanced' ... ok
+tests.test_sig.test_wrong_signature:34
+'cross-rsdp-256-fast' ... ok
+tests.test_sig.test_wrong_signature:35
+'cross-rsdp-256-small' ... ok
+tests.test_sig.test_wrong_signature:36
+'cross-rsdpg-128-balanced' ... ok
+tests.test_sig.test_wrong_signature:37
+'cross-rsdpg-128-fast' ... ok
+tests.test_sig.test_wrong_signature:38
+'cross-rsdpg-128-small' ... ok
+tests.test_sig.test_wrong_signature:39
+'cross-rsdpg-192-balanced' ... ok
+tests.test_sig.test_wrong_signature:40
+'cross-rsdpg-192-fast' ... ok
+tests.test_sig.test_wrong_signature:41
+'cross-rsdpg-192-small' ... ok
+tests.test_sig.test_wrong_signature:42
+'cross-rsdpg-256-balanced' ... ok
+tests.test_sig.test_wrong_signature:43
+'cross-rsdpg-256-fast' ... ok
+tests.test_sig.test_wrong_signature:44
+'cross-rsdpg-256-small' ... ok
+tests.test_sig.test_wrong_signature:45
+'OV-Is' ... ok
+tests.test_sig.test_wrong_signature:46
+'OV-Ip' ... ok
+tests.test_sig.test_wrong_signature:47
+'OV-III' ... ok
+tests.test_sig.test_wrong_signature:48
+'OV-V' ... ok
+tests.test_sig.test_wrong_signature:49
+'OV-Is-pkc' ... ok
+tests.test_sig.test_wrong_signature:50
+'OV-Ip-pkc' ... ok
+tests.test_sig.test_wrong_signature:51
+'OV-III-pkc' ... ok
+tests.test_sig.test_wrong_signature:52
+'OV-V-pkc' ... ok
+tests.test_sig.test_wrong_signature:53
+'OV-Is-pkc-skc' ... ok
+tests.test_sig.test_wrong_signature:54
+'OV-Ip-pkc-skc' ... ok
+tests.test_sig.test_wrong_signature:55
+'OV-III-pkc-skc' ... ok
+tests.test_sig.test_wrong_signature:56
+'OV-V-pkc-skc' ... ok
+tests.test_sig.test_wrong_signature:57
+'SNOVA_24_5_4' ... ok
+tests.test_sig.test_wrong_signature:58
+'SNOVA_24_5_4_SHAKE' ... ok
+tests.test_sig.test_wrong_signature:59
+'SNOVA_24_5_4_esk' ... ok
+tests.test_sig.test_wrong_signature:60
+'SNOVA_24_5_4_SHAKE_esk' ... ok
+tests.test_sig.test_wrong_signature:61
+'SNOVA_37_17_2' ... ok
+tests.test_sig.test_wrong_signature:62
+'SNOVA_25_8_3' ... ok
+tests.test_sig.test_wrong_signature:63
+'SNOVA_56_25_2' ... ok
+tests.test_sig.test_wrong_signature:64
+'SNOVA_49_11_3' ... ok
+tests.test_sig.test_wrong_signature:65
+'SNOVA_37_8_4' ... ok
+tests.test_sig.test_wrong_signature:66
+'SNOVA_24_5_5' ... ok
+tests.test_sig.test_wrong_signature:67
+'SNOVA_60_10_4' ... ok
+tests.test_sig.test_wrong_signature:68
+'SNOVA_29_6_5' ... ok
+tests.test_kem.test_not_enabled ... ok
+tests.test_kem.test_not_supported ... ok
+tests.test_kem.test_python_attributes ... ok
+tests.test_kem.test_correctness:1
+'BIKE-L1' ... ok
+tests.test_kem.test_correctness:2
+'BIKE-L3' ... ok
+tests.test_kem.test_correctness:3
+'BIKE-L5' ... ok
+tests.test_kem.test_correctness:4
+'Classic-McEliece-348864' ... ok
+tests.test_kem.test_correctness:5
+'Classic-McEliece-348864f' ... ok
+tests.test_kem.test_correctness:6
+'Classic-McEliece-460896' ... ok
+tests.test_kem.test_correctness:7
+'Classic-McEliece-460896f' ... ok
+tests.test_kem.test_correctness:8
+'Classic-McEliece-6688128' ... ok
+tests.test_kem.test_correctness:9
+'Classic-McEliece-6688128f' ... ok
+tests.test_kem.test_correctness:10
+'Classic-McEliece-6960119' ... ok
+tests.test_kem.test_correctness:11
+'Classic-McEliece-6960119f' ... ok
+tests.test_kem.test_correctness:12
+'Classic-McEliece-8192128' ... ok
+tests.test_kem.test_correctness:13
+'Classic-McEliece-8192128f' ... ok
+tests.test_kem.test_correctness:14
+'Kyber512' ... ok
+tests.test_kem.test_correctness:15
+'Kyber768' ... ok
+tests.test_kem.test_correctness:16
+'Kyber1024' ... ok
+tests.test_kem.test_correctness:17
+'ML-KEM-512' ... ok
+tests.test_kem.test_correctness:18
+'ML-KEM-768' ... ok
+tests.test_kem.test_correctness:19
+'ML-KEM-1024' ... ok
+tests.test_kem.test_correctness:20
+'sntrup761' ... ok
+tests.test_kem.test_correctness:21
+'FrodoKEM-640-AES' ... ok
+tests.test_kem.test_correctness:22
+'FrodoKEM-640-SHAKE' ... ok
+tests.test_kem.test_correctness:23
+'FrodoKEM-976-AES' ... ok
+tests.test_kem.test_correctness:24
+'FrodoKEM-976-SHAKE' ... ok
+tests.test_kem.test_correctness:25
+'FrodoKEM-1344-AES' ... ok
+tests.test_kem.test_correctness:26
+'FrodoKEM-1344-SHAKE' ... ok
+tests.test_kem.test_seed_generation:1
+'ML-KEM-512' ... ok
+tests.test_kem.test_seed_generation:2
+'ML-KEM-768' ... ok
+tests.test_kem.test_seed_generation:3
+'ML-KEM-1024' ... ok
+tests.test_kem.test_wrong_ciphertext:1
+'BIKE-L1' ... ok
+tests.test_kem.test_wrong_ciphertext:2
+'BIKE-L3' ... ok
+tests.test_kem.test_wrong_ciphertext:3
+'BIKE-L5' ... ok
+tests.test_kem.test_wrong_ciphertext:4
+'Classic-McEliece-348864' ... ok
+tests.test_kem.test_wrong_ciphertext:5
+'Classic-McEliece-348864f' ... ok
+tests.test_kem.test_wrong_ciphertext:6
+'Classic-McEliece-460896' ... ok
+tests.test_kem.test_wrong_ciphertext:7
+'Classic-McEliece-460896f' ... ok
+tests.test_kem.test_wrong_ciphertext:8
+'Classic-McEliece-6688128' ... ok
+tests.test_kem.test_wrong_ciphertext:9
+'Classic-McEliece-6688128f' ... ok
+tests.test_kem.test_wrong_ciphertext:10
+'Classic-McEliece-6960119' ... ok
+tests.test_kem.test_wrong_ciphertext:11
+'Classic-McEliece-6960119f' ... ok
+tests.test_kem.test_wrong_ciphertext:12
+'Classic-McEliece-8192128' ... ok
+tests.test_kem.test_wrong_ciphertext:13
+'Classic-McEliece-8192128f' ... ok
+tests.test_kem.test_wrong_ciphertext:14
+'Kyber512' ... ok
+tests.test_kem.test_wrong_ciphertext:15
+'Kyber768' ... ok
+tests.test_kem.test_wrong_ciphertext:16
+'Kyber1024' ... ok
+tests.test_kem.test_wrong_ciphertext:17
+'ML-KEM-512' ... ok
+tests.test_kem.test_wrong_ciphertext:18
+'ML-KEM-768' ... ok
+tests.test_kem.test_wrong_ciphertext:19
+'ML-KEM-1024' ... ok
+tests.test_kem.test_wrong_ciphertext:20
+'sntrup761' ... ok
+tests.test_kem.test_wrong_ciphertext:21
+'FrodoKEM-640-AES' ... ok
+tests.test_kem.test_wrong_ciphertext:22
+'FrodoKEM-640-SHAKE' ... ok
+tests.test_kem.test_wrong_ciphertext:23
+'FrodoKEM-976-AES' ... ok
+tests.test_kem.test_wrong_ciphertext:24
+'FrodoKEM-976-SHAKE' ... ok
+tests.test_kem.test_wrong_ciphertext:25
+'FrodoKEM-1344-AES' ... ok
+tests.test_kem.test_wrong_ciphertext:26
+'FrodoKEM-1344-SHAKE' ... ok
+tests.test_stfl_sig.test_not_enabled ... ok
+tests.test_stfl_sig.test_not_supported ... ok
+tests.test_stfl_sig.test_python_attributes ... ok
+
+----------------------------------------------------------------------
+Ran 340 tests in 43.259s
+
+OK
