@@ -22,7 +22,10 @@ message = b"This is the message to sign"
 
 # Create signer and verifier with sample signature mechanisms
 stfl_sigalg = "XMSS-SHA2_10_256"
-with StatefulSignature(stfl_sigalg) as signer, StatefulSignature(stfl_sigalg) as verifier:
+with (
+    StatefulSignature(stfl_sigalg) as signer,
+    StatefulSignature(stfl_sigalg) as verifier,
+):
     logger.info("Signature details:\n%s", pformat(signer.details))
 
     # Signer generates its keypair

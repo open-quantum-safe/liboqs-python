@@ -36,6 +36,7 @@ from typing import (
     cast,
     Optional,
 )
+
 if TYPE_CHECKING:
     from collections.abc import Sequence, Iterable
     from types import TracebackType
@@ -244,7 +245,9 @@ def _load_liboqs() -> ct.CDLL:
         assert liboqs  # noqa: S101
     except RuntimeError:
         # We don't have liboqs, so we try to install it automatically
-        _install_liboqs(target_directory=oqs_install_dir, oqs_version_to_install=OQS_VERSION)
+        _install_liboqs(
+            target_directory=oqs_install_dir, oqs_version_to_install=OQS_VERSION
+        )
         # Try loading it again
         try:
             liboqs = _load_shared_obj(
@@ -283,9 +286,13 @@ oqs_ver_major, oqs_ver_minor, oqs_ver_patch = version(oqs_ver)
 
 oqs_python_ver = oqs_python_version()
 if oqs_python_ver:
-    oqs_python_ver_major, oqs_python_ver_minor, oqs_python_ver_patch = version(oqs_python_ver)
+    oqs_python_ver_major, oqs_python_ver_minor, oqs_python_ver_patch = version(
+        oqs_python_ver
+    )
     # Warn the user if the liboqs version differs from liboqs-python version
-    if not (oqs_ver_major == oqs_python_ver_major and oqs_ver_minor == oqs_python_ver_minor):
+    if not (
+        oqs_ver_major == oqs_python_ver_major and oqs_ver_minor == oqs_python_ver_minor
+    ):
         warnings.warn(
             f"liboqs version (major, minor) {oqs_version()} differs from liboqs-python version "
             f"{oqs_python_version()}",
@@ -296,7 +303,9 @@ if oqs_python_ver:
 class MechanismNotSupportedError(Exception):
     """Exception raised when an algorithm is not supported by OQS."""
 
-    def __init__(self, alg_name: str, supported: Optional[Iterable[str]] = None) -> None:
+    def __init__(
+        self, alg_name: str, supported: Optional[Iterable[str]] = None
+    ) -> None:
         """
         Initialize the exception.
 
@@ -363,7 +372,9 @@ class KeyEncapsulation(ct.Structure):
         ("decaps_cb", ct.c_void_p),
     ]
 
-    def __init__(self, alg_name: str, secret_key: Union[int, bytes, None] = None) -> None:
+    def __init__(
+        self, alg_name: str, secret_key: Union[int, bytes, None] = None
+    ) -> None:
         """
         Create new KeyEncapsulation with the given algorithm.
 
@@ -552,9 +563,13 @@ def is_kem_enabled(alg_name: str) -> bool:
     return native().OQS_KEM_alg_is_enabled(ct.create_string_buffer(alg_name.encode()))
 
 
-_KEM_alg_ids = [native().OQS_KEM_alg_identifier(i) for i in range(native().OQS_KEM_alg_count())]
-_supported_KEMs: tuple[str, ...] = tuple([i.decode() for i in _KEM_alg_ids])  # noqa: N816
-_enabled_KEMs: tuple[str, ...] = tuple([i for i in _supported_KEMs if is_kem_enabled(i)])  # noqa: N816
+_KEM_alg_ids = [
+    native().OQS_KEM_alg_identifier(i) for i in range(native().OQS_KEM_alg_count())
+]
+_supported_KEMs: tuple[str, ...] = tuple([i.decode() for i in _KEM_alg_ids])
+_enabled_KEMs: tuple[str, ...] = tuple(
+    [i for i in _supported_KEMs if is_kem_enabled(i)]
+)
 
 
 def get_enabled_kem_mechanisms() -> tuple[str, ...]:
@@ -603,7 +618,9 @@ class Signature(ct.Structure):
         ("verify_with_ctx_cb", ct.c_void_p),
     ]
 
-    def __init__(self, alg_name: str, secret_key: Union[int, bytes, None] = None) -> None:
+    def __init__(
+        self, alg_name: str, secret_key: Union[int, bytes, None] = None
+    ) -> None:
         """
         Create new Signature with the given algorithm.
 
@@ -746,8 +763,10 @@ class Signature(ct.Structure):
         :param message: the message to sign.
         """
         if context and not self._sig.contents.sig_with_ctx_support:
-            msg = (f"Signing with context is not supported for: "
-                   f"{self._sig.contents.method_name.decode()}")
+            msg = (
+                f"Signing with context is not supported for: "
+                f"{self._sig.contents.method_name.decode()}"
+            )
             raise RuntimeError(msg)
 
         # Provide length to avoid extra null char
@@ -859,12 +878,18 @@ def sig_supports_context(alg_name: str) -> bool:
 
     :param alg_name: A signature mechanism algorithm name.
     """
-    return bool(native().OQS_SIG_supports_ctx_str(ct.create_string_buffer(alg_name.encode())))
+    return bool(
+        native().OQS_SIG_supports_ctx_str(ct.create_string_buffer(alg_name.encode()))
+    )
 
 
-_sig_alg_ids = [native().OQS_SIG_alg_identifier(i) for i in range(native().OQS_SIG_alg_count())]
+_sig_alg_ids = [
+    native().OQS_SIG_alg_identifier(i) for i in range(native().OQS_SIG_alg_count())
+]
 _supported_sigs: tuple[str, ...] = tuple([i.decode() for i in _sig_alg_ids])
-_enabled_sigs: tuple[str, ...] = tuple([i for i in _supported_sigs if is_sig_enabled(i)])
+_enabled_sigs: tuple[str, ...] = tuple(
+    [i for i in _supported_sigs if is_sig_enabled(i)]
+)
 
 
 def get_enabled_sig_mechanisms() -> tuple[str, ...]:
@@ -883,7 +908,9 @@ native().OQS_SIG_STFL_alg_identifier.restype = ct.c_char_p
 
 def is_stateful_sig_enabled(alg_name: str) -> bool:
     """Check if a stateful signature algorithm is enabled."""
-    return native().OQS_SIG_STFL_alg_is_enabled(ct.create_string_buffer(alg_name.encode()))
+    return native().OQS_SIG_STFL_alg_is_enabled(
+        ct.create_string_buffer(alg_name.encode())
+    )
 
 
 _supported_stateful_sigs: tuple[str, ...] = tuple(
@@ -971,7 +998,9 @@ class StatefulSignature(ct.Structure):
         super().__init__()
 
         _check_alg(alg_name)
-        self._sig = native().OQS_SIG_STFL_new(ct.create_string_buffer(alg_name.encode()))
+        self._sig = native().OQS_SIG_STFL_new(
+            ct.create_string_buffer(alg_name.encode())
+        )
         if not self._sig:
             msg = f"Could not allocate OQS_SIG_STFL for {alg_name}"
             raise RuntimeError(msg)
@@ -1008,7 +1037,9 @@ class StatefulSignature(ct.Structure):
             return OQS_SUCCESS
 
         self._store_cb = _cb  # keep ref
-        native().OQS_SIG_STFL_SECRET_KEY_SET_store_cb(self._secret_key, self._store_cb, None)
+        native().OQS_SIG_STFL_SECRET_KEY_SET_store_cb(
+            self._secret_key, self._store_cb, None
+        )
 
     def _new_secret_key(self) -> None:
         """Create a new secret key for the stateful signature."""
@@ -1022,7 +1053,9 @@ class StatefulSignature(ct.Structure):
         """Load a secret key from bytes."""
         self._new_secret_key()
         buf = ct.create_string_buffer(data, len(data))
-        rc = native().OQS_SIG_STFL_SECRET_KEY_deserialize(self._secret_key, buf, len(data), None)
+        rc = native().OQS_SIG_STFL_SECRET_KEY_deserialize(
+            self._secret_key, buf, len(data), None
+        )
         if rc != OQS_SUCCESS:
             msg = "Secret‑key deserialization failed"
             raise RuntimeError(msg)
@@ -1098,7 +1131,9 @@ class StatefulSignature(ct.Structure):
         msg = ct.create_string_buffer(message, len(message))
         sig = ct.create_string_buffer(signature, len(signature))
         pk = ct.create_string_buffer(public_key, len(public_key))
-        rc = native().OQS_SIG_STFL_verify(self._sig, msg, len(message), sig, len(signature), pk)
+        rc = native().OQS_SIG_STFL_verify(
+            self._sig, msg, len(message), sig, len(signature), pk
+        )
         return rc == OQS_SUCCESS
 
     def export_secret_key(self) -> bytes:
@@ -1126,7 +1161,9 @@ class StatefulSignature(ct.Structure):
     def sigs_total(self) -> int:
         """Get the total number of signatures that can be made with the secret key."""
         total = ct.c_uint64()
-        rc = native().OQS_SIG_STFL_sigs_total(self._sig, ct.byref(total), self._secret_key)
+        rc = native().OQS_SIG_STFL_sigs_total(
+            self._sig, ct.byref(total), self._secret_key
+        )
         if rc != OQS_SUCCESS:
             msg = "Failed to get total signature count"
             raise RuntimeError(msg)
@@ -1138,7 +1175,9 @@ class StatefulSignature(ct.Structure):
             msg = "Secret key not initialised – call generate_keypair() first"
             raise ValueError(msg)
         remain = ct.c_uint64()
-        rc = native().OQS_SIG_STFL_sigs_remaining(self._sig, ct.byref(remain), self._secret_key)
+        rc = native().OQS_SIG_STFL_sigs_remaining(
+            self._sig, ct.byref(remain), self._secret_key
+        )
         if rc != OQS_SUCCESS:
             msg = "Failed to get remaining signature count"
             raise ValueError(msg)
@@ -1173,8 +1212,16 @@ class StatefulSignature(ct.Structure):
 native().OQS_SIG_STFL_new.restype = ct.POINTER(StatefulSignature)
 native().OQS_SIG_STFL_SECRET_KEY_new.restype = ct.c_void_p
 native().OQS_SIG_STFL_SECRET_KEY_new.argtypes = [ct.c_char_p]
-native().OQS_SIG_STFL_SECRET_KEY_SET_store_cb.argtypes = [ct.c_void_p, ct.c_void_p, ct.c_void_p]
-native().OQS_SIG_STFL_keypair.argtypes = [ct.POINTER(StatefulSignature), ct.c_void_p, ct.c_void_p]
+native().OQS_SIG_STFL_SECRET_KEY_SET_store_cb.argtypes = [
+    ct.c_void_p,
+    ct.c_void_p,
+    ct.c_void_p,
+]
+native().OQS_SIG_STFL_keypair.argtypes = [
+    ct.POINTER(StatefulSignature),
+    ct.c_void_p,
+    ct.c_void_p,
+]
 native().OQS_SIG_STFL_sign.argtypes = [
     ct.POINTER(StatefulSignature),
     ct.c_void_p,
