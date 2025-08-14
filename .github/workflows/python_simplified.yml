@@ -37,7 +37,7 @@ jobs:
           uv run examples/kem.py
           uv run examples/sig.py
           uv run examples/rand.py
-          # uv run examples/stfl_sig.py
+          uv run examples/stfl_sig.py
 
       - name: Run unit tests
         run: |
