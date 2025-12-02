@@ -36,7 +36,7 @@ def _get_oid_from_name(name: str) -> str:
 
 
 def serialize_stateful_signature_key(
-    stateful_sig: oqs.StatefulSignature, public_key: bytes, fpath: str
+    stateful_sig: oqs.StatefulSignature, public_key: bytes, fpath: Union[Path, str]
 ) -> None:
     """
     Serialize the stateful signature key to a `OneAsymmetricKey` structure.

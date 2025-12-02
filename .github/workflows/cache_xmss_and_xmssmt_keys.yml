@@ -1,0 +1,157 @@
+# ============================================================================
+# XMSS/XMSS^MT Key Generation and Caching Pipeline
+# ============================================================================
+#
+# Purpose:
+# --------
+# XMSS and XMSS^MT are post-quantum stateful signature schemes that are very
+# expensive to generate (can take several minutes (more than 30 Minutes) for larger parameters).
+# This workflow pre-generates these keys and caches them in GitHub Actions
+# so that tests can run quickly without regenerating keys every time.
+#
+# Caching Strategy:
+# -----------------
+# - "complete" cache: All required keys have been generated (final state).
+# - "progress" cache: Partial key generation (incremental saves during generation).
+#
+# The workflow will:
+# 1. Try to restore a complete cache first.
+# 2. Fall back to the latest progress cache if the complete cache doesn't exist.
+# 3. Generate any missing keys.
+# 4. Save either a new progress cache or complete cache depending on status.
+#
+# Cache Key Versioning:
+# ---------------------
+# KEY_GEN_VERSION allows invalidating old caches when the key generation
+# logic changes or when we need to regenerate all keys from scratch.
+# Increment this version to force a fresh generation.
+# ============================================================================
+
+name: "Generate & Cache XMSS Keys"
+
+# Trigger this workflow on any push, manual dispatch, or repository dispatch
+on:
+  push:
+    branches: [ "**" ]
+  workflow_dispatch:
+  repository_dispatch: {}
+
+env:
+  # Version of key generation logic - increment to invalidate all caches.
+  KEY_GEN_VERSION: 0
+  # Directory where generated keys will be stored.
+  KEY_DIR: data/xmss_xmssmt_keys
+
+# Prevent multiple instances of this workflow from running concurrently
+# to avoid cache conflicts and wasted compute time.
+concurrency:
+  group: gen-cache-stfl-keys-${{ github.event_name == 'pull_request' && github.head_ref || github.sha }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  build-cache:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          version: "latest"
+          enable-cache: true
+          cache-dependency-glob: "**/pyproject.toml"
+
+      - name: Set up Python 3.9
+        run: uv python install 3.9
+
+      - name: Install dependencies
+        run: uv sync --extra dev
+
+      # Generate today's date for use in progress cache keys
+      # This ensures we get a new cache entry each day for incremental progress
+      - name: Get current date for cache key
+        id: date
+        run: echo "date=$(date +%Y-%m-%d)" >> $GITHUB_OUTPUT
+
+      # Try to restore previously cached keys
+      # Priority order:
+      #   1. xmss-v{VERSION}-complete (all keys generated - exact match)
+      #   2. xmss-v{VERSION}-progress- (partial keys - most recent match)
+      #   3. xmss-v{VERSION}- (any cache for this version)
+      - name: Restore XMSS/XMSSMT key cache
+        id: cache-restore
+        uses: actions/cache/restore@v4
+        with:
+          path: ${{ env.KEY_DIR }}
+          key: xmss-v${{ env.KEY_GEN_VERSION }}-complete
+          restore-keys: |
+            xmss-v${{ env.KEY_GEN_VERSION }}-progress-
+            xmss-v${{ env.KEY_GEN_VERSION }}-
+          enableCrossOsArchive: true
+
+      # Display what keys were restored from cache (if any)
+      # Helps with debugging cache issues
+      - name: Show tree of cache directory
+        run: |
+          echo "Listing cache directory:"
+          mkdir -p data/xmss_xmssmt_keys
+          ls -R data/xmss_xmssmt_keys
+
+      # Generate any keys that are still missing
+      # The script skips keys that already exist (from cache restore)
+      # This is used, to safe the keys across multiple runs.
+      - name: Generate keys when missing
+        id: generate
+        env:
+          PYTHONUNBUFFERED: "1"  # Enable unbuffered output for real-time logs
+        run: |
+          set -x  # Enable command echoing for transparency
+          mkdir -p "${KEY_DIR}"
+          
+          # Run the key generation script
+          # It will skip keys that already exist and only generate missing ones
+          uv run scripts/pipeline_gen_stfl_keys.py "${KEY_DIR}"
+          
+          # Show what keys we have now
+          ls -lah "${KEY_DIR}"
+          
+          # Count total keys and export for later steps
+          KEY_COUNT=$(find "${KEY_DIR}" -type f -name "*.der" | wc -l)
+          echo "key_count=${KEY_COUNT}" >> $GITHUB_OUTPUT
+          echo "Generated/found ${KEY_COUNT} keys"
+
+      # Check if we have successfully generated ALL required keys
+      # Uses the --check_keys_dir flag which returns:
+      #   - exit code 0 if all keys present → complete=true
+      #   - exit code 1 if any keys missing → complete=false
+      - name: Check if all keys are generated
+        id: check-complete
+        run: |
+          # Use the --check_keys_dir flag to verify all keys are present
+          if uv run scripts/pipeline_gen_stfl_keys.py "${KEY_DIR}" --check_keys_dir; then
+            echo "complete=true" >> $GITHUB_OUTPUT
+          else
+            echo "complete=false" >> $GITHUB_OUTPUT
+          fi
+
+      # Save a "progress" cache if key generation is not yet complete
+      # This allows us to resume from this point in the next workflow run
+      # Uses a unique key with date and run number to avoid conflicts
+      # Condition: always() ensures we save even if generation times out or fails
+      - name: Save progress cache
+        if: always() && steps.check-complete.outputs.complete != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: ${{ env.KEY_DIR }}
+          key: xmss-v${{ env.KEY_GEN_VERSION }}-progress-${{ steps.date.outputs.date }}-${{ github.run_number }}
+          enableCrossOsArchive: true
+
+      # Save a "complete" cache once all keys are generated
+      # This is the final cache that will be restored by future workflow runs
+      # Uses a fixed key name so it's always found first during cache restore
+      - name: Save complete cache
+        if: steps.check-complete.outputs.complete == 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: ${{ env.KEY_DIR }}
+          key: xmss-v${{ env.KEY_GEN_VERSION }}-complete
+          enableCrossOsArchive: true

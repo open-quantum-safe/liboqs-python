@@ -17,6 +17,8 @@ concurrency:
 
 env:
   PYOQS_ENABLE_FAULTHANDLER: "1"
+  KEY_GEN_VERSION: 0
+  KEY_DIR: data/xmss_xmssmt_keys
 
 jobs:
   build:
@@ -37,6 +39,25 @@ jobs:
 
       - name: Set up Python 3.9
         run: uv python install 3.9
+
+      # Restore the XMSS/XMSSMT key cache.
+      # Still allows the incomplete cache to be used to avoid regenerating keys.
+      # But if the complete cache is present, all keys are already generated and used.
+      - name: Restore XMSS/XMSSMT key cache
+        uses: actions/cache/restore@v4
+        with:
+          path: ${{ env.KEY_DIR }}
+          key: xmss-v${{ env.KEY_GEN_VERSION }}-complete
+          restore-keys: |
+            xmss-v${{ env.KEY_GEN_VERSION }}-progress-
+            xmss-v${{ env.KEY_GEN_VERSION }}-
+          enableCrossOsArchive: true
+
+      # Display the contents of the cache directory to verify what was restored.
+      - name: Show tree of cache directory
+        run: |
+          echo "Listing cache directory:"
+          ls -R data/xmss_xmssmt_keys
 
       - name: Run examples
         run: |

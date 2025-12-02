@@ -1,7 +1,7 @@
 [project]
 name = "liboqs-python"
 requires-python = ">=3.9"
-version = "0.14.0"
+version = "0.15.0"
 description = "Python bindings for liboqs, providing post-quantum public key cryptography algorithms"
 authors = [
     { name = "Open Quantum Safe project", email = "contact@openquantumsafe.org" },
