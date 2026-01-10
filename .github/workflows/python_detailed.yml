@@ -15,7 +15,7 @@ env:
   BUILD_TYPE: Debug
   LD_LIBRARY_PATH: /usr/local/lib
   WIN_LIBOQS_INSTALL_PATH: C:\liboqs
-  VERSION: 0.14.0
+  VERSION: 0.15.0
   PYOQS_ENABLE_FAULTHANDLER: "1"
 
 concurrency:
