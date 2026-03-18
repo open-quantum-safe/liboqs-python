@@ -66,9 +66,16 @@ else:
 OQS_SUCCESS: Final[int] = 0
 OQS_ERROR: Final[int] = -1
 
+OQS_ENV_VERSION = os.environ.get("OQS_VERSION", None)
+
 
 def oqs_python_version() -> Union[str, None]:
     """liboqs-python version string."""
+    if OQS_ENV_VERSION is not None:
+        if OQS_ENV_VERSION == "latest":
+            return None
+        return OQS_ENV_VERSION
+
     try:
         result = importlib.metadata.version("liboqs-python")
     except importlib.metadata.PackageNotFoundError:
