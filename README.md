@@ -45,6 +45,10 @@ The project contains the following files and directories
 
 ## Installation
 
+* [Windows Installation Guide](INSTALL-Windows.md)   
+* [Raspberry Pi Installation Guide](INSTALL-RaspberryPi.md)   
+
+
 ### Configure, build and install liboqs
 
 Execute in a Terminal/Console/Administrator Command Prompt
