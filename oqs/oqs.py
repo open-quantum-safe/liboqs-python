@@ -170,6 +170,10 @@ def _install_liboqs(
     if oqs_version_to_install is None:
         pass
 
+    elif oqs_version_to_install.endswith("-dev"):
+        # Pre-release dev versions of liboqs-python track liboqs main
+        oqs_version_to_install = None
+
     elif "rc" in oqs_version_to_install:
         # removed the "-" from the version string
         tmp = oqs_version_to_install.split("rc")
