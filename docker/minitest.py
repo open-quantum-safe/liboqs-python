@@ -11,7 +11,7 @@ import oqs
 message = b"This is the message to sign"
 
 # create signer and verifier with sample signature mechanisms
-sigalg = "Dilithium2"
+sigalg = "ML-DSA-44"
 with oqs.Signature(sigalg) as signer:
     with oqs.Signature(sigalg) as verifier:
         signer_public_key = signer.generate_keypair()
