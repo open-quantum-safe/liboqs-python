@@ -103,6 +103,14 @@ of the process.
 This is convenient in case you want to avoid installing liboqs manually, as
 described in the subsection above.
 
+By default, liboqs-python installs the liboqs release that matches its own
+version. Set the `PYOQS_VERSION` environment variable to override this:
+
+```shell
+export PYOQS_VERSION=0.15.0   # install a specific liboqs release
+export PYOQS_VERSION=latest   # install liboqs from main (HEAD)
+```
+
 ### Install and activate a Python virtual environment
 
 Execute in a Terminal/Console/Administrator Command Prompt
