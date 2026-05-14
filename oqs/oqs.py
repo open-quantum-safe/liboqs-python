@@ -962,6 +962,32 @@ def _check_alg(alg_name: str) -> None:
         raise MechanismNotEnabledError(alg_name, enabled=sup)
 
 
+def _stfl_keygen_and_sign_supported(alg_name: str) -> bool:
+    """Return True if liboqs supports stateful keygen/sign for `alg_name`.
+
+    Prefer the upstream API `OQS_SIG_STFL_keygen_and_sign_supported` (added in
+    liboqs >= 0.16.0). If it's not present in the loaded library, fall back to a
+    struct-layout probe: when liboqs is built without the HAZARDOUS flag, its
+    public header types `OQS_SIG_STFL` as `OQS_SIG`, so the pointer at offset 8
+    of the returned struct is `alg_version` (e.g. a fixed RFC URL) instead of
+    `method_name`. Both layouts have a `const char *` at offset 8, so the read
+    itself is safe in either mode.
+    """
+    fn = getattr(native(), "OQS_SIG_STFL_keygen_and_sign_supported", None)
+    if fn is not None:
+        fn.restype = ct.c_int
+        fn.argtypes = []
+        return bool(fn())
+
+    sig = native().OQS_SIG_STFL_new(ct.create_string_buffer(alg_name.encode()))
+    if not sig:
+        return False
+    try:
+        return sig.contents.method_name == alg_name.encode()
+    finally:
+        native().OQS_SIG_STFL_free(sig)
+
+
 class StatefulSignature(ct.Structure):
     """
     An OQS StatefulSignature wraps native/C liboqs OQS_SIG structs.
@@ -1005,6 +1031,20 @@ class StatefulSignature(ct.Structure):
         super().__init__()
 
         _check_alg(alg_name)
+
+        # liboqs's public header defines `OQS_SIG_STFL` as `OQS_SIG` when built without
+        # OQS_HAZARDOUS_EXPERIMENTAL_ENABLE_SIG_STFL_KEY_SIG_GEN, so OQS_SIG_STFL_new
+        # returns a struct with a different layout — reading it via this wrapper's
+        # _fields_ segfaults. Detect the build mode before touching the struct.
+        if not _stfl_keygen_and_sign_supported(alg_name):
+            msg = (
+                f"Stateful signatures are not fully supported by the loaded liboqs: "
+                f"liboqs must be built with "
+                f"-DOQS_HAZARDOUS_EXPERIMENTAL_ENABLE_SIG_STFL_KEY_SIG_GEN=ON "
+                f"to use StatefulSignature for {alg_name}."
+            )
+            raise RuntimeError(msg)
+
         self._sig = native().OQS_SIG_STFL_new(ct.create_string_buffer(alg_name.encode()))
         if not self._sig:
             msg = f"Could not allocate OQS_SIG_STFL for {alg_name}"
@@ -1080,13 +1120,22 @@ class StatefulSignature(ct.Structure):
             msg = "Keypair already generated, call free() to release the secret key"
             raise ValueError(msg)
 
+        sig_struct = self._sig.contents
+        if not sig_struct.keypair_cb:
+            msg = (
+                f"Stateful keypair generation is not available for "
+                f"{self.method_name.decode()}. liboqs must be built with "
+                f"-DOQS_HAZARDOUS_EXPERIMENTAL_ENABLE_SIG_STFL_KEY_SIG_GEN=ON "
+                f"to enable stateful signature key generation."
+            )
+            raise RuntimeError(msg)
+
         self._secret_key = native().OQS_SIG_STFL_SECRET_KEY_new(self.method_name)
         if not self._secret_key:
             msg = "Could not allocate OQS_SIG_STFL_SECRET_KEY"
             raise RuntimeError(msg)
         self._attach_store_cb()
 
-        sig_struct = self._sig.contents
         pk_buf = ct.create_string_buffer(sig_struct.length_public_key)
 
         rc = native().OQS_SIG_STFL_keypair(self._sig, pk_buf, self._secret_key)
@@ -1110,6 +1159,14 @@ class StatefulSignature(ct.Structure):
             raise NotImplementedError(msg)
         if self._secret_key is None:
             msg = "Secret key not initialised – call generate_keypair() first"
+            raise RuntimeError(msg)
+        if not self._sig.contents.sign_cb:
+            msg = (
+                f"Stateful signing is not available for "
+                f"{self.method_name.decode()}. liboqs must be built with "
+                f"-DOQS_HAZARDOUS_EXPERIMENTAL_ENABLE_SIG_STFL_KEY_SIG_GEN=ON "
+                f"to enable stateful signature signing."
+            )
             raise RuntimeError(msg)
         c_signature = ct.create_string_buffer(self.length_signature)
         c_signature_len = ct.c_size_t(self.length_signature)
