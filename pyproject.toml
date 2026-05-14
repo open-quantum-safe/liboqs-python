@@ -22,7 +22,7 @@ dev = [
     "ruff==0.9.4",
     "nose2==0.15.1",
     "pyasn1-alt-modules==0.4.6",
-    "pyasn1==0.6.1",
+    "pyasn1==0.6.3",
 ]
 lint = [
     "mypy==1.14.1",
