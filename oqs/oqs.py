@@ -91,8 +91,16 @@ def oqs_python_version() -> Union[str, None]:
 
 
 # liboqs-python tries to automatically install and load this liboqs version in
-# case no other version is found
-OQS_VERSION = oqs_python_version()
+# case no other version is found. The default tracks liboqs-python's own
+# version; set the PYOQS_VERSION environment variable to override (use
+# "latest" to pull liboqs HEAD).
+_pyoqs_version_override = os.environ.get("PYOQS_VERSION")
+if _pyoqs_version_override is None:
+    OQS_VERSION = oqs_python_version()
+elif _pyoqs_version_override == "latest":
+    OQS_VERSION = None
+else:
+    OQS_VERSION = _pyoqs_version_override
 
 
 def version(version_str: str) -> tuple[str, str, str]:
