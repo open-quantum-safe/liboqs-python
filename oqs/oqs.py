@@ -1161,7 +1161,7 @@ class StatefulSignature(ct.Structure):
             msg = "Secret‑key serialization failed"
             raise ValueError(msg)
         data = ct.string_at(buf_ptr, buf_len.value)
-        ct.CDLL(ct.util.find_library("c")).free(buf_ptr)
+        native().OQS_MEM_secure_free(buf_ptr, buf_len.value)
         return data
 
     def sigs_total(self) -> int:
@@ -1212,7 +1212,19 @@ class StatefulSignature(ct.Structure):
 
 
 native().OQS_SIG_STFL_new.restype = ct.POINTER(StatefulSignature)
-native().OQS_SIG_STFL_SECRET_KEY_new.restype = ct.c_void_p
+
+
+# Subclass c_void_p so the returned pointer stays as a ctypes object rather
+# than being auto-unwrapped to a Python int. On 64-bit Windows Python 3.14,
+# a pointer with the high bit set round-tripping through a Python int into
+# a c_void_p argument triggers "OverflowError: int too long to convert".
+# Keeping it as a ctypes object uses the same-type fast path on the way back
+# in and avoids the int conversion entirely. (Issue #136.)
+class _OQS_SIG_STFL_SECRET_KEY_p(ct.c_void_p):
+    pass
+
+
+native().OQS_SIG_STFL_SECRET_KEY_new.restype = _OQS_SIG_STFL_SECRET_KEY_p
 native().OQS_SIG_STFL_SECRET_KEY_new.argtypes = [ct.c_char_p]
 # Added precise signatures for (de)serialization to avoid ABI issues
 native().OQS_SIG_STFL_SECRET_KEY_serialize.restype = ct.c_int
@@ -1221,6 +1233,8 @@ native().OQS_SIG_STFL_SECRET_KEY_serialize.argtypes = [
     ct.POINTER(ct.c_size_t),
     ct.c_void_p,
 ]
+native().OQS_MEM_secure_free.restype = None
+native().OQS_MEM_secure_free.argtypes = [ct.c_void_p, ct.c_size_t]
 native().OQS_SIG_STFL_SECRET_KEY_deserialize.restype = ct.c_int
 native().OQS_SIG_STFL_SECRET_KEY_deserialize.argtypes = [
     ct.c_void_p,
