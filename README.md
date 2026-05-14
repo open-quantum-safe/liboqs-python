@@ -235,9 +235,6 @@ mount your current project in the Docker container with
 docker run --rm -it --workdir=/app -v ${PWD}:/app oqs-python /bin/bash
 ```
 
-A more comprehensive Docker example is provided in the directory
-[`docker`](https://github.com/open-quantum-safe/liboqs-python/tree/main/docker).
-
 ---
 
 ## Limitations and security
