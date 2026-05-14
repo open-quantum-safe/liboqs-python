@@ -1,6 +1,6 @@
 [project]
 name = "liboqs-python"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 version = "0.16.0-dev"
 description = "Python bindings for liboqs, providing post-quantum public key cryptography algorithms"
 authors = [
@@ -41,7 +41,7 @@ homepage = "https://github.com/open-quantum-safe/liboqs-python"
 repository = "https://github.com/open-quantum-safe/liboqs-python.git"
 
 [tool.isort]
-py_version = 39
+py_version = 310
 src_paths = ["oqs"]
 line_length = 99
 multi_line_output = 3
@@ -56,7 +56,7 @@ extend_skip_glob = []
 
 [tool.ruff]
 src = ["oqs"]
-target-version = "py39"
+target-version = "py310"
 line-length = 99
 exclude = [
     ".git",
@@ -96,7 +96,7 @@ skip-magic-trailing-comma = false
 line-ending = "auto"
 
 [tool.mypy]
-python_version = "3.9"
+python_version = "3.10"
 mypy_path = "."
 packages = ["oqs"]
 plugins = []
