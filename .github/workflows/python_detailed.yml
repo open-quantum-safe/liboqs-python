@@ -17,6 +17,7 @@ env:
   WIN_LIBOQS_INSTALL_PATH: C:\liboqs
   VERSION: 0.14.0
   PYOQS_ENABLE_FAULTHANDLER: "1"
+  UV_PYTHON: "3.14"
 
 concurrency:
   group: test-python-detailed-${{ github.event_name == 'pull_request' && github.head_ref || github.sha }}
@@ -39,8 +40,8 @@ jobs:
           enable-cache: true
           cache-dependency-glob: "**/pyproject.toml"
 
-      - name: Set up Python 3.9
-        run: uv python install 3.9
+      - name: Set up Python 3.14
+        run: uv python install 3.14
 
       - name: Install dependencies
         run: uv sync --extra dev
