@@ -183,6 +183,12 @@ seed using `KeyEncapsulation.generate_keypair_seed()`.
 The files in `examples/` demonstrate the wrapper's API. Support for alternative
 RNGs is provided via the `randombytes_*()` functions.
 
+Note: `StatefulSignature` requires liboqs to be built with
+`-DOQS_HAZARDOUS_EXPERIMENTAL_ENABLE_SIG_STFL_KEY_SIG_GEN=ON` in addition to
+`-DOQS_ENABLE_SIG_STFL_LMS=ON` and/or `-DOQS_ENABLE_SIG_STFL_XMSS=ON`. Without
+that flag, instantiating `StatefulSignature` raises `RuntimeError` (the public
+C ABI for stateful signatures is only available when the flag is set).
+
 The liboqs-python project should be in the `PYTHONPATH`. To ensure this on
 UNIX-like systems, execute
 
