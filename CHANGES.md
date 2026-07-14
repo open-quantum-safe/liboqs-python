@@ -1,4 +1,25 @@
-# Pre-release
+# Version 0.16.0 - <!-- TODO: release date -->
+
+- Updated to liboqs 0.16.0
+- Added the `PYOQS_VERSION` environment variable to override the liboqs
+  release installed automatically at runtime,
+  https://github.com/open-quantum-safe/liboqs-python/pull/140
+- Fixed the Windows shared library lookup to search for both `oqs.dll` and
+  `liboqs.dll`,
+  https://github.com/open-quantum-safe/liboqs-python/pull/117
+- Fixed a `faulthandler` import error under Robot Framework,
+  https://github.com/open-quantum-safe/liboqs-python/pull/129
+- Fixed `StatefulSignature.export_secret_key` `TypeError`s on Windows,
+  https://github.com/open-quantum-safe/liboqs-python/pull/141
+- Fixed a `StatefulSignature` segfault when liboqs is built without stateful
+  signature key generation support,
+  https://github.com/open-quantum-safe/liboqs-python/pull/144
+- Updated the Python versions used in CI,
+  https://github.com/open-quantum-safe/liboqs-python/pull/143
+- Removed the `docker/` directory,
+  https://github.com/open-quantum-safe/liboqs-python/pull/145
+
+# Version 0.14.0 - August 9, 2025
 
 - Added type checking and automatic linting/formatting, https://github.com/open-quantum-safe/liboqs-python/pull/97
 - Added a utility function for de-structuring version strings in `oqs.py`
@@ -6,6 +27,12 @@
     containing the (major, minor, patch) versions
 - A warning is issued only if the liboqs-python version's major and minor
   numbers differ from those of liboqs, ignoring the patch version
+- Added stateful signature support via the `StatefulSignature` class
+- New enumeration helpers `get_enabled_stateful_sig_mechanisms()` and
+  `get_supported_stateful_sig_mechanisms()`
+- ML-KEM keys can be generated from a seed via
+  `KeyEncapsulation.generate_keypair_seed()`.
+- Minimum required Python 3 version bumped to 3.11
 
 # Version 0.12.0 - January 15, 2025
 
