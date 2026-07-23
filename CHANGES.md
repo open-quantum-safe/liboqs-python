@@ -1,4 +1,4 @@
-# Version 0.16.0 - <!-- TODO: release date -->
+# Version 0.16.0 - July 23, 2026
 
 - Updated to liboqs 0.16.0
 - Added the `PYOQS_VERSION` environment variable to override the liboqs

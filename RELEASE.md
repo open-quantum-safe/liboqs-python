@@ -2,7 +2,7 @@
 
 ---
 
-# Added in version 0.16.0 <!-- TODO: release month/year -->
+# Added in version 0.16.0
 
 - Updated to liboqs 0.16.0.
 - Added the `PYOQS_VERSION` environment variable to override the liboqs
@@ -34,7 +34,7 @@ See in particular limitations on intended use.
 
 ## Release notes
 
-This release of liboqs-python was released on <!-- TODO: release date -->. Its release
+This release of liboqs-python was released on July 23, 2026. Its release
 page on GitHub is
 https://github.com/open-quantum-safe/liboqs-python/releases/tag/0.16.0.
 
