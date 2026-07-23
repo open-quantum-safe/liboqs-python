@@ -1,6 +1,7 @@
 # liboqs-python: Python 3 bindings for liboqs
 
 [![GitHub actions](https://github.com/open-quantum-safe/liboqs-python/actions/workflows/python_simplified.yml/badge.svg)](https://github.com/open-quantum-safe/liboqs-python/actions)
+[![PyPI version](https://img.shields.io/pypi/v/liboqs-python)](https://pypi.org/project/liboqs-python/)
 
 ---
 
@@ -107,7 +108,7 @@ By default, liboqs-python installs the liboqs release that matches its own
 version. Set the `PYOQS_VERSION` environment variable to override this:
 
 ```shell
-export PYOQS_VERSION=0.15.0   # install a specific liboqs release
+export PYOQS_VERSION=0.16.0   # install a specific liboqs release
 export PYOQS_VERSION=latest   # install liboqs from main (HEAD)
 ```
 
@@ -133,9 +134,27 @@ by
 venv\Scripts\activate.bat
 ```
 
-### Configure and install the wrapper
+### Install the wrapper from PyPI
 
-Execute in a Terminal/Console/Administrator Command Prompt
+The simplest way to install liboqs-python is from
+[PyPI](https://pypi.org/project/liboqs-python/)
+
+```shell
+pip install liboqs-python
+```
+
+The PyPI package contains only the Python wrapper; it does **not** bundle a
+compiled copy of liboqs. The first time you `import oqs`, liboqs-python uses a
+system-wide liboqs if one is available, or otherwise downloads, builds and
+installs the matching liboqs release automatically, as described in
+[Let liboqs-python install liboqs automatically](#let-liboqs-python-install-liboqs-automatically)
+above. Building liboqs from source requires git, CMake and a C compiler; see
+[Pre-requisites](#pre-requisites).
+
+### Install the wrapper from source
+
+Alternatively, install the wrapper directly from the source repository by
+executing in a Terminal/Console/Administrator Command Prompt
 
 ```shell
 git clone --depth=1 https://github.com/open-quantum-safe/liboqs-python

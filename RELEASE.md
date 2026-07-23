@@ -1,14 +1,16 @@
-# liboqs-python version 0.14.0
+# liboqs-python version 0.16.0
 
 ---
-# Added in version 0.14.0 July 2025
 
-- Added stateful signature support via the `StatefulSignature` class.
-- New enumeration helpers `get_enabled_stateful_sig_mechanisms()` and
-  `get_supported_stateful_sig_mechanisms()`.
-- Updated to liboqs 0.14.0.
-- ML-KEM keys can be generated from a seed via
-  `KeyEncapsulation.generate_keypair_seed()`.
+# Added in version 0.16.0
+
+- Updated to liboqs 0.16.0.
+- Added the `PYOQS_VERSION` environment variable to override the liboqs
+  release that is installed automatically at runtime.
+- Fixed the Windows shared library lookup to search for both `oqs.dll` and
+  `liboqs.dll`.
+- Fixed a `StatefulSignature` segfault when liboqs is built without stateful
+  signature key generation support.
 
 ## About
 
@@ -32,13 +34,13 @@ See in particular limitations on intended use.
 
 ## Release notes
 
-This release of liboqs-python was released on July 10, 2025. Its release
+This release of liboqs-python was released on July 23, 2026. Its release
 page on GitHub is
-https://github.com/open-quantum-safe/liboqs-python/releases/tag/0.14.0.
+https://github.com/open-quantum-safe/liboqs-python/releases/tag/0.16.0.
 
 ---
 
 ## What's New
 
-This is the 11th release of liboqs-python. For a list of changes see
+For a list of changes see
 [CHANGES.md](https://github.com/open-quantum-safe/liboqs-python/blob/main/CHANGES.md).
