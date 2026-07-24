@@ -4,8 +4,13 @@ import random
 import oqs
 from oqs.oqs import Signature, native
 
-# Sigs for which unit testing is disabled
-disabled_sig_patterns = []
+# Sigs for which unit testing is disabled.
+#
+# The ML-DSA "external mu" (extmu) variants require an externally computed mu
+# and cannot be signed via the standard sign() API, so exclude them from the
+# generic sign/verify correctness tests. See
+# https://github.com/open-quantum-safe/liboqs-python/issues/151.
+disabled_sig_patterns = ["extmu"]
 
 if platform.system() == "Windows":
     disabled_sig_patterns = [""]
