@@ -4,16 +4,20 @@ import random
 import oqs
 from oqs.oqs import Signature, native
 
-# Sigs for which unit testing is disabled.
-#
-# The ML-DSA "external mu" (extmu) variants require an externally computed mu
-# and cannot be signed via the standard sign() API, so exclude them from the
-# generic sign/verify correctness tests. See
-# https://github.com/open-quantum-safe/liboqs-python/issues/151.
-disabled_sig_patterns = ["extmu"]
+# Sigs for which unit testing is disabled
+disabled_sig_patterns = []
 
 if platform.system() == "Windows":
     disabled_sig_patterns = [""]
+
+# External-mu (extmu) variants interpret the signed input as the externally
+# computed mu rather than a raw message. For ML-DSA that mu is 64 bytes (FIPS
+# 204); liboqs's own test suite likewise hardcodes this length for extmu.
+EXTMU_MESSAGE_LEN = 64
+
+
+def _message_len(alg_name: str) -> int:
+    return EXTMU_MESSAGE_LEN if "-extmu" in alg_name else 100
 
 
 def test_correctness() -> tuple[None, str]:
@@ -34,7 +38,7 @@ def test_correctness_with_ctx_str() -> tuple[None, str]:
 
 def check_correctness(alg_name: str) -> None:
     with oqs.Signature(alg_name) as sig:
-        message = bytes(random.getrandbits(8) for _ in range(100))
+        message = bytes(random.getrandbits(8) for _ in range(_message_len(alg_name)))
         public_key = sig.generate_keypair()
         signature = sig.sign(message)
         assert sig.verify(message, signature, public_key)  # noqa: S101
@@ -47,6 +51,15 @@ def check_correctness_with_ctx_str(alg_name: str) -> None:
         public_key = sig.generate_keypair()
         signature = sig.sign_with_ctx_str(message, context)
         assert sig.verify_with_ctx_str(message, signature, context, public_key)  # noqa: S101
+
+
+def test_is_extmu_flag() -> None:
+    """The is_extmu flag is exposed consistently and set for external-mu variants."""
+    for alg_name in oqs.get_enabled_sig_mechanisms():
+        with oqs.Signature(alg_name) as sig:
+            expected = "-extmu" in alg_name
+            assert sig.is_extmu == expected  # noqa: S101
+            assert sig.details["is_extmu"] == expected  # noqa: S101
 
 
 def test_sig_with_ctx_support_detection() -> None:
@@ -83,7 +96,7 @@ def test_wrong_message() -> tuple[None, str]:
 
 def check_wrong_message(alg_name: str) -> None:
     with oqs.Signature(alg_name) as sig:
-        message = bytes(random.getrandbits(8) for _ in range(100))
+        message = bytes(random.getrandbits(8) for _ in range(_message_len(alg_name)))
         public_key = sig.generate_keypair()
         signature = sig.sign(message)
         wrong_message = bytes(random.getrandbits(8) for _ in range(len(message)))
@@ -99,7 +112,7 @@ def test_wrong_signature() -> tuple[None, str]:
 
 def check_wrong_signature(alg_name: str) -> None:
     with oqs.Signature(alg_name) as sig:
-        message = bytes(random.getrandbits(8) for _ in range(100))
+        message = bytes(random.getrandbits(8) for _ in range(_message_len(alg_name)))
         public_key = sig.generate_keypair()
         signature = sig.sign(message)
         wrong_signature = bytes(random.getrandbits(8) for _ in range(len(signature)))
@@ -115,7 +128,7 @@ def test_wrong_public_key() -> tuple[None, str]:
 
 def check_wrong_public_key(alg_name: str) -> None:
     with oqs.Signature(alg_name) as sig:
-        message = bytes(random.getrandbits(8) for _ in range(100))
+        message = bytes(random.getrandbits(8) for _ in range(_message_len(alg_name)))
         public_key = sig.generate_keypair()
         signature = sig.sign(message)
         wrong_public_key = bytes(random.getrandbits(8) for _ in range(len(public_key)))
