@@ -657,6 +657,10 @@ class Signature(ct.Structure):
         self.claimed_nist_level = self._sig.contents.claimed_nist_level
         self.euf_cma = self._sig.contents.euf_cma
         self.sig_with_ctx_support = bool(self._sig.contents.sig_with_ctx_support)
+        # External-mu ("extmu") variants (e.g. ML-DSA-*-extmu) reuse the standard
+        # sign/verify API but interpret the message input as the externally
+        # computed mu rather than a raw message.
+        self.is_extmu = "-extmu" in self.method_name.decode()
         self.length_public_key = self._sig.contents.length_public_key
         self.length_secret_key = self._sig.contents.length_secret_key
         self.length_signature = self._sig.contents.length_signature
@@ -669,6 +673,7 @@ class Signature(ct.Structure):
             "is_suf_cma": bool(self.suf_cma),
             "supports_context_signing": bool(self.sig_with_ctx_support),
             "sig_with_ctx_support": bool(self.sig_with_ctx_support),
+            "is_extmu": self.is_extmu,
             "length_public_key": int(self.length_public_key),
             "length_secret_key": int(self.length_secret_key),
             "length_signature": int(self.length_signature),
@@ -719,7 +724,12 @@ class Signature(ct.Structure):
         """
         Signs the provided message and returns the signature.
 
-        :param message: the message to sign.
+        For external-mu variants (is_extmu, e.g. ML-DSA-*-extmu), message is the
+        externally computed mu rather than a raw message; liboqs enforces its
+        length (64 bytes for ML-DSA).
+
+        :param message: the message to sign (the externally computed mu for
+        external-mu variants).
         """
         # Provide length to avoid extra null char
         c_message = ct.create_string_buffer(message, len(message))
@@ -746,7 +756,11 @@ class Signature(ct.Structure):
         """
         Verify the provided signature on the message; returns True if valid.
 
-        :param message: the signed message.
+        For external-mu variants (is_extmu, e.g. ML-DSA-*-extmu), message is the
+        externally computed mu rather than a raw message.
+
+        :param message: the signed message (the externally computed mu for
+        external-mu variants).
         :param signature: the signature on the message.
         :param public_key: the signer's public key.
         """
