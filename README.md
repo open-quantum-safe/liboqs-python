@@ -181,6 +181,34 @@ Execute
 nose2 --verbose
 ```
 
+
+### Platform-specific notes
+
+The instructions above apply to all platforms; the notes below cover
+prerequisites that are easy to miss on Windows and on Debian-based Linux
+(including Raspberry Pi).
+
+**Windows:** If you do not already have a C++ compiler and CMake, install the
+[Build Tools for Visual Studio](https://visualstudio.microsoft.com/downloads)
+(scroll to "All Downloads" → "Tools for Visual Studio"). In the installer,
+select the **Desktop development with C++** workload, which provides the MSVC
+compiler, the Windows SDK, and CMake. Then run the CMake commands from a
+**Developer Command Prompt for VS** so the compiler is on your `PATH`. Remember
+the `-DCMAKE_WINDOWS_EXPORT_ALL_SYMBOLS=TRUE` flag and the `PATH` setting for
+`oqs.dll` described above.
+
+**Debian-based Linux (including Raspberry Pi):** Install the build
+prerequisites with
+
+```shell
+sudo apt update
+sudo apt install -y build-essential cmake ninja-build libssl-dev git python3-pip python3-venv
+```
+
+After `cmake --build ... --target install`, run `sudo ldconfig` so the newly
+installed shared library is found at runtime (an alternative to setting
+`LD_LIBRARY_PATH` as described above).
+
 ---
 
 ## Usage in standalone applications
