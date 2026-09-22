@@ -14,6 +14,7 @@ import ctypes.util as ctu
 import importlib.metadata  # to determine module version at runtime
 import logging
 import platform  # to learn the OS we're on
+import re
 import subprocess
 import tempfile  # to install liboqs on demand
 import time
@@ -169,85 +170,78 @@ def _countdown(seconds: int) -> None:
         time.sleep(1)
 
 
+# Versions accepted for installing liboqs: a release (0.16.0), a liboqs-python
+# maintenance release (0.16.0.1, which installs liboqs 0.16.0), a release
+# candidate (0.16.0rc1 or 0.16.0-rc1), or a dev version (0.16.0.dev0 or
+# 0.16.0-dev).
+_LIBOQS_VERSION_RE = re.compile(r"(\d+\.\d+\.\d+)(?:\.\d+|-?(rc\d+)|([.-]?dev\d*))?")
+
+
 def _install_liboqs(
     target_directory: Path,
     oqs_version_to_install: Union[str, None] = None,
 ) -> None:
     """Install liboqs version oqs_version (if None, installs latest at HEAD) in the target_directory."""  # noqa: E501
     # Set explicit to `None` to install the lastest `liboqs` code.
-    if oqs_version_to_install is None:
-        pass
-
-    elif "dev" in oqs_version_to_install:
-        # Pre-release dev versions of liboqs-python (e.g. 0.16.0.dev0,
-        # 0.16.0-dev) track liboqs main, since no matching tag exists.
-        oqs_version_to_install = None
-
-    elif "rc" in oqs_version_to_install:
-        # removed the "-" from the version string
-        tmp = oqs_version_to_install.split("rc")
-        oqs_version_to_install = tmp[0] + "-rc" + tmp[1]
+    liboqs_tag = None
+    if oqs_version_to_install is not None:
+        match = _LIBOQS_VERSION_RE.fullmatch(oqs_version_to_install)
+        if match is None:
+            msg = (
+                f"Cannot install liboqs version {oqs_version_to_install!r}: expected a "
+                "release such as 0.16.0 or 0.16.0-rc1 (check PYOQS_VERSION)"
+            )
+            raise ValueError(msg)
+        release, rc, dev = match.groups()
+        if dev:
+            # Pre-release dev versions of liboqs-python (e.g. 0.16.0.dev0,
+            # 0.16.0-dev) track liboqs main, since no matching tag exists.
+            liboqs_tag = None
+        elif rc:
+            # liboqs tags release candidates as e.g. 0.16.0-rc1
+            liboqs_tag = f"{release}-{rc}"
+        else:
+            liboqs_tag = release
 
     with tempfile.TemporaryDirectory() as tmpdirname:
-        oqs_install_cmd = [
-            "cd",
-            tmpdirname,
-            "&&",
-            "git",
-            "clone",
-            "https://github.com/open-quantum-safe/liboqs",
+        # Commands are run as argument lists, without a shell, so paths and
+        # versions are never interpreted by the shell.
+        source_dir = Path(tmpdirname) / "liboqs"
+        build_dir = source_dir / "build"
+
+        clone_cmd = ["git", "clone", "--depth", "1"]
+        if liboqs_tag:
+            clone_cmd.append(f"--branch={liboqs_tag}")
+        clone_cmd.extend(["https://github.com/open-quantum-safe/liboqs", str(source_dir)])
+
+        configure_cmd = [
+            "cmake",
+            "-S",
+            str(source_dir),
+            "-B",
+            str(build_dir),
+            "-DBUILD_SHARED_LIBS=ON",
+            "-DOQS_BUILD_ONLY_LIB=ON",
+            # Stateful signature algorithms:
+            "-DOQS_ENABLE_SIG_STFL_LMS=ON",  # LMS family
+            "-DOQS_ENABLE_SIG_STFL_XMSS=ON",  # XMSS family
+            # To support key-generation.
+            "-DOQS_HAZARDOUS_EXPERIMENTAL_ENABLE_SIG_STFL_KEY_SIG_GEN=ON",
+            f"-DCMAKE_INSTALL_PREFIX={target_directory}",
         ]
-        if oqs_version_to_install:
-            oqs_install_cmd.extend(["--branch", oqs_version_to_install])
-
-        oqs_install_cmd.extend(
-            [
-                "--depth",
-                "1",
-                "&&",
-                "cmake",
-                "-S",
-                "liboqs",
-                "-B",
-                "liboqs/build",
-                "-DBUILD_SHARED_LIBS=ON",
-                "-DOQS_BUILD_ONLY_LIB=ON",
-                # Stateful signature algorithms:
-                "-DOQS_ENABLE_SIG_STFL_LMS=ON",  # LMS family
-                "-DOQS_ENABLE_SIG_STFL_XMSS=ON",  # XMSS family
-                # To support key-generation.
-                "-DOQS_HAZARDOUS_EXPERIMENTAL_ENABLE_SIG_STFL_KEY_SIG_GEN=ON",
-                f"-DCMAKE_INSTALL_PREFIX={target_directory}",
-            ],
-        )
-
         if platform.system() == "Windows":
-            oqs_install_cmd.append("-DCMAKE_WINDOWS_EXPORT_ALL_SYMBOLS=TRUE")
+            configure_cmd.append("-DCMAKE_WINDOWS_EXPORT_ALL_SYMBOLS=TRUE")
 
-        oqs_install_cmd.extend(
-            [
-                "&&",
-                "cmake",
-                "--build",
-                "liboqs/build",
-                "--parallel",
-                "4",
-                "&&",
-                "cmake",
-                "--build",
-                "liboqs/build",
-                "--target",
-                "install",
-            ],
-        )
+        build_cmd = ["cmake", "--build", str(build_dir), "--parallel", "4"]
+        install_cmd = ["cmake", "--build", str(build_dir), "--target", "install"]
+
         logger.info("liboqs not found, installing it in %s", str(target_directory))
         _countdown(5)
 
-        _retcode = subprocess.call(" ".join(oqs_install_cmd), shell=True)  # noqa: S602
-
-        if _retcode != 0:
-            logger.exception("Error installing liboqs.")
-            raise SystemExit(1)
+        for cmd in (clone_cmd, configure_cmd, build_cmd, install_cmd):
+            if subprocess.run(cmd, check=False).returncode != 0:  # noqa: S603
+                logger.exception("Error installing liboqs.")
+                raise SystemExit(1)
 
         logger.info("Done installing liboqs")
 

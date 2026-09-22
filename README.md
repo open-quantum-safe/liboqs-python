@@ -112,6 +112,8 @@ export PYOQS_VERSION=0.16.0   # install a specific liboqs release
 export PYOQS_VERSION=latest   # install liboqs from main (HEAD)
 ```
 
+Other values must be a liboqs release version, e.g., `0.16.0` or `0.16.0-rc1`.
+
 ### Install and activate a Python virtual environment
 
 Execute in a Terminal/Console/Administrator Command Prompt
