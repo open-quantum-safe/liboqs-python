@@ -1,4 +1,4 @@
-# Version 0.16.0.1 - TODO
+# Version 0.16.0.1 - September 23, 2026
 
 - Security fix: the automatic liboqs installation no longer runs commands
   through a shell, which allowed command injection via `PYOQS_VERSION` and
