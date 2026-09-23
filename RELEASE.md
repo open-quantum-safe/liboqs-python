@@ -1,16 +1,29 @@
-# liboqs-python version 0.16.0
+# liboqs-python version 0.16.0.1
 
 ---
 
-# Added in version 0.16.0
+This is a maintenance release of liboqs-python 0.16.0 that fixes a security
+issue. It is still built for liboqs 0.16.0. All users of liboqs-python
+0.10.0 through 0.16.0 who rely on liboqs being installed automatically
+should upgrade.
 
-- Updated to liboqs 0.16.0.
-- Added the `PYOQS_VERSION` environment variable to override the liboqs
-  release that is installed automatically at runtime.
-- Fixed the Windows shared library lookup to search for both `oqs.dll` and
-  `liboqs.dll`.
-- Fixed a `StatefulSignature` segfault when liboqs is built without stateful
-  signature key generation support.
+# Security fix in version 0.16.0.1
+
+- **Shell command injection in automatic liboqs installation**
+  ([GHSA-pw23-r5gj-42g8](https://github.com/open-quantum-safe/liboqs-python/security/advisories/GHSA-pw23-r5gj-42g8)).
+  When liboqs was not found at import time, liboqs-python built it by running
+  git and CMake through a shell, so shell metacharacters in `PYOQS_VERSION`,
+  `OQS_INSTALL_PATH`, `HOME`, or `TMPDIR` could execute arbitrary commands.
+  These commands now run without a shell, and `PYOQS_VERSION` is validated.
+
+# Other changes in version 0.16.0.1
+
+- Fixed automatic installation of liboqs release candidates (e.g.,
+  `0.16.0-rc1`) and install paths that contain spaces.
+- Added support for the ML-DSA external-mu variants when liboqs provides them
+  (they are not in liboqs 0.16.0).
+- Added installation instructions for Windows and Raspberry Pi.
+- Releases are now published to PyPI automatically.
 
 ## About
 
@@ -34,9 +47,9 @@ See in particular limitations on intended use.
 
 ## Release notes
 
-This release of liboqs-python was released on July 23, 2026. Its release
+This release of liboqs-python was released on TODO. Its release
 page on GitHub is
-https://github.com/open-quantum-safe/liboqs-python/releases/tag/0.16.0.
+https://github.com/open-quantum-safe/liboqs-python/releases/tag/0.16.0.1.
 
 ---
 

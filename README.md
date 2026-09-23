@@ -105,7 +105,8 @@ This is convenient in case you want to avoid installing liboqs manually, as
 described in the subsection above.
 
 By default, liboqs-python installs the liboqs release that matches its own
-version. Set the `PYOQS_VERSION` environment variable to override this:
+version; a maintenance release such as liboqs-python 0.16.0.1 installs liboqs
+0.16.0. Set the `PYOQS_VERSION` environment variable to override this:
 
 ```shell
 export PYOQS_VERSION=0.16.0   # install a specific liboqs release

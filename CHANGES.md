@@ -1,3 +1,16 @@
+# Version 0.16.0.1 - TODO
+
+- Security fix: the automatic liboqs installation no longer runs commands
+  through a shell, which allowed command injection via `PYOQS_VERSION` and
+  the install paths,
+  https://github.com/open-quantum-safe/liboqs-python/security/advisories/GHSA-pw23-r5gj-42g8
+- Added support for the ML-DSA external-mu variants when liboqs provides
+  them, https://github.com/open-quantum-safe/liboqs-python/pull/154
+- Added installation instructions for Windows and Raspberry Pi,
+  https://github.com/open-quantum-safe/liboqs-python/pull/135
+- Releases are now published to PyPI automatically,
+  https://github.com/open-quantum-safe/liboqs-python/pull/150
+
 # Version 0.16.0 - July 23, 2026
 
 - Updated to liboqs 0.16.0
