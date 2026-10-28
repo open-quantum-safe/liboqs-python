@@ -1,5 +1,6 @@
 import platform  # to learn the OS we're on
 import random
+from collections.abc import Callable
 from unittest import mock
 
 import oqs
@@ -200,15 +201,78 @@ def test_free_twice() -> None:
         real_free(ptr)
 
     for alg_name in oqs.get_enabled_sig_mechanisms():
+        with oqs.Signature(alg_name) as sig:
+            secret_key = b"\x01" * sig.length_secret_key
         freed.clear()
         with mock.patch.object(lib, "OQS_SIG_free", recording_free):
             # Passing a secret key exercises the cleanse path in free().
-            with oqs.Signature(alg_name, secret_key=b"\x01") as obj:
+            with oqs.Signature(alg_name, secret_key=secret_key) as obj:
                 pass
             obj.free()  # Explicit free after the context manager must be a no-op.
         if len(freed) != 1:
             msg = f"{alg_name}: OQS_SIG_free called {len(freed)} times"
             raise AssertionError(msg)
+
+
+def _wrong_lengths(length: int) -> set[int]:
+    # Empty, a bare 32-byte seed (e.g. ML-DSA rho with t1 = 0), off by one either way
+    return {0, min(32, length - 1), length - 1, length + 1}
+
+
+def _assert_raises_value_error(
+    label: str, call: Callable[..., object], *args: object, **kwargs: object
+) -> None:
+    try:
+        call(*args, **kwargs)
+    except ValueError:
+        pass
+    else:
+        msg = f"{label} did not raise ValueError"
+        raise AssertionError(msg)
+
+
+def test_wrong_length_public_key() -> tuple[None, str]:
+    for alg_name in oqs.get_enabled_sig_mechanisms():
+        if any(item in alg_name for item in disabled_sig_patterns):
+            continue
+        yield check_wrong_length_public_key, alg_name
+
+
+def check_wrong_length_public_key(alg_name: str) -> None:
+    with oqs.Signature(alg_name) as sig:
+        message = bytes(_message_len(alg_name))
+        signature = bytes(sig.length_signature)
+        for n in _wrong_lengths(sig.length_public_key):
+            public_key = bytes(n)
+            _assert_raises_value_error(
+                f"{alg_name}: verify() with a {n}-byte public key",
+                sig.verify,
+                message,
+                signature,
+                public_key,
+            )
+            if sig.sig_with_ctx_support:
+                _assert_raises_value_error(
+                    f"{alg_name}: verify_with_ctx_str() with a {n}-byte public key",
+                    sig.verify_with_ctx_str,
+                    message,
+                    signature,
+                    b"",
+                    public_key,
+                )
+
+
+def test_wrong_length_secret_key() -> None:
+    for alg_name in oqs.get_enabled_sig_mechanisms():
+        with oqs.Signature(alg_name) as sig:
+            length = sig.length_secret_key
+        for n in _wrong_lengths(length):
+            _assert_raises_value_error(
+                f"{alg_name}: Signature() with a {n}-byte secret key",
+                oqs.Signature,
+                alg_name,
+                secret_key=bytes(n),
+            )
 
 
 if __name__ == "__main__":
