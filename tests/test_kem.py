@@ -1,6 +1,7 @@
 import os
 import platform  # to learn the OS we're on
 import random
+from unittest import mock
 
 import oqs
 
@@ -129,6 +130,27 @@ def test_python_attributes() -> None:
             if kem.length_keypair_seed is None:
                 msg = "Undefined oqs.KeyEncapsulation.length_keypair_seed"
                 raise AssertionError(msg)
+
+
+def test_free_twice() -> None:
+    lib = oqs.native()
+    real_free = lib.OQS_KEM_free
+    freed: list[object] = []
+
+    def recording_free(ptr: object) -> None:
+        freed.append(ptr)
+        real_free(ptr)
+
+    for alg_name in oqs.get_enabled_kem_mechanisms():
+        freed.clear()
+        with mock.patch.object(lib, "OQS_KEM_free", recording_free):
+            # Passing a secret key exercises the cleanse path in free().
+            with oqs.KeyEncapsulation(alg_name, secret_key=b"\x01") as obj:
+                pass
+            obj.free()  # Explicit free after the context manager must be a no-op.
+        if len(freed) != 1:
+            msg = f"{alg_name}: OQS_KEM_free called {len(freed)} times"
+            raise AssertionError(msg)
 
 
 if __name__ == "__main__":
