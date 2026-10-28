@@ -1,3 +1,19 @@
+# Version 0.16.0.2 - October 28, 2026
+
+- Security fix: public keys, ciphertexts and secret keys of the wrong length
+  now raise `ValueError`. Previously a short value was zero-padded, which
+  allowed ML-DSA signature forgery and ML-KEM shared-secret recovery when an
+  application passed an empty or very short public key, and
+  `StatefulSignature.verify` read past the end of a short public key,
+  https://github.com/open-quantum-safe/liboqs-python/security/advisories/GHSA-w696-4vrr-x6x3
+- Fixed `StatefulSignature` leaking its native `OQS_SIG_STFL` struct and secret
+  key; `free()` now securely erases and frees both, is safe to call more than
+  once on every class, and makes later `StatefulSignature` method calls raise
+  `RuntimeError`,
+  https://github.com/open-quantum-safe/liboqs-python/pull/160
+- Fixed publishing to PyPI, which rejected packages built with hatchling 1.32,
+  https://github.com/open-quantum-safe/liboqs-python/pull/158
+
 # Version 0.16.0.1 - September 23, 2026
 
 - Security fix: the automatic liboqs installation no longer runs commands
