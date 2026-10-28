@@ -319,6 +319,19 @@ if oqs_python_ver:
         )
 
 
+def _check_length(name: str, value: bytes, length: int) -> None:
+    """
+    Raise ValueError unless value is exactly length bytes.
+
+    ctypes.create_string_buffer(value, length) silently zero-pads a short value,
+    and liboqs reads exactly length bytes, so a short key or ciphertext must be
+    rejected before it reaches either.
+    """
+    if len(value) != length:
+        msg = f"{name} length must be {length} bytes, got {len(value)} bytes"
+        raise ValueError(msg)
+
+
 class MechanismNotSupportedError(Exception):
     """Exception raised when an algorithm is not supported by OQS."""
 
@@ -429,7 +442,8 @@ class KeyEncapsulation(ct.Structure):
             "length_keypair_seed": int(self.length_keypair_seed),
         }
 
-        if secret_key:
+        if secret_key is not None:
+            _check_length("Secret key", secret_key, self._kem.contents.length_secret_key)
             self.secret_key = ct.create_string_buffer(
                 secret_key,
                 self._kem.contents.length_secret_key,
@@ -507,6 +521,7 @@ class KeyEncapsulation(ct.Structure):
 
         :param public_key: the peer's public key.
         """
+        _check_length("Public key", public_key, self._kem.contents.length_public_key)
         c_public_key = ct.create_string_buffer(
             public_key,
             self._kem.contents.length_public_key,
@@ -534,6 +549,7 @@ class KeyEncapsulation(ct.Structure):
 
         :param ciphertext: the ciphertext received from the peer.
         """
+        _check_length("Ciphertext", ciphertext, self._kem.contents.length_ciphertext)
         c_ciphertext = ct.create_string_buffer(
             ciphertext,
             self._kem.contents.length_ciphertext,
@@ -676,7 +692,8 @@ class Signature(ct.Structure):
             "length_signature": int(self.length_signature),
         }
 
-        if secret_key:
+        if secret_key is not None:
+            _check_length("Secret key", secret_key, self._sig.contents.length_secret_key)
             self.secret_key = ct.create_string_buffer(
                 secret_key,
                 self._sig.contents.length_secret_key,
@@ -761,6 +778,7 @@ class Signature(ct.Structure):
         :param signature: the signature on the message.
         :param public_key: the signer's public key.
         """
+        _check_length("Public key", public_key, self._sig.contents.length_public_key)
         # Provide length to avoid extra null char
         c_message = ct.create_string_buffer(message, len(message))
         c_message_len = ct.c_size_t(len(c_message))
@@ -841,6 +859,7 @@ class Signature(ct.Structure):
         if context and not self.sig_with_ctx_support:
             msg = "Verifying with context string not supported"
             raise RuntimeError(msg)
+        _check_length("Public key", public_key, self._sig.contents.length_public_key)
 
         # Provide length to avoid extra null char
         c_message = ct.create_string_buffer(message, len(message))
@@ -1226,6 +1245,7 @@ class StatefulSignature(ct.Structure):
         :return: `True` if the signature is valid, `False` otherwise.
         """
         self._check_not_freed()
+        _check_length("Public key", public_key, self.length_public_key)
         msg = ct.create_string_buffer(message, len(message))
         sig = ct.create_string_buffer(signature, len(signature))
         pk = ct.create_string_buffer(public_key, len(public_key))

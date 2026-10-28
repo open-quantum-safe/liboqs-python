@@ -277,6 +277,40 @@ def test_use_after_free() -> None:
             _assert_raises_freed(f"{alg_name}.{name}", call)
 
 
+def _assert_raises_value_error(
+    label: str, call: Callable[..., object], *args: object, **kwargs: object
+) -> None:
+    try:
+        call(*args, **kwargs)
+    except ValueError:
+        pass
+    else:
+        msg = f"{label} did not raise ValueError"
+        raise AssertionError(msg)
+
+
+def test_wrong_length_public_key() -> tuple[None, str]:
+    for alg_name in oqs.get_enabled_stateful_sig_mechanisms():
+        if any(item in alg_name for item in disabled_sig_patterns):
+            continue
+        yield check_wrong_length_public_key, alg_name
+
+
+def check_wrong_length_public_key(alg_name: str) -> None:
+    # A short key must not reach OQS_SIG_STFL_verify, which reads length_public_key bytes.
+    with oqs.StatefulSignature(alg_name) as sig:
+        length = sig.length_public_key
+        signature = bytes(sig.length_signature)
+        for n in {0, min(32, length - 1), length - 1, length + 1}:
+            _assert_raises_value_error(
+                f"{alg_name}: verify() with a {n}-byte public key",
+                sig.verify,
+                b"message",
+                signature,
+                bytes(n),
+            )
+
+
 if __name__ == "__main__":
     try:
         import nose2
